@@ -1,0 +1,317 @@
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CoreConnect — CRM Vendors Group</title>
+<script>try{document.documentElement.setAttribute('data-theme',localStorage.getItem('cc_theme')==='light'?'light':'dark')}catch(e){}</script>
+<link rel="stylesheet" href="../../shared/app.css?v=2">
+<link rel="stylesheet" href="../../shared/settings.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{background:var(--bg);margin:0;padding:0;font-family:'DM Sans',sans-serif;}
+.root.main-area{height:calc(100vh - 64px);min-height:0;overflow:hidden;display:flex;flex-direction:column;}
+@media (max-width:640px){
+  .root.main-area{height:auto;min-height:0;overflow:visible;}
+}
+.ur-head-spacer{flex:1;}
+.cvg-add-btn{display:flex;align-items:center;gap:5px;background:var(--ac);border:none;border-radius:8px;padding:0 14px;height:32px;color:#fff;font-size:12.5px;font-weight:500;font-family:var(--font);cursor:pointer;transition:all .15s;white-space:nowrap;}
+.cvg-add-btn:hover{background:var(--ac2);}
+.cvg-add-btn svg{width:15px;height:15px;}
+.table-wrap{flex:none;overflow-x:auto;overflow-y:visible;margin:0;border:0.5px solid var(--brd2);border-radius:12px;background:var(--sur);scrollbar-width:thin;scrollbar-color:var(--brd2) transparent;}
+.table-wrap::-webkit-scrollbar{height:8px;}
+.table-wrap::-webkit-scrollbar-track{background:transparent;}
+.table-wrap::-webkit-scrollbar-thumb{background:var(--brd2);border-radius:4px;}
+.table-wrap::-webkit-scrollbar-thumb:hover{background:var(--mu);}
+.table-wrap table{border-collapse:separate;border-spacing:0;font-size:12.5px;width:max-content;min-width:100%;}
+.table-wrap thead th{background:var(--sur2);padding:13px 16px;text-align:left;font-size:11px;font-weight:600;color:var(--mu);text-transform:uppercase;letter-spacing:.5px;border-bottom:0.5px solid var(--brd2);white-space:nowrap;position:sticky;top:0;z-index:10;}
+.table-wrap thead th:first-child{border-radius:12px 0 0 0;padding-left:16px;}
+.table-wrap thead th:last-child{border-radius:0 12px 0 0;}
+.table-wrap tbody tr{transition:background .1s;cursor:pointer;}
+.table-wrap tbody tr:hover{background:rgba(79,124,255,.04);}
+.table-wrap tbody td{padding:13px 16px;vertical-align:middle;border-bottom:0.5px solid var(--brd);white-space:nowrap;font-size:13px;overflow:hidden;text-overflow:ellipsis;}
+.table-wrap tbody td:first-child{padding-left:16px;}
+.table-wrap tbody tr:last-child td{border-bottom:none;}
+.table-wrap tbody tr:last-child td:first-child{border-radius:0 0 0 12px;}
+.table-wrap tbody tr:last-child td:last-child{border-radius:0 0 12px 0;}
+.cvg-no{font-family:var(--mono);font-size:11px;color:var(--mu);}
+.cvg-name{font-weight:500;color:var(--tx2);font-size:12.5px;cursor:pointer;transition:color .12s;}
+.cvg-name:hover{color:var(--ac2);}
+.cvg-phone{font-family:var(--mono);font-size:12px;color:var(--mu);}
+.cvg-cost{font-family:var(--mono);font-size:12px;color:var(--mu);}
+.cvg-field-label{font-size:12px;font-weight:500;color:var(--mu);padding-left:2px;margin-bottom:4px;}
+.cvg-del-btn{background:none;border:0.5px solid var(--rd);border-radius:8px;padding:0 16px;height:34px;color:var(--rd);font-size:13px;font-family:var(--font);cursor:pointer;transition:all .15s;margin-right:auto;}
+.cvg-del-btn:hover{background:var(--rd);color:#fff;}
+</style>
+
+<div class="top-header">
+  <div class="th-left">
+    <button class="hamburger-btn" id="hamburger-btn" onclick="toggleMobileDrawer()" aria-label="Open menu">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+    <div class="logo" onclick="toggleProductSwitcher(event)">
+      <div class="logo-mark"><svg class="logo-mark-svg" viewBox="0 0 324 221" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="CoreConnect logo" style="width:100%;height:100%;"><path d="M72.30,32.52 L72.30,32.52 Q85.97,12.00 110.63,12.00 L246.25,12.00 Q270.90,12.00 257.23,32.52 L210.61,102.44 Q196.93,122.96 172.27,122.96 L36.66,122.96 Q12.00,122.96 25.68,102.44 Z" fill="#1E6BFF"/><path d="M113.39,118.82 L113.39,118.82 Q127.07,98.30 151.73,98.30 L287.34,98.30 Q312.00,98.30 298.32,118.82 L251.70,188.74 Q238.03,209.26 213.37,209.26 L77.75,209.26 Q53.10,209.26 66.77,188.74 Z" fill="#3D3DCC"/></svg></div>
+      <span class="logo-text">CoreConnect</span>
+      <svg class="logo-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+      <div class="product-switcher" id="product-switcher">
+        <a class="ps-item" data-pid="coreconnect" href="../../coreconnect_dashboard_v41/coreconnect_dashboard_v41.html"><svg class="ps-ic" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span>CoreConnect</span></a>
+        <a class="ps-item" data-pid="reputation" href="../../reputation/reputation_dashboard/Dashboard.html"><svg class="ps-ic" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span>Reputation</span></a>
+      </div>
+    </div>
+  </div>
+  <div class="top-header-right">
+    <button class="header-bell" id="header-bell" data-label="Notifications" onclick="toggleNotifications(event)" aria-label="Notifications">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+      </svg>
+      <span class="header-bell-dot" id="header-bell-dot"></span>
+      <span class="header-bell-call-dot" id="header-bell-call-dot"></span>
+    </button>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="sidebar-nav">
+    <div class="sb-item" data-nav="home" data-label="Dashboard" onclick="navClick('Home')">
+      <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 13.5H15"/><path d="M9.5 13.5V9.5H6.5V13.5"/><path d="M2.5 7.29309V13.5"/><path d="M13.5 13.5V7.29309"/><path d="M1.5 8.29315L7.64625 2.14628C7.69269 2.09979 7.74783 2.06291 7.80853 2.03775C7.86923 2.01259 7.93429 1.99963 8 1.99963C8.06571 1.99963 8.13077 2.01259 8.19147 2.03775C8.25217 2.06291 8.30731 2.09979 8.35375 2.14628L14.5 8.29315"/></svg>
+    </div>
+    <div class="sb-item" data-nav="crm" data-label="CRM Customer" onclick="navClick('CRM')">
+      <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 9C6.38071 9 7.5 7.88071 7.5 6.5C7.5 5.11929 6.38071 4 5 4C3.61929 4 2.5 5.11929 2.5 6.5C2.5 7.88071 3.61929 9 5 9Z"/><path d="M10 5H15.5"/><path d="M10 8H15.5"/><path d="M11.5 11H15.5"/><path d="M1 12C1.44375 10.275 3.13625 9 5 9C6.86375 9 8.55625 10.275 9 12"/></svg>
+    </div>
+    <div class="sb-item" data-nav="call" data-label="Call History" onclick="navClick('Call')">
+      <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.2744 9.08374C10.3436 9.03766 10.4233 9.00959 10.5061 9.00206C10.5889 8.99453 10.6723 9.00778 10.7488 9.04061L13.6963 10.3612C13.7956 10.4037 13.8785 10.4772 13.9326 10.5707C13.9867 10.6642 14.009 10.7727 13.9963 10.88C13.8991 11.6056 13.5418 12.2713 12.9907 12.7533C12.4395 13.2352 11.7321 13.5005 11 13.5C8.74566 13.5 6.58365 12.6045 4.98959 11.0104C3.39553 9.41633 2.5 7.25433 2.5 4.99999C2.49944 4.26786 2.7648 3.56045 3.24673 3.00932C3.72865 2.45818 4.39435 2.10084 5.12 2.00374C5.22727 1.99099 5.33578 2.01333 5.4293 2.06741C5.52281 2.12149 5.5963 2.2044 5.63875 2.30374L6.95938 5.25374C6.99182 5.3295 7.00504 5.41212 6.99784 5.49423C6.99064 5.57634 6.96326 5.65539 6.91813 5.72436L5.5825 7.31249C5.53512 7.38398 5.50711 7.46654 5.50119 7.55209C5.49528 7.63765 5.51166 7.72328 5.54875 7.80061C6.06563 8.85874 7.15938 9.93936 8.22063 10.4512C8.29836 10.4882 8.38439 10.5042 8.47021 10.4977C8.55602 10.4912 8.63867 10.4625 8.71 10.4144L10.2744 9.08374Z"/></svg>
+    </div>
+    <div class="sb-item" data-nav="message" data-label="Message History" onclick="navClick('Message')">
+      <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.47375 9L2 11V3C2 2.86739 2.05268 2.74021 2.14645 2.64645C2.24021 2.55268 2.36739 2.5 2.5 2.5H10.5C10.6326 2.5 10.7598 2.55268 10.8536 2.64645C10.9473 2.74021 11 2.86739 11 3V8.5C11 8.63261 10.9473 8.75979 10.8536 8.85355C10.7598 8.94732 10.6326 9 10.5 9H4.47375Z"/><path d="M5 9V11.5C5 11.6326 5.05268 11.7598 5.14645 11.8536C5.24021 11.9473 5.36739 12 5.5 12H11.5262L14 14V6C14 5.86739 13.9473 5.74021 13.8536 5.64645C13.7598 5.55268 13.6326 5.5 13.5 5.5H11"/></svg>
+    </div>
+    <div class="sb-item" data-nav="voicemail" data-label="Voice mail History" onclick="navClick('Voice mail')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="12" r="4"/><circle cx="18" cy="12" r="4"/><line x1="6" y1="16" x2="18" y2="16"/></svg>
+    </div>
+    <div class="sb-item" data-nav="appointments" data-label="Appointments" onclick="navClick('Appointments')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    </div>
+    <div class="sidebar-nav-spacer"></div>
+    <div class="sb-divider"></div>
+    <div class="sb-item active" data-nav="settings" data-label="Settings" onclick="navClick('Settings')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="6" x2="13" y2="6"/><line x1="17" y1="6" x2="20" y2="6"/><circle cx="15" cy="6" r="2"/><line x1="4" y1="12" x2="7" y2="12"/><line x1="11" y1="12" x2="20" y2="12"/><circle cx="9" cy="12" r="2"/><line x1="4" y1="18" x2="13" y2="18"/><line x1="17" y1="18" x2="20" y2="18"/><circle cx="15" cy="18" r="2"/></svg>
+    </div>
+  </div>
+  <div class="sb-account" onclick="navClick('Account')" title="Account">DP</div>
+</div>
+
+<!-- MOBILE DRAWER -->
+<div class="mobile-drawer-backdrop" id="mobile-drawer-backdrop" onclick="closeMobileDrawer()"></div>
+<div class="mobile-drawer" id="mobile-drawer">
+  <div class="md-nav">
+    <div class="md-item" onclick="navClick('Home');closeMobileDrawer();">
+      <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 13.5H15"/><path d="M9.5 13.5V9.5H6.5V13.5"/><path d="M2.5 7.29309V13.5"/><path d="M13.5 13.5V7.29309"/><path d="M1.5 8.29315L7.64625 2.14628C7.69269 2.09979 7.74783 2.06291 7.80853 2.03775C7.86923 2.01259 7.93429 1.99963 8 1.99963C8.06571 1.99963 8.13077 2.01259 8.19147 2.03775C8.25217 2.06291 8.30731 2.09979 8.35375 2.14628L14.5 8.29315"/></svg>
+      <span>Dashboard</span>
+    </div>
+    <div class="md-item" onclick="navClick('CRM');closeMobileDrawer();">
+      <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 9C6.38071 9 7.5 7.88071 7.5 6.5C7.5 5.11929 6.38071 4 5 4C3.61929 4 2.5 5.11929 2.5 6.5C2.5 7.88071 3.61929 9 5 9Z"/><path d="M10 5H15.5"/><path d="M10 8H15.5"/><path d="M11.5 11H15.5"/><path d="M1 12C1.44375 10.275 3.13625 9 5 9C6.86375 9 8.55625 10.275 9 12"/></svg>
+      <span>CRM Customer</span>
+    </div>
+    <div class="md-item" onclick="navClick('Call');closeMobileDrawer();">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      <span>Call History</span>
+    </div>
+    <div class="md-item" onclick="navClick('Message');closeMobileDrawer();">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span>Message History</span>
+    </div>
+    <div class="md-item" onclick="navClick('Voice mail');closeMobileDrawer();">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="12" r="4"/><circle cx="18" cy="12" r="4"/><line x1="6" y1="16" x2="18" y2="16"/></svg>
+      <span>Voice mail History</span>
+    </div>
+    <div class="md-item" onclick="navClick('Appointments');closeMobileDrawer();">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <span>Appointments</span>
+    </div>
+    <div class="md-divider"></div>
+    <div class="md-item active" onclick="navClick('Settings');closeMobileDrawer();">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="6" x2="13" y2="6"/><line x1="17" y1="6" x2="20" y2="6"/><circle cx="15" cy="6" r="2"/><line x1="4" y1="12" x2="7" y2="12"/><line x1="11" y1="12" x2="20" y2="12"/><circle cx="9" cy="12" r="2"/><line x1="4" y1="18" x2="13" y2="18"/><line x1="17" y1="18" x2="20" y2="18"/><circle cx="15" cy="18" r="2"/></svg>
+      <span>Settings</span>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE-LEVEL NAV TOAST -->
+<div class="nav-toast" id="nav-toast">
+  <div class="nav-toast-icon">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+  </div>
+  <div class="nav-toast-text">
+    <strong id="nav-toast-title">Coming soon</strong>
+    <span id="nav-toast-body">This feature is under construction.</span>
+  </div>
+  <button class="nav-toast-close" onclick="hideNavToast()" title="Dismiss">&#x2715;</button>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="root main-area" id="root">
+  <div class="set-page-head">
+    <a class="ur-back" href="../Settings_main_page/coreconnect_settings.html" title="Back to Settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      <span>Settings</span>
+    </a>
+    <span class="set-page-title">CRM Vendors Group</span>
+    <span class="ur-head-spacer"></span>
+    <button class="cvg-add-btn" onclick="openCvgAddModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><span>Add CRM Vendors Group</span></button>
+  </div>
+  <div class="set-scroll">
+    <section class="set-section">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th style="width:50px;">No</th><th>Group Name</th><th>Vendor Phone</th><th>Vendor Cost</th></tr></thead>
+          <tbody id="cvg-tbody">
+            <tr onclick="openCvgEditModal(this)"><td><span class="cvg-no">1</span></td><td><span class="cvg-name">Acme Corp</span></td><td><span class="cvg-phone">+1 (555) 100-2001</span></td><td><span class="cvg-cost">$150.00</span></td></tr>
+            <tr onclick="openCvgEditModal(this)"><td><span class="cvg-no">2</span></td><td><span class="cvg-name">Globex Inc</span></td><td><span class="cvg-phone">+1 (555) 200-3002</span></td><td><span class="cvg-cost">$200.00</span></td></tr>
+            <tr onclick="openCvgEditModal(this)"><td><span class="cvg-no">3</span></td><td><span class="cvg-name">Initech Group</span></td><td><span class="cvg-phone">+1 (555) 300-4003</span></td><td><span class="cvg-cost">$175.00</span></td></tr>
+            <tr onclick="openCvgEditModal(this)"><td><span class="cvg-no">4</span></td><td><span class="cvg-name">Umbrella LLC</span></td><td><span class="cvg-phone">+1 (555) 400-5004</span></td><td><span class="cvg-cost">$300.00</span></td></tr>
+            <tr onclick="openCvgEditModal(this)"><td><span class="cvg-no">5</span></td><td><span class="cvg-name">Stark Industries</span></td><td><span class="cvg-phone">+1 (555) 500-6005</span></td><td><span class="cvg-cost">$500.00</span></td></tr>
+            <tr onclick="openCvgEditModal(this)"><td><span class="cvg-no">6</span></td><td><span class="cvg-name">Wayne Enterprises</span></td><td><span class="cvg-phone">+1 (555) 600-7006</span></td><td><span class="cvg-cost">$450.00</span></td></tr>
+            <tr onclick="openCvgEditModal(this)"><td><span class="cvg-no">7</span></td><td><span class="cvg-name">Oscorp</span></td><td><span class="cvg-phone">+1 (555) 700-8007</span></td><td><span class="cvg-cost">$225.00</span></td></tr>
+            <tr onclick="openCvgEditModal(this)"><td><span class="cvg-no">8</span></td><td><span class="cvg-name">LexCorp</span></td><td><span class="cvg-phone">+1 (555) 800-9008</span></td><td><span class="cvg-cost">$350.00</span></td></tr>
+            <tr onclick="openCvgEditModal(this)"><td><span class="cvg-no">9</span></td><td><span class="cvg-name">Cyberdyne Systems</span></td><td><span class="cvg-phone">+1 (555) 900-1009</span></td><td><span class="cvg-cost">$275.00</span></td></tr>
+            <tr onclick="openCvgEditModal(this)"><td><span class="cvg-no">10</span></td><td><span class="cvg-name">Soylent Corp</span></td><td><span class="cvg-phone">+1 (555) 010-1100</span></td><td><span class="cvg-cost">$125.00</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal-backdrop modal-fullscreen-mobile" id="cvg-modal-backdrop" onclick="closeCvgEditModal()">
+  <div class="modal" id="cvg-modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <span class="modal-title">Edit CRM Vendors Group</span>
+      <button class="modal-close" onclick="closeCvgEditModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div>
+        <label class="cvg-field-label" for="cvg-edit-group">Group Name</label>
+        <div class="modal-field"><input type="text" id="cvg-edit-group" placeholder="Group Name" /></div>
+      </div>
+      <div>
+        <label class="cvg-field-label" for="cvg-edit-phone">Vendor Phone</label>
+        <div class="modal-field"><input type="text" id="cvg-edit-phone" placeholder="Vendor Phone" /></div>
+      </div>
+      <div>
+        <label class="cvg-field-label" for="cvg-edit-cost">Vendor Cost</label>
+        <div class="modal-field"><input type="text" id="cvg-edit-cost" placeholder="Vendor Cost" /></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="cvg-del-btn" onclick="deleteCvgRow()">Delete</button>
+      <button class="modal-cancel" onclick="closeCvgEditModal()">Cancel</button>
+      <button class="modal-save" onclick="saveCvgEdit()">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var cvgActiveRow = null;
+var cvgIsAdding = false;
+function openCvgAddModal(){
+  cvgActiveRow = null;
+  cvgIsAdding = true;
+  document.getElementById('cvg-edit-group').value = '';
+  document.getElementById('cvg-edit-phone').value = '';
+  document.getElementById('cvg-edit-cost').value = '';
+  document.querySelector('#cvg-modal .modal-title').textContent = 'Add CRM Vendors Group';
+  document.querySelector('#cvg-modal .cvg-del-btn').style.display = 'none';
+  document.getElementById('cvg-modal-backdrop').classList.add('open');
+  setTimeout(function(){ document.getElementById('cvg-edit-group').focus(); }, 0);
+}
+function openCvgEditModal(row){
+  cvgActiveRow = row;
+  cvgIsAdding = false;
+  var cells = row.children;
+  document.getElementById('cvg-edit-group').value = cells[1].textContent;
+  document.getElementById('cvg-edit-phone').value = cells[2].textContent;
+  document.getElementById('cvg-edit-cost').value = cells[3].textContent;
+  document.querySelector('#cvg-modal .modal-title').textContent = 'Edit CRM Vendors Group';
+  document.querySelector('#cvg-modal .cvg-del-btn').style.display = '';
+  document.getElementById('cvg-modal-backdrop').classList.add('open');
+  setTimeout(function(){ document.getElementById('cvg-edit-group').focus(); }, 0);
+}
+function closeCvgEditModal(){
+  document.getElementById('cvg-modal-backdrop').classList.remove('open');
+  cvgActiveRow = null;
+  cvgIsAdding = false;
+}
+function saveCvgEdit(){
+  var group = document.getElementById('cvg-edit-group').value.trim();
+  if(!group){ alert('Please enter a group name.'); return; }
+  var phone = document.getElementById('cvg-edit-phone').value.trim();
+  var cost = document.getElementById('cvg-edit-cost').value.trim();
+  if(cvgIsAdding){
+    var tbody = document.getElementById('cvg-tbody');
+    var rowNum = tbody.rows.length + 1;
+    var tr = document.createElement('tr');
+    tr.setAttribute('onclick','openCvgEditModal(this)');
+    tr.innerHTML = '<td><span class="cvg-no">'+rowNum+'</span></td><td><span class="cvg-name">'+group+'</span></td><td><span class="cvg-phone">'+phone+'</span></td><td><span class="cvg-cost">'+cost+'</span></td>';
+    tbody.appendChild(tr);
+    closeCvgEditModal();
+    showNavToast('CRM Vendors Group','CRM Vendors Group added successfully.');
+  } else if(cvgActiveRow){
+    cvgActiveRow.children[1].innerHTML = '<span class="cvg-name">'+group+'</span>';
+    cvgActiveRow.children[2].innerHTML = '<span class="cvg-phone">'+phone+'</span>';
+    cvgActiveRow.children[3].innerHTML = '<span class="cvg-cost">'+cost+'</span>';
+    closeCvgEditModal();
+    showNavToast('CRM Vendors Group','CRM Vendors Group updated successfully.');
+  }
+}
+function deleteCvgRow(){
+  if(!cvgActiveRow) return;
+  cvgActiveRow.remove();
+  var rows = document.querySelectorAll('#cvg-tbody tr');
+  rows.forEach(function(r,i){ r.children[0].querySelector('.cvg-no').textContent = i + 1; });
+  closeCvgEditModal();
+  showNavToast('CRM Vendors Group','CRM Vendors Group deleted successfully.');
+}
+</script>
+
+<script>
+function navClick(label){
+  if(label === 'Settings') return;
+  var routes = {
+    'Home':'../../coreconnect_dashboard_v41/coreconnect_dashboard_v41.html',
+    'CRM':'../../coreconnect_leads_v83/coreconnect_leads_v83.html',
+    'Call':'../../call_history/coreconnect_call_history_v31.html',
+    'Message':'../../coreconnect_message_history_v41/coreconnect_message_history_v41.html',
+    'Voice mail':'../../coreconnect_voicemail_history_v9/coreconnect_voicemail_history_v9.html',
+    'Appointments':'../../coreconnect_appointments/coreconnect_appointments.html'
+  };
+  if(routes[label]){ window.location.href = routes[label]; return; }
+  showNavToast(label + ' is coming soon', 'This feature is under construction.');
+}
+function toggleMobileDrawer(){
+  var d = document.getElementById('mobile-drawer'), b = document.getElementById('mobile-drawer-backdrop');
+  if(!d || !b) return;
+  if(d.classList.contains('open')) closeMobileDrawer();
+  else { d.classList.add('open'); b.classList.add('open'); }
+}
+function closeMobileDrawer(){
+  var d = document.getElementById('mobile-drawer'), b = document.getElementById('mobile-drawer-backdrop');
+  if(d) d.classList.remove('open'); if(b) b.classList.remove('open');
+}
+var navToastTimer = null;
+function showNavToast(title, body){
+  var t = document.getElementById('nav-toast'); if(!t) return;
+  if(title) document.getElementById('nav-toast-title').textContent = title;
+  if(body)  document.getElementById('nav-toast-body').textContent  = body;
+  t.classList.add('show');
+  if(navToastTimer) clearTimeout(navToastTimer);
+  navToastTimer = setTimeout(hideNavToast, 4000);
+}
+function hideNavToast(){
+  var t = document.getElementById('nav-toast'); if(t) t.classList.remove('show');
+  if(navToastTimer){ clearTimeout(navToastTimer); navToastTimer = null; }
+}
+function toggleProductSwitcher(e){ e.stopPropagation(); document.getElementById('product-switcher').classList.toggle('open'); }
+document.addEventListener('click', function(){ var ps = document.getElementById('product-switcher'); if(ps) ps.classList.remove('open'); });
+function toggleNotifications(e){ e.stopPropagation(); document.getElementById('notif-panel').classList.toggle('open'); }
+function closeNotifications(){ document.getElementById('notif-panel').classList.remove('open'); }
+</script>
+<script src="../../shared/notifications.js?v=6"></script>

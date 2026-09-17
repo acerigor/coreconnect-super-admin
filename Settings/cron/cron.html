@@ -1,0 +1,958 @@
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CoreConnect — Cron</title>
+<script>try{document.documentElement.setAttribute('data-theme',localStorage.getItem('cc_theme')==='light'?'light':'dark')}catch(e){}</script>
+<link rel="stylesheet" href="../../shared/app.css?v=2">
+<link rel="stylesheet" href="../../shared/settings.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{background:var(--bg);margin:0;padding:0;font-family:'DM Sans',sans-serif;}
+.root.main-area{height:calc(100vh - 64px);min-height:0;overflow:hidden;display:flex;flex-direction:column;}
+@media (max-width:640px){
+  .root.main-area{height:auto;min-height:0;overflow:visible;}
+}
+.ur-head-spacer{flex:1;}
+.cron-add-btn{display:flex;align-items:center;gap:5px;background:var(--ac);border:none;border-radius:8px;padding:0 14px;height:32px;color:#fff;font-size:12.5px;font-weight:500;font-family:var(--font);cursor:pointer;transition:all .15s;white-space:nowrap;}
+.cron-add-btn:hover{background:var(--ac2);}
+.cron-add-btn svg{width:15px;height:15px;}
+.table-wrap{flex:none;overflow-x:auto;overflow-y:visible;margin:0;border:0.5px solid var(--brd2);border-radius:12px;background:var(--sur);scrollbar-width:thin;scrollbar-color:var(--brd2) transparent;}
+.table-wrap::-webkit-scrollbar{height:8px;}
+.table-wrap::-webkit-scrollbar-track{background:transparent;}
+.table-wrap::-webkit-scrollbar-thumb{background:var(--brd2);border-radius:4px;}
+.table-wrap::-webkit-scrollbar-thumb:hover{background:var(--mu);}
+.table-wrap table{border-collapse:separate;border-spacing:0;font-size:12.5px;width:max-content;min-width:100%;}
+.table-wrap thead th{background:var(--sur2);padding:13px 16px;text-align:left;font-size:11px;font-weight:600;color:var(--mu);text-transform:uppercase;letter-spacing:.5px;border-bottom:0.5px solid var(--brd2);white-space:nowrap;position:sticky;top:0;z-index:10;}
+.table-wrap thead th:first-child{border-radius:12px 0 0 0;padding-left:16px;}
+.table-wrap thead th:last-child{border-radius:0 12px 0 0;}
+.table-wrap tbody tr{transition:background .1s;cursor:pointer;}
+.table-wrap tbody tr:hover{background:rgba(79,124,255,.04);}
+.table-wrap tbody td{padding:13px 16px;vertical-align:middle;border-bottom:0.5px solid var(--brd);white-space:nowrap;font-size:13px;overflow:hidden;text-overflow:ellipsis;}
+.table-wrap tbody td:first-child{padding-left:16px;}
+.table-wrap tbody tr:last-child td{border-bottom:none;}
+.table-wrap tbody tr:last-child td:first-child{border-radius:0 0 0 12px;}
+.table-wrap tbody tr:last-child td:last-child{border-radius:0 0 12px 0;}
+.crn-no{font-family:var(--mono);font-size:11px;color:var(--mu);}
+.crn-name{font-weight:500;color:var(--tx2);font-size:12.5px;}
+.crn-link{color:var(--ac);font-size:12.5px;text-decoration:none;}
+.crn-link:hover{text-decoration:underline;}
+.crn-exec{display:flex;align-items:center;gap:8px;}
+.crn-exec-type{display:inline-flex;padding:3px 7px;border-radius:5px;font-size:11px;font-weight:500;background:rgba(79,124,255,.12);color:var(--ac2);}
+.crn-exec-time{display:inline-block;font-size:10.5px;color:var(--mu);background:var(--sur2);padding:1px 5px;border-radius:3px;font-family:var(--mono);}
+.crn-time{font-size:10.5px;color:var(--mu);background:var(--sur2);padding:1px 5px;border-radius:3px;font-family:var(--mono);}
+.crn-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 7px;border-radius:5px;font-size:11px;font-weight:500;}
+.crn-badge-auto{background:rgba(79,124,255,.12);color:var(--ac2);}
+.crn-badge-manual{background:rgba(245,166,35,.12);color:var(--am);}
+.crn-badge-complete{background:rgba(34,200,138,.12);color:var(--gr);}
+.crn-badge-failed{background:rgba(232,85,85,.12);color:var(--rd);}
+.crn-field-label{display:block;font-size:12px;font-weight:500;color:var(--mu);padding-left:2px;margin-bottom:4px;}
+.crn-del-btn{margin-right:auto;background:none;border:0.5px solid var(--brd2);border-radius:8px;padding:0 14px;height:34px;color:var(--mu);font-size:13px;font-family:var(--font);cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:5px;}
+.crn-del-btn:hover{border-color:var(--rd);color:#fff;background:var(--rd);}
+.crn-del-btn svg{width:14px;height:14px;}
+.crn-dd{position:relative;width:100%;}
+.crn-dd-btn{width:100%;height:40px;background:var(--sur2);border:0.5px solid var(--brd2);border-radius:8px;padding:0 12px;color:var(--tx);font-family:var(--font);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:8px;text-align:left;transition:border-color .15s;}
+.crn-dd-btn:hover{border-color:var(--mu);}
+.crn-dd.open .crn-dd-btn{border-color:var(--ac);}
+.crn-dd-btn svg{width:16px;height:16px;color:var(--mu);flex-shrink:0;transition:transform .15s;}
+.crn-dd.open .crn-dd-btn svg{transform:rotate(180deg);}
+.crn-dd-val{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.crn-dd-val.ph{color:var(--mu);}
+#crn-dd-pop{position:fixed;z-index:4000;min-width:150px;max-height:260px;overflow:auto;background:var(--sur);border:0.5px solid var(--brd2);border-radius:10px;padding:6px;box-shadow:0 14px 36px rgba(0,0,0,.55);display:none;}
+#crn-dd-pop.open{display:block;}
+.crn-dd-opt{padding:9px 11px;border-radius:7px;font-size:13px;color:var(--tx);cursor:pointer;white-space:nowrap;transition:background .1s;}
+.crn-dd-opt:hover{background:var(--sur2);}
+.crn-dd-opt.sel{background:rgba(79,124,255,.14);color:var(--ac2);}
+.crn-time-row{display:flex;align-items:center;gap:8px;}
+.crn-time-box{display:flex;align-items:center;height:40px;background:var(--sur2);border:0.5px solid var(--brd2);border-radius:8px;padding:0 12px;flex:1;transition:border-color .15s;}
+.crn-time-box:hover{border-color:var(--mu);}
+.crn-time-box:focus-within{border-color:var(--ac);}
+.crn-time-sep{color:var(--mu);font-size:13px;font-family:var(--font);padding:0 2px;user-select:none;}
+.crn-time-seg{display:flex;align-items:center;cursor:text;}
+.crn-time-seg.open{}
+.crn-time-input{width:24px;background:transparent;border:none;outline:none;color:var(--tx);font-family:var(--font);font-size:13px;text-align:center;padding:0;cursor:text;}
+.crn-time-input::placeholder{color:var(--mu);}
+.crn-time-input.ampm{width:28px;}
+.crn-sched-add{width:40px;height:40px;border:0.5px solid var(--brd2);border-radius:8px;background:var(--sur2);color:var(--mu);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;}
+.crn-sched-add:hover{border-color:var(--ac);color:var(--ac2);background:rgba(79,124,255,.08);}
+.crn-sched-add svg{width:18px;height:18px;}
+.crn-sched-times{font-size:12.5px;color:var(--tx);margin-top:6px;display:flex;flex-wrap:wrap;gap:6px;}
+.crn-sched-times:empty{display:none;}
+.crn-sched-tag{display:inline-flex;align-items:center;gap:4px;background:var(--sur);border:0.5px solid var(--brd2);border-radius:999px;padding:3px 4px 3px 10px;color:var(--tx);font-size:12px;height:26px;}
+.crn-sched-tag-x{width:20px;height:20px;border:none;background:transparent;color:var(--mu);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .12s;padding:0;}
+.crn-sched-tag-x:hover{background:var(--rd);color:#fff;}
+.crn-day-wrap{display:none;}
+.crn-day-btns{display:flex;gap:6px;flex-wrap:wrap;}
+.crn-day-btn{height:32px;min-width:40px;padding:0 10px;border:0.5px solid var(--brd2);border-radius:8px;background:var(--sur2);color:var(--tx);font-family:var(--font);font-size:12px;cursor:pointer;transition:all .15s;user-select:none;}
+.crn-day-btn:hover{border-color:var(--mu);}
+.crn-day-btn.sel{background:var(--ac);color:#fff;border-color:var(--ac);}
+</style>
+
+<div class="top-header">
+  <div class="th-left">
+    <button class="hamburger-btn" id="hamburger-btn" onclick="toggleMobileDrawer()" aria-label="Open menu">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+    <div class="logo" onclick="toggleProductSwitcher(event)">
+      <div class="logo-mark"><svg class="logo-mark-svg" viewBox="0 0 324 221" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="CoreConnect logo" style="width:100%;height:100%;"><path d="M72.30,32.52 L72.30,32.52 Q85.97,12.00 110.63,12.00 L246.25,12.00 Q270.90,12.00 257.23,32.52 L210.61,102.44 Q196.93,122.96 172.27,122.96 L36.66,122.96 Q12.00,122.96 25.68,102.44 Z" fill="#1E6BFF"/><path d="M113.39,118.82 L113.39,118.82 Q127.07,98.30 151.73,98.30 L287.34,98.30 Q312.00,98.30 298.32,118.82 L251.70,188.74 Q238.03,209.26 213.37,209.26 L77.75,209.26 Q53.10,209.26 66.77,188.74 Z" fill="#3D3DCC"/></svg></div>
+      <span class="logo-text">CoreConnect</span>
+      <svg class="logo-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+      <div class="product-switcher" id="product-switcher">
+        <a class="ps-item" data-pid="coreconnect" href="../../coreconnect_dashboard_v41/coreconnect_dashboard_v41.html"><svg class="ps-ic" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span>CoreConnect</span></a>
+        <a class="ps-item" data-pid="reputation" href="../../reputation/reputation_dashboard/Dashboard.html"><svg class="ps-ic" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span>Reputation</span></a>
+      </div>
+    </div>
+  </div>
+  <div class="top-header-right">
+    <button class="header-bell" id="header-bell" data-label="Notifications" onclick="toggleNotifications(event)" aria-label="Notifications">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+      </svg>
+      <span class="header-bell-dot" id="header-bell-dot"></span>
+      <span class="header-bell-call-dot" id="header-bell-call-dot"></span>
+    </button>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="sidebar-nav">
+    <div class="sb-item" data-nav="home" data-label="Dashboard" onclick="navClick('Home')">
+      <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 13.5H15"/><path d="M9.5 13.5V9.5H6.5V13.5"/><path d="M2.5 7.29309V13.5"/><path d="M13.5 13.5V7.29309"/><path d="M1.5 8.29315L7.64625 2.14628C7.69269 2.09979 7.74783 2.06291 7.80853 2.03775C7.86923 2.01259 7.93429 1.99963 8 1.99963C8.06571 1.99963 8.13077 2.01259 8.19147 2.03775C8.25217 2.06291 8.30731 2.09979 8.35375 2.14628L14.5 8.29315"/></svg>
+    </div>
+    <div class="sb-item" data-nav="crm" data-label="CRM Customer" onclick="navClick('CRM')">
+      <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 9C6.38071 9 7.5 7.88071 7.5 6.5C7.5 5.11929 6.38071 4 5 4C3.61929 4 2.5 5.11929 2.5 6.5C2.5 7.88071 3.61929 9 5 9Z"/><path d="M10 5H15.5"/><path d="M10 8H15.5"/><path d="M11.5 11H15.5"/><path d="M1 12C1.44375 10.275 3.13625 9 5 9C6.86375 9 8.55625 10.275 9 12"/></svg>
+    </div>
+    <div class="sb-item" data-nav="call" data-label="Call History" onclick="navClick('Call')">
+      <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.2744 9.08374C10.3436 9.03766 10.4233 9.00959 10.5061 9.00206C10.5889 8.99453 10.6723 9.00778 10.7488 9.04061L13.6963 10.3612C13.7956 10.4037 13.8785 10.4772 13.9326 10.5707C13.9867 10.6642 14.009 10.7727 13.9963 10.88C13.8991 11.6056 13.5418 12.2713 12.9907 12.7533C12.4395 13.2352 11.7321 13.5005 11 13.5C8.74566 13.5 6.58365 12.6045 4.98959 11.0104C3.39553 9.41633 2.5 7.25433 2.5 4.99999C2.49944 4.26786 2.7648 3.56045 3.24673 3.00932C3.72865 2.45818 4.39435 2.10084 5.12 2.00374C5.22727 1.99099 5.33578 2.01333 5.4293 2.06741C5.52281 2.12149 5.5963 2.2044 5.63875 2.30374L6.95938 5.25374C6.99182 5.3295 7.00504 5.41212 6.99784 5.49423C6.99064 5.57634 6.96326 5.65539 6.91813 5.72436L5.5825 7.31249C5.53512 7.38398 5.50711 7.46654 5.50119 7.55209C5.49528 7.63765 5.51166 7.72328 5.54875 7.80061C6.06563 8.85874 7.15938 9.93936 8.22063 10.4512C8.29836 10.4882 8.38439 10.5042 8.47021 10.4977C8.55602 10.4912 8.63867 10.4625 8.71 10.4144L10.2744 9.08374Z"/></svg>
+    </div>
+    <div class="sb-item" data-nav="message" data-label="Message History" onclick="navClick('Message')">
+      <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.47375 9L2 11V3C2 2.86739 2.05268 2.74021 2.14645 2.64645C2.24021 2.55268 2.36739 2.5 2.5 2.5H10.5C10.6326 2.5 10.7598 2.55268 10.8536 2.64645C10.9473 2.74021 11 2.86739 11 3V8.5C11 8.63261 10.9473 8.75979 10.8536 8.85355C10.7598 8.94732 10.6326 9 10.5 9H4.47375Z"/><path d="M5 9V11.5C5 11.6326 5.05268 11.7598 5.14645 11.8536C5.24021 11.9473 5.36739 12 5.5 12H11.5262L14 14V6C14 5.86739 13.9473 5.74021 13.8536 5.64645C13.7598 5.55268 13.6326 5.5 13.5 5.5H11"/></svg>
+    </div>
+    <div class="sb-item" data-nav="voicemail" data-label="Voice mail History" onclick="navClick('Voice mail')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="12" r="4"/><circle cx="18" cy="12" r="4"/><line x1="6" y1="16" x2="18" y2="16"/></svg>
+    </div>
+    <div class="sb-item" data-nav="appointments" data-label="Appointments" onclick="navClick('Appointments')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    </div>
+    <div class="sidebar-nav-spacer"></div>
+    <div class="sb-divider"></div>
+    <div class="sb-item active" data-nav="settings" data-label="Settings" onclick="navClick('Settings')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="6" x2="13" y2="6"/><line x1="17" y1="6" x2="20" y2="6"/><circle cx="15" cy="6" r="2"/><line x1="4" y1="12" x2="7" y2="12"/><line x1="11" y1="12" x2="20" y2="12"/><circle cx="9" cy="12" r="2"/><line x1="4" y1="18" x2="13" y2="18"/><line x1="17" y1="18" x2="20" y2="18"/><circle cx="15" cy="18" r="2"/></svg>
+    </div>
+  </div>
+  <div class="sb-account" onclick="navClick('Account')" title="Account">DP</div>
+</div>
+
+<!-- MOBILE DRAWER -->
+<div class="mobile-drawer-backdrop" id="mobile-drawer-backdrop" onclick="closeMobileDrawer()"></div>
+<div class="mobile-drawer" id="mobile-drawer">
+  <div class="md-nav">
+    <div class="md-item" onclick="navClick('Home');closeMobileDrawer();">
+      <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 13.5H15"/><path d="M9.5 13.5V9.5H6.5V13.5"/><path d="M2.5 7.29309V13.5"/><path d="M13.5 13.5V7.29309"/><path d="M1.5 8.29315L7.64625 2.14628C7.69269 2.09979 7.74783 2.06291 7.80853 2.03775C7.86923 2.01259 7.93429 1.99963 8 1.99963C8.06571 1.99963 8.13077 2.01259 8.19147 2.03775C8.25217 2.06291 8.30731 2.09979 8.35375 2.14628L14.5 8.29315"/></svg>
+      <span>Dashboard</span>
+    </div>
+    <div class="md-item" onclick="navClick('CRM');closeMobileDrawer();">
+      <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 9C6.38071 9 7.5 7.88071 7.5 6.5C7.5 5.11929 6.38071 4 5 4C3.61929 4 2.5 5.11929 2.5 6.5C2.5 7.88071 3.61929 9 5 9Z"/><path d="M10 5H15.5"/><path d="M10 8H15.5"/><path d="M11.5 11H15.5"/><path d="M1 12C1.44375 10.275 3.13625 9 5 9C6.86375 9 8.55625 10.275 9 12"/></svg>
+      <span>CRM Customer</span>
+    </div>
+    <div class="md-item" onclick="navClick('Call');closeMobileDrawer();">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      <span>Call History</span>
+    </div>
+    <div class="md-item" onclick="navClick('Message');closeMobileDrawer();">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span>Message History</span>
+    </div>
+    <div class="md-item" onclick="navClick('Voice mail');closeMobileDrawer();">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="12" r="4"/><circle cx="18" cy="12" r="4"/><line x1="6" y1="16" x2="18" y2="16"/></svg>
+      <span>Voice mail History</span>
+    </div>
+    <div class="md-item" onclick="navClick('Appointments');closeMobileDrawer();">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <span>Appointments</span>
+    </div>
+    <div class="md-divider"></div>
+    <div class="md-item active" onclick="navClick('Settings');closeMobileDrawer();">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="6" x2="13" y2="6"/><line x1="17" y1="6" x2="20" y2="6"/><circle cx="15" cy="6" r="2"/><line x1="4" y1="12" x2="7" y2="12"/><line x1="11" y1="12" x2="20" y2="12"/><circle cx="9" cy="12" r="2"/><line x1="4" y1="18" x2="13" y2="18"/><line x1="17" y1="18" x2="20" y2="18"/><circle cx="15" cy="18" r="2"/></svg>
+      <span>Settings</span>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE-LEVEL NAV TOAST -->
+<div class="nav-toast" id="nav-toast">
+  <div class="nav-toast-icon">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+  </div>
+  <div class="nav-toast-text">
+    <strong id="nav-toast-title">Coming soon</strong>
+    <span id="nav-toast-body">This feature is under construction.</span>
+  </div>
+  <button class="nav-toast-close" onclick="hideNavToast()" title="Dismiss">&#x2715;</button>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="root main-area" id="root">
+  <div class="set-page-head">
+    <a class="ur-back" href="../Settings_main_page/coreconnect_settings.html" title="Back to Settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      <span>Settings</span>
+    </a>
+    <span class="set-page-title">Cron</span>
+    <span class="ur-head-spacer"></span>
+    <button class="cron-add-btn" onclick="openCrnAddModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><span>Add Cron</span></button>
+  </div>
+  <div class="set-scroll">
+    <section class="set-section">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>No</th>
+              <th>Cron</th>
+              <th>Link</th>
+              <th>Executing</th>
+              <th>Time</th>
+              <th>Type</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr onclick="openCrnEditModal(this)">
+              <td><span class="crn-no">1</span></td>
+              <td><span class="crn-name">Daily Backup</span></td>
+              <td><a class="crn-link" href="#">/api/cron/backup</a></td>
+              <td><div class="crn-exec"><span class="crn-exec-type">Daily</span><span class="crn-exec-time">09:00 AM</span></div></td>
+              <td><span class="crn-time">09:00 AM</span></td>
+              <td><span class="crn-badge crn-badge-auto">Automatic</span></td>
+              <td><span class="crn-badge crn-badge-complete">Complete</span></td>
+            </tr>
+            <tr onclick="openCrnEditModal(this)">
+              <td><span class="crn-no">2</span></td>
+              <td><span class="crn-name">Lead Sync</span></td>
+              <td><a class="crn-link" href="#">/api/cron/lead-sync</a></td>
+              <td><div class="crn-exec"><span class="crn-exec-type">Minute</span><span class="crn-exec-time">15</span></div></td>
+              <td><span class="crn-time">15 min</span></td>
+              <td><span class="crn-badge crn-badge-auto">Automatic</span></td>
+              <td><span class="crn-badge crn-badge-complete">Complete</span></td>
+            </tr>
+            <tr onclick="openCrnEditModal(this)">
+              <td><span class="crn-no">3</span></td>
+              <td><span class="crn-name">Report Generation</span></td>
+              <td><a class="crn-link" href="#">/api/cron/reports</a></td>
+              <td><div class="crn-exec"><span class="crn-exec-type">Weekly</span><span class="crn-exec-time">10:30 AM Mon</span></div></td>
+              <td><span class="crn-time">10:30 AM</span></td>
+              <td><span class="crn-badge crn-badge-auto">Automatic</span></td>
+              <td><span class="crn-badge crn-badge-complete">Complete</span></td>
+            </tr>
+            <tr onclick="openCrnEditModal(this)">
+              <td><span class="crn-no">4</span></td>
+              <td><span class="crn-name">Invoice Reminder</span></td>
+              <td><a class="crn-link" href="#">/api/cron/invoice</a></td>
+              <td><div class="crn-exec"><span class="crn-exec-type">Monthly</span><span class="crn-exec-time">02:00 PM 08/15/2026</span></div></td>
+              <td><span class="crn-time">02:00 PM</span></td>
+              <td><span class="crn-badge crn-badge-manual">Manual</span></td>
+              <td><span class="crn-badge crn-badge-failed">Failed</span></td>
+            </tr>
+            <tr onclick="openCrnEditModal(this)">
+              <td><span class="crn-no">5</span></td>
+              <td><span class="crn-name">Cache Refresh</span></td>
+              <td><a class="crn-link" href="#">/api/cron/cache</a></td>
+              <td><div class="crn-exec"><span class="crn-exec-type">Hour</span><span class="crn-exec-time">2</span></div></td>
+              <td><span class="crn-time">2 hr</span></td>
+              <td><span class="crn-badge crn-badge-auto">Automatic</span></td>
+              <td><span class="crn-badge crn-badge-complete">Complete</span></td>
+            </tr>
+            <tr onclick="openCrnEditModal(this)">
+              <td><span class="crn-no">6</span></td>
+              <td><span class="crn-name">SMS Blast</span></td>
+              <td><a class="crn-link" href="#">/api/cron/sms-blast</a></td>
+              <td><div class="crn-exec"><span class="crn-exec-type">One Time</span><span class="crn-exec-time">08:30</span></div></td>
+              <td><span class="crn-time">08:30</span></td>
+              <td><span class="crn-badge crn-badge-manual">Manual</span></td>
+              <td><span class="crn-badge crn-badge-complete">Complete</span></td>
+            </tr>
+            <tr onclick="openCrnEditModal(this)">
+              <td><span class="crn-no">7</span></td>
+              <td><span class="crn-name">Billing Cycle</span></td>
+              <td><a class="crn-link" href="#">/api/cron/billing</a></td>
+              <td><div class="crn-exec"><span class="crn-exec-type">1st Day of Month</span><span class="crn-exec-time">06:00 AM</span></div></td>
+              <td><span class="crn-time">06:00 AM</span></td>
+              <td><span class="crn-badge crn-badge-auto">Automatic</span></td>
+              <td><span class="crn-badge crn-badge-failed">Failed</span></td>
+            </tr>
+            <tr onclick="openCrnEditModal(this)">
+              <td><span class="crn-no">8</span></td>
+              <td><span class="crn-name">Month-End Cleanup</span></td>
+              <td><a class="crn-link" href="#">/api/cron/cleanup</a></td>
+              <td><div class="crn-exec"><span class="crn-exec-type">Last Day of Month</span><span class="crn-exec-time">11:59 PM</span></div></td>
+              <td><span class="crn-time">11:59 PM</span></td>
+              <td><span class="crn-badge crn-badge-auto">Automatic</span></td>
+              <td><span class="crn-badge crn-badge-complete">Complete</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</div>
+
+<!-- EDIT CRON MODAL -->
+<div class="modal-backdrop modal-fullscreen-mobile" id="crn-edit-modal" onclick="if(event.target===this)closeCrnEditModal()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <span class="modal-title">Edit Cron</span>
+      <button class="modal-close" onclick="closeCrnEditModal()" aria-label="Close">&#x2715;</button>
+    </div>
+    <div class="modal-body">
+      <div>
+        <label class="crn-field-label" for="crn-edit-name">Cron Name</label>
+        <div class="modal-field"><input type="text" id="crn-edit-name" placeholder="Enter cron name" /></div>
+      </div>
+      <div>
+        <label class="crn-field-label" for="crn-edit-link">Link</label>
+        <div class="modal-field"><input type="text" id="crn-edit-link" placeholder="/api/cron/..." /></div>
+      </div>
+      <div>
+        <label class="crn-field-label">Executing</label>
+        <div class="crn-dd" id="crn-dd-exec" data-value="">
+          <button type="button" class="crn-dd-btn" onclick="crnDDToggle(this)">
+            <span class="crn-dd-val ph">Select</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+        </div>
+      </div>
+      <div id="crn-time-wrap">
+        <label class="crn-field-label" id="crn-exec-time-label">Executing Time</label>
+        <div id="crn-single-time">
+          <div class="crn-time-box">
+            <div class="crn-time-seg" id="crn-single-hr" data-value="">
+              <input type="text" class="crn-time-input" placeholder="--" maxlength="2" oninput="crnTimeInput(this,'hr')" onblur="crnTimeBlur(this,'hr')" onfocus="this.select()" />
+            </div>
+            <span class="crn-time-sep">:</span>
+            <div class="crn-time-seg" id="crn-single-min" data-value="">
+              <input type="text" class="crn-time-input" placeholder="--" maxlength="2" oninput="crnTimeInput(this,'min')" onblur="crnTimeBlur(this,'min')" onfocus="this.select()" />
+            </div>
+            <span class="crn-time-sep">&nbsp;</span>
+            <div class="crn-time-seg" id="crn-single-ampm" data-value="AM">
+              <input type="text" class="crn-time-input ampm" value="AM" placeholder="AM" maxlength="2" oninput="crnAmpmInput(this)" onblur="crnAmpmBlur(this)" onfocus="this.select()" />
+            </div>
+          </div>
+        </div>
+        <div id="crn-sched-wrap" style="display:none;">
+          <div class="crn-time-row">
+            <div class="crn-time-box">
+              <div class="crn-time-seg" id="crn-time-hr" data-value="">
+                <input type="text" class="crn-time-input" placeholder="--" maxlength="2" oninput="crnTimeInput(this,'hr')" onblur="crnTimeBlur(this,'hr')" onfocus="this.select()" />
+              </div>
+              <span class="crn-time-sep">:</span>
+              <div class="crn-time-seg" id="crn-time-min" data-value="">
+                <input type="text" class="crn-time-input" placeholder="--" maxlength="2" oninput="crnTimeInput(this,'min')" onblur="crnTimeBlur(this,'min')" onfocus="this.select()" />
+              </div>
+              <span class="crn-time-sep">&nbsp;</span>
+              <div class="crn-time-seg" id="crn-time-ampm" data-value="AM">
+                <input type="text" class="crn-time-input ampm" value="AM" placeholder="AM" maxlength="2" oninput="crnAmpmInput(this)" onblur="crnAmpmBlur(this)" onfocus="this.select()" />
+              </div>
+            </div>
+            <button type="button" class="crn-sched-add" onclick="crnSchedAddTime()" title="Add time">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+          </div>
+          <div class="crn-sched-times" id="crn-sched-times"></div>
+        </div>
+      </div>
+      <div class="crn-day-wrap" id="crn-day-wrap">
+        <label class="crn-field-label">Select a Day</label>
+        <div class="crn-day-btns" id="crn-day-btns">
+          <button type="button" class="crn-day-btn" data-day="Sun" onclick="crnDayToggle(this)">Sun</button>
+          <button type="button" class="crn-day-btn" data-day="Mon" onclick="crnDayToggle(this)">Mon</button>
+          <button type="button" class="crn-day-btn" data-day="Tue" onclick="crnDayToggle(this)">Tue</button>
+          <button type="button" class="crn-day-btn" data-day="Wed" onclick="crnDayToggle(this)">Wed</button>
+          <button type="button" class="crn-day-btn" data-day="Thu" onclick="crnDayToggle(this)">Thu</button>
+          <button type="button" class="crn-day-btn" data-day="Fri" onclick="crnDayToggle(this)">Fri</button>
+          <button type="button" class="crn-day-btn" data-day="Sat" onclick="crnDayToggle(this)">Sat</button>
+        </div>
+      </div>
+      <div>
+        <label class="crn-field-label">Type</label>
+        <div class="crn-dd" id="crn-dd-type" data-value="">
+          <button type="button" class="crn-dd-btn" onclick="crnDDToggle(this)">
+            <span class="crn-dd-val ph">Select</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="crn-del-btn" onclick="deleteCrnRow()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>Delete</button>
+      <button class="modal-cancel" onclick="closeCrnEditModal()">Cancel</button>
+      <button class="modal-save" onclick="saveCrnEdit()">Save</button>
+    </div>
+  </div>
+</div>
+<div id="crn-dd-pop"></div>
+
+<script>
+var crnEditRow = null;
+var crnIsAdding = false;
+function crnDDReset(ddId){
+  var dd = document.getElementById(ddId);
+  dd.setAttribute('data-value','');
+  var val = dd.querySelector('.crn-dd-val');
+  val.textContent = 'Select';
+  val.classList.add('ph');
+}
+function openCrnAddModal(){
+  crnEditRow = null;
+  crnIsAdding = true;
+  document.getElementById('crn-edit-name').value = '';
+  document.getElementById('crn-edit-link').value = '';
+  crnDDReset('crn-dd-exec');
+  crnDDReset('crn-dd-type');
+  var sh = document.getElementById('crn-single-hr');
+  var sm = document.getElementById('crn-single-min');
+  var sa = document.getElementById('crn-single-ampm');
+  [sh,sm,sa].forEach(function(seg){ if(seg){ seg.setAttribute('data-value',''); seg.querySelector('.crn-time-input').value=''; seg.style.display=''; }});
+  var colonSep = sh ? sh.nextElementSibling : null;
+  var ampmSep = sa ? sa.previousElementSibling : null;
+  if(colonSep) colonSep.style.display='';
+  if(ampmSep) ampmSep.style.display='';
+  document.getElementById('crn-single-time').style.display = '';
+  document.getElementById('crn-sched-wrap').style.display = 'none';
+  document.getElementById('crn-exec-time-label').textContent = 'Executing Time';
+  _crnSchedTimes = []; crnSchedRender(); crnTimeReset();
+  document.getElementById('crn-day-wrap').style.display='none'; crnDayReset();
+  document.querySelector('#crn-edit-modal .modal-title').textContent = 'Add Cron';
+  document.querySelector('#crn-edit-modal .crn-del-btn').style.display = 'none';
+  document.getElementById('crn-edit-modal').classList.add('open');
+  setTimeout(function(){ document.getElementById('crn-edit-name').focus(); }, 0);
+}
+var _crnDD = null;
+var _crnSchedTimes = [];
+var _crnTimeDDBtn = null;
+var _crnTimeOpts = {
+  hr: ['01','02','03','04','05','06','07','08','09','10','11','12'],
+  hr24: (function(){ var a=[]; for(var i=0;i<24;i++) a.push(i<10?'0'+i:''+i); return a; })(),
+  min: (function(){ var a=[]; for(var i=0;i<60;i++) a.push(i<10?'0'+i:''+i); return a; })(),
+  ampm: ['AM','PM']
+};
+
+var crnDDOptions = {
+  'crn-dd-exec': ['Daily','Minute','Weekly','Monthly','Hour','One Time','1st Day of Month','Last Day of Month'],
+  'crn-dd-type': ['Automatic','Manual']
+};
+
+function crnDDSetValue(ddId, val){
+  var dd = document.getElementById(ddId);
+  dd.setAttribute('data-value', val);
+  var lbl = dd.querySelector('.crn-dd-val');
+  lbl.textContent = val;
+  lbl.classList.remove('ph');
+}
+
+function crnDDToggle(btn){
+  var dd = btn.closest('.crn-dd');
+  if(dd.classList.contains('open')){ crnDDClose(); return; }
+  crnDDClose();
+  _crnDD = dd;
+  dd.classList.add('open');
+  var ddId = dd.id;
+  var cur = dd.getAttribute('data-value') || '';
+  var pop = document.getElementById('crn-dd-pop');
+  var opts = crnDDOptions[ddId] || [];
+  pop.innerHTML = opts.map(function(o){
+    return '<div class="crn-dd-opt'+(o===cur?' sel':'')+'" onclick="crnDDPick(this)">'+o+'</div>';
+  }).join('');
+  pop.classList.add('open');
+  var r = btn.getBoundingClientRect();
+  pop.style.width = r.width+'px';
+  var ph = pop.offsetHeight, left = r.left, top = r.bottom+4;
+  if(top+ph > window.innerHeight-8) top = Math.max(8, r.top-4-ph);
+  if(left+r.width > window.innerWidth-8) left = window.innerWidth-8-r.width;
+  if(left<8) left=8;
+  pop.style.left = left+'px';
+  pop.style.top = top+'px';
+}
+
+function crnDDPick(opt){
+  if(!_crnDD) return;
+  var val = opt.textContent;
+  var isExec = _crnDD.id === 'crn-dd-exec';
+  crnDDSetValue(_crnDD.id, val);
+  if(isExec) crnToggleTimeField(val);
+  crnDDClose();
+}
+
+function crnDDClose(){
+  var pop = document.getElementById('crn-dd-pop');
+  if(pop) pop.classList.remove('open');
+  document.querySelectorAll('.crn-dd.open').forEach(function(d){ d.classList.remove('open'); });
+  document.querySelectorAll('.crn-time-seg.open').forEach(function(d){ d.classList.remove('open'); });
+  _crnDD = null;
+  _crnTimeDDBtn = null;
+}
+
+document.addEventListener('mousedown', function(e){
+  var pop = document.getElementById('crn-dd-pop');
+  if(pop && pop.classList.contains('open') && !pop.contains(e.target)){
+    var dd = e.target.closest('.crn-dd');
+    var tdd = e.target.closest('.crn-time-seg');
+    if((!dd || !dd.classList.contains('open')) && (!tdd || !tdd.classList.contains('open'))) crnDDClose();
+  }
+});
+
+function crnTimeDDToggle(btn, type){
+  if(btn.classList.contains('open')){ crnDDClose(); return; }
+  crnDDClose();
+  _crnTimeDDBtn = btn;
+  btn.classList.add('open');
+  var cur = btn.getAttribute('data-value') || '';
+  var pop = document.getElementById('crn-dd-pop');
+  var optKey = type;
+  if(type === 'hr' && btn.closest('#crn-single-time') && document.getElementById('crn-dd-exec').getAttribute('data-value') === 'One Time') optKey = 'hr24';
+  var opts = _crnTimeOpts[optKey] || [];
+  pop.innerHTML = opts.map(function(o){
+    return '<div class="crn-dd-opt'+(o===cur?' sel':'')+'" onclick="crnTimeDDPick(this)">'+o+'</div>';
+  }).join('');
+  pop.classList.add('open');
+  var box = btn.closest('.crn-time-box') || btn;
+  var r = box.getBoundingClientRect();
+  pop.style.width = r.width+'px';
+  var ph = pop.offsetHeight, left = r.left, top = r.bottom+4;
+  if(top+ph > window.innerHeight-8) top = Math.max(8, r.top-4-ph);
+  if(left+r.width > window.innerWidth-8) left = window.innerWidth-8-r.width;
+  if(left<8) left=8;
+  pop.style.left = left+'px';
+  pop.style.top = top+'px';
+  var sel = pop.querySelector('.sel');
+  if(sel) sel.scrollIntoView({block:'center'});
+}
+
+function crnTimeDDPick(opt){
+  if(!_crnTimeDDBtn) return;
+  var val = opt.textContent;
+  _crnTimeDDBtn.setAttribute('data-value', val);
+  var inp = _crnTimeDDBtn.querySelector('.crn-time-input');
+  if(inp){ inp.value = val; }
+  var lbl = _crnTimeDDBtn.querySelector('.crn-dd-val');
+  if(lbl){ lbl.textContent = val; lbl.classList.remove('ph'); }
+  crnDDClose();
+}
+
+function crnTimeDDShow(btn, type){
+  var pop = document.getElementById('crn-dd-pop');
+  var alreadyOpen = btn.classList.contains('open') && _crnTimeDDBtn === btn;
+  if(!alreadyOpen){
+    crnDDClose();
+    _crnTimeDDBtn = btn;
+    btn.classList.add('open');
+    var optKey = type;
+    if(type === 'hr' && btn.closest('#crn-single-time') && document.getElementById('crn-dd-exec').getAttribute('data-value') === 'One Time') optKey = 'hr24';
+    var opts = _crnTimeOpts[optKey] || [];
+    pop.innerHTML = opts.map(function(o){
+      return '<div class="crn-dd-opt" onclick="crnTimeDDPick(this)">'+o+'</div>';
+    }).join('');
+    pop.classList.add('open');
+    var box = btn.closest('.crn-time-box') || btn;
+    var r = box.getBoundingClientRect();
+    pop.style.width = r.width+'px';
+    var ph = pop.offsetHeight, left = r.left, top = r.bottom+4;
+    if(top+ph > window.innerHeight-8) top = Math.max(8, r.top-4-ph);
+    if(left+r.width > window.innerWidth-8) left = window.innerWidth-8-r.width;
+    if(left<8) left=8;
+    pop.style.left = left+'px';
+    pop.style.top = top+'px';
+  }
+  var v = btn.querySelector('.crn-time-input').value;
+  var padded = v.length === 1 ? '0' + v : v;
+  pop.querySelectorAll('.crn-dd-opt').forEach(function(o){
+    var match = (type === 'ampm')
+      ? (v.length > 0 && o.textContent.charAt(0) === v.charAt(0).toUpperCase())
+      : (o.textContent === padded || o.textContent === v);
+    o.classList.toggle('sel', match);
+  });
+  var sel = pop.querySelector('.sel');
+  if(sel) sel.scrollIntoView({block:'center'});
+}
+
+function crnTimeInput(input, type){
+  input.value = input.value.replace(/[^0-9]/g, '');
+  if(input.value.length > 2) input.value = input.value.slice(0,2);
+  if(input.value.length > 0){
+    crnTimeDDShow(input.parentElement, type);
+  }
+}
+
+function crnTimeBlur(input, type){
+  var v = input.value.replace(/[^0-9]/g, '');
+  if(!v){ input.parentElement.setAttribute('data-value',''); return; }
+  var n = parseInt(v, 10);
+  if(type === 'hr'){
+    var execVal = input.closest('#crn-single-time') ? document.getElementById('crn-dd-exec').getAttribute('data-value') : '';
+    if(execVal === 'One Time'){ if(n < 0) n = 0; if(n > 23) n = 23; }
+    else if(execVal === 'Hour'){ if(n < 1) n = 1; if(n > 24) n = 24; }
+    else { if(n < 1) n = 1; if(n > 12) n = 12; }
+  } else {
+    if(n < 0) n = 0;
+    if(n > 59) n = 59;
+  }
+  var padded = n < 10 ? '0' + n : '' + n;
+  input.value = padded;
+  input.parentElement.setAttribute('data-value', padded);
+}
+
+function crnAmpmInput(input){
+  var v = input.value.toUpperCase().replace(/[^AP]/g, '');
+  if(v.length > 0) v = v.charAt(0);
+  input.value = v;
+  if(v === 'A' || v === 'P'){
+    crnTimeDDShow(input.parentElement, 'ampm');
+  }
+}
+
+function crnAmpmBlur(input){
+  var v = input.value.toUpperCase();
+  if(v.charAt(0) === 'P'){
+    input.value = 'PM';
+    input.parentElement.setAttribute('data-value', 'PM');
+  } else {
+    input.value = 'AM';
+    input.parentElement.setAttribute('data-value', 'AM');
+  }
+}
+
+function crnTimeReset(){
+  var hr = document.getElementById('crn-time-hr');
+  var min = document.getElementById('crn-time-min');
+  var ampm = document.getElementById('crn-time-ampm');
+  if(hr){ hr.setAttribute('data-value',''); var hi=hr.querySelector('.crn-time-input'); if(hi) hi.value=''; }
+  if(min){ min.setAttribute('data-value',''); var mi=min.querySelector('.crn-time-input'); if(mi) mi.value=''; }
+  if(ampm){ ampm.setAttribute('data-value','AM'); var ai=ampm.querySelector('.crn-time-input'); if(ai) ai.value='AM'; }
+}
+
+function crnDayToggle(btn){ btn.classList.toggle('sel'); }
+function crnDayReset(){ document.querySelectorAll('.crn-day-btn').forEach(function(b){ b.classList.remove('sel'); }); }
+function crnDayGetSelected(){
+  var days = [];
+  document.querySelectorAll('.crn-day-btn.sel').forEach(function(b){ days.push(b.getAttribute('data-day')); });
+  return days;
+}
+function crnDaySet(days){
+  crnDayReset();
+  document.querySelectorAll('.crn-day-btn').forEach(function(b){
+    if(days.indexOf(b.getAttribute('data-day')) !== -1) b.classList.add('sel');
+  });
+}
+
+function crnToggleTimeField(type){
+  var single = document.getElementById('crn-single-time');
+  var multi = document.getElementById('crn-sched-wrap');
+  var label = document.getElementById('crn-exec-time-label');
+  if(type === 'Daily'){
+    single.style.display = 'none';
+    multi.style.display = '';
+    label.textContent = 'Schedule Time';
+    _crnSchedTimes = [];
+    crnSchedRender();
+    crnTimeReset();
+  } else {
+    single.style.display = '';
+    multi.style.display = 'none';
+    label.textContent = 'Executing Time';
+    var sh = document.getElementById('crn-single-hr');
+    var sm = document.getElementById('crn-single-min');
+    var sa = document.getElementById('crn-single-ampm');
+    if(sh){ sh.setAttribute('data-value',''); sh.querySelector('.crn-time-input').value=''; }
+    if(sm){ sm.setAttribute('data-value',''); sm.querySelector('.crn-time-input').value=''; }
+    var colonSep = sh ? sh.nextElementSibling : null;
+    var ampmSep = sa ? sa.previousElementSibling : null;
+    if(type === 'Minute'){
+      if(sh) sh.style.display='none';
+      if(colonSep) colonSep.style.display='none';
+      if(sa){ sa.style.display='none'; sa.setAttribute('data-value',''); sa.querySelector('.crn-time-input').value=''; }
+      if(ampmSep) ampmSep.style.display='none';
+      if(sm) sm.style.display='';
+    } else if(type === 'Hour'){
+      if(sm) sm.style.display='none';
+      if(colonSep) colonSep.style.display='none';
+      if(sa){ sa.style.display='none'; sa.setAttribute('data-value',''); sa.querySelector('.crn-time-input').value=''; }
+      if(ampmSep) ampmSep.style.display='none';
+      if(sh) sh.style.display='';
+    } else if(type === 'One Time'){
+      if(sh) sh.style.display='';
+      if(sm) sm.style.display='';
+      if(colonSep) colonSep.style.display='';
+      if(sa){ sa.style.display='none'; sa.setAttribute('data-value',''); sa.querySelector('.crn-time-input').value=''; }
+      if(ampmSep) ampmSep.style.display='none';
+    } else {
+      if(sh) sh.style.display='';
+      if(sm) sm.style.display='';
+      if(colonSep) colonSep.style.display='';
+      if(sa){ sa.style.display=''; sa.setAttribute('data-value','AM'); sa.querySelector('.crn-time-input').value='AM'; }
+      if(ampmSep) ampmSep.style.display='';
+    }
+  }
+  var dayWrap = document.getElementById('crn-day-wrap');
+  if(type === 'Weekly'){ dayWrap.style.display='block'; crnDayReset(); }
+  else { dayWrap.style.display='none'; crnDayReset(); }
+}
+
+function crnFormatTime(t24){
+  var parts = t24.split(':');
+  var h = parseInt(parts[0],10), m = parts[1];
+  var ampm = h >= 12 ? 'PM' : 'AM';
+  if(h === 0) h = 12;
+  else if(h > 12) h -= 12;
+  return (h < 10 ? '0' : '') + h + ':' + m + ' ' + ampm;
+}
+
+function crnSchedAddTime(){
+  var hr = document.getElementById('crn-time-hr').getAttribute('data-value');
+  var min = document.getElementById('crn-time-min').getAttribute('data-value');
+  var ampm = document.getElementById('crn-time-ampm').getAttribute('data-value') || 'AM';
+  if(!hr || !min) return;
+  var formatted = hr + ':' + min + ' ' + ampm;
+  if(_crnSchedTimes.indexOf(formatted) === -1){
+    _crnSchedTimes.push(formatted);
+    crnSchedRender();
+  }
+  crnTimeReset();
+}
+
+function crnSchedRender(){
+  var wrap = document.getElementById('crn-sched-times');
+  wrap.innerHTML = _crnSchedTimes.map(function(t, i){
+    return '<span class="crn-sched-tag">' + t +
+      '<button type="button" class="crn-sched-tag-x" onclick="crnSchedRemove('+i+')">&#x2715;</button></span>';
+  }).join('');
+}
+
+function crnSchedRemove(idx){
+  _crnSchedTimes.splice(idx, 1);
+  crnSchedRender();
+}
+
+function openCrnEditModal(row){
+  crnEditRow = row;
+  crnIsAdding = false;
+  var cells = row.children;
+  document.getElementById('crn-edit-name').value = cells[1].querySelector('.crn-name').textContent;
+  document.getElementById('crn-edit-link').value = cells[2].querySelector('.crn-link').textContent;
+  var execType = cells[3].querySelector('.crn-exec-type').textContent;
+  var execTimeText = cells[3].querySelector('.crn-exec-time').textContent;
+  crnDDSetValue('crn-dd-exec', execType);
+  if(execType === 'Daily'){
+    document.getElementById('crn-single-time').style.display = 'none';
+    document.getElementById('crn-sched-wrap').style.display = '';
+    document.getElementById('crn-exec-time-label').textContent = 'Schedule Time';
+    _crnSchedTimes = execTimeText.split(',').map(function(s){ return s.trim(); }).filter(Boolean);
+    crnSchedRender();
+    crnTimeReset();
+  } else {
+    document.getElementById('crn-single-time').style.display = '';
+    document.getElementById('crn-sched-wrap').style.display = 'none';
+    document.getElementById('crn-exec-time-label').textContent = 'Executing Time';
+    var sh = document.getElementById('crn-single-hr');
+    var sm = document.getElementById('crn-single-min');
+    var sa = document.getElementById('crn-single-ampm');
+    var colonSep = sh ? sh.nextElementSibling : null;
+    var ampmSep = sa ? sa.previousElementSibling : null;
+    if(execType === 'Minute'){
+      var minVal = execTimeText.replace(/[^0-9]/g,'');
+      sh.setAttribute('data-value',''); sh.querySelector('.crn-time-input').value='';
+      sm.setAttribute('data-value', minVal); sm.querySelector('.crn-time-input').value = minVal;
+      sa.setAttribute('data-value',''); sa.querySelector('.crn-time-input').value='';
+      if(sh) sh.style.display='none';
+      if(colonSep) colonSep.style.display='none';
+      if(sm) sm.style.display='';
+      if(sa) sa.style.display='none';
+      if(ampmSep) ampmSep.style.display='none';
+    } else if(execType === 'Hour'){
+      var hrVal = execTimeText.replace(/[^0-9]/g,'');
+      sh.setAttribute('data-value', hrVal); sh.querySelector('.crn-time-input').value = hrVal;
+      sm.setAttribute('data-value',''); sm.querySelector('.crn-time-input').value='';
+      sa.setAttribute('data-value',''); sa.querySelector('.crn-time-input').value='';
+      if(sh) sh.style.display='';
+      if(sm) sm.style.display='none';
+      if(colonSep) colonSep.style.display='none';
+      if(sa) sa.style.display='none';
+      if(ampmSep) ampmSep.style.display='none';
+    } else {
+      var parts = execTimeText.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+      var parts24 = !parts ? execTimeText.match(/(\d{1,2}):(\d{2})/) : null;
+      if(parts){
+        sh.setAttribute('data-value', parts[1]); sh.querySelector('.crn-time-input').value = parts[1];
+        sm.setAttribute('data-value', parts[2]); sm.querySelector('.crn-time-input').value = parts[2];
+        sa.setAttribute('data-value', parts[3].toUpperCase()); sa.querySelector('.crn-time-input').value = parts[3].toUpperCase();
+      } else if(parts24){
+        sh.setAttribute('data-value', parts24[1]); sh.querySelector('.crn-time-input').value = parts24[1];
+        sm.setAttribute('data-value', parts24[2]); sm.querySelector('.crn-time-input').value = parts24[2];
+        sa.setAttribute('data-value',''); sa.querySelector('.crn-time-input').value='';
+      } else {
+        sh.setAttribute('data-value',''); sh.querySelector('.crn-time-input').value='';
+        sm.setAttribute('data-value',''); sm.querySelector('.crn-time-input').value='';
+        sa.setAttribute('data-value',''); sa.querySelector('.crn-time-input').value='';
+      }
+      if(sh) sh.style.display='';
+      if(sm) sm.style.display='';
+      if(colonSep) colonSep.style.display='';
+      if(execType === 'One Time'){
+        if(sa) sa.style.display='none';
+        if(ampmSep) ampmSep.style.display='none';
+      } else {
+        if(sa) sa.style.display='';
+        if(ampmSep) ampmSep.style.display='';
+        if(!parts){ sa.setAttribute('data-value','AM'); sa.querySelector('.crn-time-input').value='AM'; }
+      }
+    }
+  }
+  var dayWrap = document.getElementById('crn-day-wrap');
+  if(execType === 'Weekly'){
+    dayWrap.style.display='block';
+    var dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    var foundDays = [];
+    dayNames.forEach(function(d){ if(execTimeText.indexOf(d) !== -1) foundDays.push(d); });
+    crnDaySet(foundDays);
+  } else {
+    dayWrap.style.display='none';
+    crnDayReset();
+  }
+  crnDDSetValue('crn-dd-type', cells[5].querySelector('.crn-badge').textContent.trim());
+  document.querySelector('#crn-edit-modal .modal-title').textContent = 'Edit Cron';
+  document.querySelector('#crn-edit-modal .crn-del-btn').style.display = '';
+  document.getElementById('crn-edit-modal').classList.add('open');
+  setTimeout(function(){ document.getElementById('crn-edit-name').focus(); }, 0);
+}
+
+function closeCrnEditModal(){
+  crnDDClose();
+  document.getElementById('crn-edit-modal').classList.remove('open');
+  crnEditRow = null;
+  crnIsAdding = false;
+}
+
+function saveCrnEdit(){
+  var name = document.getElementById('crn-edit-name').value.trim();
+  if(!name){ alert('Please enter a cron name.'); return; }
+  var link = document.getElementById('crn-edit-link').value.trim();
+  var execType = document.getElementById('crn-dd-exec').getAttribute('data-value');
+  var type = document.getElementById('crn-dd-type').getAttribute('data-value');
+
+  var execTime;
+  if(execType === 'Daily'){
+    execTime = _crnSchedTimes.join(', ');
+  } else {
+    var sh = document.getElementById('crn-single-hr').getAttribute('data-value');
+    var sm = document.getElementById('crn-single-min').getAttribute('data-value');
+    if(execType === 'Minute'){
+      execTime = sm || '';
+    } else if(execType === 'Hour'){
+      execTime = sh || '';
+    } else if(execType === 'One Time'){
+      execTime = (sh && sm) ? sh + ':' + sm : '';
+    } else {
+      var sa = document.getElementById('crn-single-ampm').getAttribute('data-value') || 'AM';
+      execTime = (sh && sm) ? sh + ':' + sm + ' ' + sa : '';
+      if(execType === 'Weekly'){
+        var days = crnDayGetSelected();
+        if(days.length > 0) execTime += ' ' + days.join(', ');
+      }
+    }
+  }
+
+  if(crnIsAdding){
+    var tbody = document.querySelector('.table-wrap tbody');
+    var rowNum = tbody.rows.length + 1;
+    var badgeClass = type === 'Automatic' ? 'crn-badge-auto' : 'crn-badge-manual';
+    var tr = document.createElement('tr');
+    tr.setAttribute('onclick','openCrnEditModal(this)');
+    tr.innerHTML = '<td><span class="crn-no">'+rowNum+'</span></td>'
+      +'<td><span class="crn-name">'+name+'</span></td>'
+      +'<td><a class="crn-link" href="#">'+link+'</a></td>'
+      +'<td><div class="crn-exec"><span class="crn-exec-type">'+(execType||'')+'</span><span class="crn-exec-time">'+(execTime||'')+'</span></div></td>'
+      +'<td><span class="crn-time">'+(execTime||'')+'</span></td>'
+      +'<td><span class="crn-badge '+badgeClass+'">'+(type||'')+'</span></td>'
+      +'<td><span class="crn-badge crn-badge-pending">Pending</span></td>';
+    tbody.appendChild(tr);
+    closeCrnEditModal();
+    showNavToast('Cron','Cron added successfully.');
+  } else if(crnEditRow){
+    var cells = crnEditRow.children;
+    if(name) cells[1].querySelector('.crn-name').textContent = name;
+    if(link){
+      cells[2].querySelector('.crn-link').textContent = link;
+      cells[2].querySelector('.crn-link').href = '#';
+    }
+    cells[3].querySelector('.crn-exec-type').textContent = execType;
+    if(execTime) cells[3].querySelector('.crn-exec-time').textContent = execTime;
+
+    var typeBadge = cells[5].querySelector('.crn-badge');
+    typeBadge.textContent = type;
+    typeBadge.className = 'crn-badge ' + (type === 'Automatic' ? 'crn-badge-auto' : 'crn-badge-manual');
+
+    closeCrnEditModal();
+    showNavToast('Cron','Cron updated successfully.');
+  }
+}
+
+function deleteCrnRow(){
+  if(!crnEditRow) return;
+  crnEditRow.remove();
+  var rows = document.querySelectorAll('.table-wrap tbody tr');
+  for(var i = 0; i < rows.length; i++){
+    rows[i].querySelector('.crn-no').textContent = i + 1;
+  }
+  closeCrnEditModal();
+}
+
+document.addEventListener('keydown', function(e){
+  if(e.key !== 'Escape') return;
+  var pop = document.getElementById('crn-dd-pop');
+  if(pop && pop.classList.contains('open')){ crnDDClose(); return; }
+  var mo = document.getElementById('crn-edit-modal');
+  if(mo && mo.classList.contains('open')) closeCrnEditModal();
+});
+
+function navClick(label){
+  if(label === 'Settings') return;
+  var routes = {
+    'Home':'../../coreconnect_dashboard_v41/coreconnect_dashboard_v41.html',
+    'CRM':'../../coreconnect_leads_v83/coreconnect_leads_v83.html',
+    'Call':'../../call_history/coreconnect_call_history_v31.html',
+    'Message':'../../coreconnect_message_history_v41/coreconnect_message_history_v41.html',
+    'Voice mail':'../../coreconnect_voicemail_history_v9/coreconnect_voicemail_history_v9.html',
+    'Appointments':'../../coreconnect_appointments/coreconnect_appointments.html'
+  };
+  if(routes[label]){ window.location.href = routes[label]; return; }
+  showNavToast(label + ' is coming soon', 'This feature is under construction.');
+}
+function toggleMobileDrawer(){
+  var d = document.getElementById('mobile-drawer'), b = document.getElementById('mobile-drawer-backdrop');
+  if(!d || !b) return;
+  if(d.classList.contains('open')) closeMobileDrawer();
+  else { d.classList.add('open'); b.classList.add('open'); }
+}
+function closeMobileDrawer(){
+  var d = document.getElementById('mobile-drawer'), b = document.getElementById('mobile-drawer-backdrop');
+  if(d) d.classList.remove('open'); if(b) b.classList.remove('open');
+}
+var navToastTimer = null;
+function showNavToast(title, body){
+  var t = document.getElementById('nav-toast'); if(!t) return;
+  if(title) document.getElementById('nav-toast-title').textContent = title;
+  if(body)  document.getElementById('nav-toast-body').textContent  = body;
+  t.classList.add('show');
+  if(navToastTimer) clearTimeout(navToastTimer);
+  navToastTimer = setTimeout(hideNavToast, 4000);
+}
+function hideNavToast(){
+  var t = document.getElementById('nav-toast'); if(t) t.classList.remove('show');
+  if(navToastTimer){ clearTimeout(navToastTimer); navToastTimer = null; }
+}
+
+function toggleProductSwitcher(e){ e.stopPropagation(); document.getElementById('product-switcher').classList.toggle('open'); }
+document.addEventListener('click', function(){ var ps = document.getElementById('product-switcher'); if(ps) ps.classList.remove('open'); });
+function toggleNotifications(e){ e.stopPropagation(); document.getElementById('notif-panel').classList.toggle('open'); }
+function closeNotifications(){ document.getElementById('notif-panel').classList.remove('open'); }
+</script>
+<script src="../../shared/notifications.js?v=6"></script>

@@ -1,0 +1,529 @@
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CoreConnect — Phone Number Assignment</title>
+<script>try{document.documentElement.setAttribute('data-theme',localStorage.getItem('cc_theme')==='light'?'light':'dark')}catch(e){}</script>
+<link rel="stylesheet" href="../../shared/app.css?v=2">
+<link rel="stylesheet" href="../../shared/settings.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{background:var(--bg);margin:0;padding:0;font-family:'DM Sans',sans-serif;}
+.root.main-area{height:calc(100vh - 64px);min-height:0;overflow:hidden;display:flex;flex-direction:column;}
+@media (max-width:640px){
+  .root.main-area{height:auto;min-height:0;overflow:visible;}
+}
+.ur-head-spacer{flex:1;}
+.pna-filter{display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12.5px;color:var(--tx2);font-family:var(--font);white-space:nowrap;margin-right:8px;}
+.pna-filter input[type="checkbox"]{width:15px;height:15px;accent-color:var(--ac);cursor:pointer;}
+.pna-get-btn{display:flex;align-items:center;gap:5px;background:none;border:0.5px solid var(--ac);border-radius:8px;padding:0 14px;height:32px;color:var(--ac);font-size:12.5px;font-weight:500;font-family:var(--font);cursor:pointer;transition:all .15s;white-space:nowrap;}
+.pna-get-btn:hover{background:var(--ac);color:#fff;}
+.pna-get-btn svg{width:15px;height:15px;}
+.pna-add-btn{display:flex;align-items:center;gap:5px;background:var(--ac);border:none;border-radius:8px;padding:0 14px;height:32px;color:#fff;font-size:12.5px;font-weight:500;font-family:var(--font);cursor:pointer;transition:all .15s;white-space:nowrap;}
+.pna-add-btn:hover{background:var(--ac2);}
+.pna-add-btn svg{width:15px;height:15px;}
+.pna-table{width:100%;border-collapse:separate;border-spacing:0;border:0.5px solid var(--brd);border-radius:10px;overflow:visible;}
+.pna-table th,.pna-table td{text-align:left;padding:12px 18px;font-size:13px;font-family:var(--font);border-bottom:0.5px solid var(--brd);}
+.pna-table th{font-size:11.5px;font-weight:600;color:var(--mu);text-transform:uppercase;letter-spacing:.4px;background:var(--sur2);position:sticky;top:0;z-index:1;}
+.pna-table th:first-child{width:60px;border-radius:10px 0 0 0;}
+.pna-table th:last-child{border-radius:0 10px 0 0;}
+.pna-table td{color:var(--tx);}
+.pna-table td:first-child{color:var(--mu);font-family:var(--mono);font-size:12px;}
+.pna-table tr:hover td{background:var(--sur2);}
+.pna-table tr:last-child td{border-bottom:none;}
+.pna-table tbody tr{cursor:pointer;}
+.pna-table .pna-sid{font-size:11px;color:var(--mu);font-family:var(--mono);letter-spacing:.3px;}
+.pna-table .pna-phone{font-weight:500;color:var(--tx2);font-size:12.5px;}
+.pna-assign-cell{display:flex;align-items:center;gap:4px;overflow:visible;position:relative;}
+.pna-aus{font-size:11px;color:var(--ac2);cursor:pointer;display:flex;align-items:center;gap:3px;}
+.pna-aus svg{width:13px;height:13px;}
+.pna-aus:hover{color:var(--ac);}
+.pna-av{width:23px;height:23px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;color:#fff;position:relative;cursor:pointer;}
+.pna-av[data-name]:not([data-name=""])::after{content:attr(data-name);position:absolute;left:50%;transform:translateX(-50%);top:calc(100% + 7px);background:var(--sur2);color:var(--ac2);font-size:12px;font-weight:500;padding:6px 11px;border-radius:8px;border:0.5px solid var(--ac);white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .12s;z-index:200;}
+.pna-av[data-name]:not([data-name=""]):hover::after{opacity:1;}
+.pna-assign-popup{position:absolute;background:var(--sur);border:0.5px solid var(--brd2);border-radius:10px;padding:6px;min-width:220px;width:240px;z-index:200;box-shadow:0 8px 24px rgba(0,0,0,.5);}
+.pna-assign-title{font-size:10px;font-weight:500;color:var(--mu);text-transform:uppercase;letter-spacing:.6px;padding:4px 8px 8px;}
+.pna-assign-search{display:flex;align-items:center;gap:7px;background:var(--sur2);border:0.5px solid var(--brd2);border-radius:7px;padding:0 9px;height:32px;margin:0 2px 6px;transition:border-color .15s;}
+.pna-assign-search:focus-within{border-color:var(--ac);}
+.pna-assign-search svg{width:14px;height:14px;color:var(--mu);flex-shrink:0;}
+.pna-assign-search input{background:none;border:none;outline:none;color:var(--tx);font-family:var(--font);font-size:12.5px;width:100%;}
+.pna-assign-search input::placeholder{color:var(--mu);}
+.pna-assign-list{max-height:220px;overflow-y:auto;}
+.pna-assign-list-empty{padding:14px 8px;text-align:center;font-size:12px;color:var(--mu);}
+.pna-assign-user{display:flex;align-items:center;gap:9px;padding:7px 9px;border-radius:7px;cursor:pointer;transition:background .1s;}
+.pna-assign-user:hover{background:rgba(79,124,255,.08);}
+.pna-assign-user-av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:#fff;flex-shrink:0;}
+.pna-assign-user-name{font-size:12.5px;color:var(--tx);}
+.pna-assign-user-role{font-size:11px;color:var(--mu);}
+.pna-assign-unassign{display:flex;align-items:center;gap:9px;padding:7px 9px;border-radius:7px;cursor:pointer;transition:background .1s;border-top:0.5px solid var(--brd);margin-top:4px;}
+.pna-assign-unassign:hover{background:rgba(229,85,85,.08);}
+.pna-assign-unassign-av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--sur2);border:0.5px solid var(--brd2);}
+.pna-assign-unassign-av svg{width:14px;height:14px;color:var(--mu);}
+.pna-assign-unassign span{font-size:12px;color:var(--mu);}
+.pna-field-label{font-size:12px;font-weight:500;color:var(--mu);padding-left:2px;margin-bottom:4px;}
+.pna-del-btn{background:none;border:0.5px solid var(--rd);border-radius:8px;padding:0 16px;height:34px;color:var(--rd);font-size:13px;font-family:var(--font);cursor:pointer;transition:all .15s;margin-right:auto;}
+.pna-del-btn:hover{background:var(--rd);color:#fff;}
+@media (max-width:640px){
+  .pna-assign-popup{min-width:calc(100vw - 32px);width:calc(100vw - 32px);max-width:calc(100vw - 32px);padding:8px;}
+  .pna-assign-search{height:44px;padding:0 12px;margin:0 2px 8px;}
+  .pna-assign-search input{font-size:16px;}
+  .pna-assign-user{padding:11px 10px;min-height:44px;}
+  .pna-assign-user-av{width:30px;height:30px;font-size:11px;}
+}
+</style>
+
+<div class="top-header">
+  <div class="th-left">
+    <button class="hamburger-btn" id="hamburger-btn" onclick="toggleMobileDrawer()" aria-label="Open menu">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+    <div class="logo" onclick="toggleProductSwitcher(event)">
+      <div class="logo-mark"><svg class="logo-mark-svg" viewBox="0 0 324 221" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="CoreConnect logo" style="width:100%;height:100%;"><path d="M72.30,32.52 L72.30,32.52 Q85.97,12.00 110.63,12.00 L246.25,12.00 Q270.90,12.00 257.23,32.52 L210.61,102.44 Q196.93,122.96 172.27,122.96 L36.66,122.96 Q12.00,122.96 25.68,102.44 Z" fill="#1E6BFF"/><path d="M113.39,118.82 L113.39,118.82 Q127.07,98.30 151.73,98.30 L287.34,98.30 Q312.00,98.30 298.32,118.82 L251.70,188.74 Q238.03,209.26 213.37,209.26 L77.75,209.26 Q53.10,209.26 66.77,188.74 Z" fill="#3D3DCC"/></svg></div>
+      <span class="logo-text">CoreConnect</span>
+      <svg class="logo-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+      <div class="product-switcher" id="product-switcher">
+        <a class="ps-item" data-pid="coreconnect" href="../../coreconnect_dashboard_v41/coreconnect_dashboard_v41.html"><svg class="ps-ic" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span>CoreConnect</span></a>
+        <a class="ps-item" data-pid="reputation" href="../../reputation/reputation_dashboard/Dashboard.html"><svg class="ps-ic" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span>Reputation</span></a>
+      </div>
+    </div>
+  </div>
+  <div class="top-header-right">
+    <button class="header-bell" id="header-bell" data-label="Notifications" onclick="toggleNotifications(event)" aria-label="Notifications">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+      </svg>
+      <span class="header-bell-dot" id="header-bell-dot"></span>
+      <span class="header-bell-call-dot" id="header-bell-call-dot"></span>
+    </button>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="sidebar-nav">
+    <div class="sb-item" data-nav="home" data-label="Dashboard" onclick="navClick('Home')">
+      <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 13.5H15"/><path d="M9.5 13.5V9.5H6.5V13.5"/><path d="M2.5 7.29309V13.5"/><path d="M13.5 13.5V7.29309"/><path d="M1.5 8.29315L7.64625 2.14628C7.69269 2.09979 7.74783 2.06291 7.80853 2.03775C7.86923 2.01259 7.93429 1.99963 8 1.99963C8.06571 1.99963 8.13077 2.01259 8.19147 2.03775C8.25217 2.06291 8.30731 2.09979 8.35375 2.14628L14.5 8.29315"/></svg>
+    </div>
+    <div class="sb-item" data-nav="crm" data-label="CRM Customer" onclick="navClick('CRM')">
+      <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 9C6.38071 9 7.5 7.88071 7.5 6.5C7.5 5.11929 6.38071 4 5 4C3.61929 4 2.5 5.11929 2.5 6.5C2.5 7.88071 3.61929 9 5 9Z"/><path d="M10 5H15.5"/><path d="M10 8H15.5"/><path d="M11.5 11H15.5"/><path d="M1 12C1.44375 10.275 3.13625 9 5 9C6.86375 9 8.55625 10.275 9 12"/></svg>
+    </div>
+    <div class="sb-item" data-nav="call" data-label="Call History" onclick="navClick('Call')">
+      <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.2744 9.08374C10.3436 9.03766 10.4233 9.00959 10.5061 9.00206C10.5889 8.99453 10.6723 9.00778 10.7488 9.04061L13.6963 10.3612C13.7956 10.4037 13.8785 10.4772 13.9326 10.5707C13.9867 10.6642 14.009 10.7727 13.9963 10.88C13.8991 11.6056 13.5418 12.2713 12.9907 12.7533C12.4395 13.2352 11.7321 13.5005 11 13.5C8.74566 13.5 6.58365 12.6045 4.98959 11.0104C3.39553 9.41633 2.5 7.25433 2.5 4.99999C2.49944 4.26786 2.7648 3.56045 3.24673 3.00932C3.72865 2.45818 4.39435 2.10084 5.12 2.00374C5.22727 1.99099 5.33578 2.01333 5.4293 2.06741C5.52281 2.12149 5.5963 2.2044 5.63875 2.30374L6.95938 5.25374C6.99182 5.3295 7.00504 5.41212 6.99784 5.49423C6.99064 5.57634 6.96326 5.65539 6.91813 5.72436L5.5825 7.31249C5.53512 7.38398 5.50711 7.46654 5.50119 7.55209C5.49528 7.63765 5.51166 7.72328 5.54875 7.80061C6.06563 8.85874 7.15938 9.93936 8.22063 10.4512C8.29836 10.4882 8.38439 10.5042 8.47021 10.4977C8.55602 10.4912 8.63867 10.4625 8.71 10.4144L10.2744 9.08374Z"/></svg>
+    </div>
+    <div class="sb-item" data-nav="message" data-label="Message History" onclick="navClick('Message')">
+      <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.47375 9L2 11V3C2 2.86739 2.05268 2.74021 2.14645 2.64645C2.24021 2.55268 2.36739 2.5 2.5 2.5H10.5C10.6326 2.5 10.7598 2.55268 10.8536 2.64645C10.9473 2.74021 11 2.86739 11 3V8.5C11 8.63261 10.9473 8.75979 10.8536 8.85355C10.7598 8.94732 10.6326 9 10.5 9H4.47375Z"/><path d="M5 9V11.5C5 11.6326 5.05268 11.7598 5.14645 11.8536C5.24021 11.9473 5.36739 12 5.5 12H11.5262L14 14V6C14 5.86739 13.9473 5.74021 13.8536 5.64645C13.7598 5.55268 13.6326 5.5 13.5 5.5H11"/></svg>
+    </div>
+    <div class="sb-item" data-nav="voicemail" data-label="Voice mail History" onclick="navClick('Voice mail')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="12" r="4"/><circle cx="18" cy="12" r="4"/><line x1="6" y1="16" x2="18" y2="16"/></svg>
+    </div>
+    <div class="sb-item" data-nav="appointments" data-label="Appointments" onclick="navClick('Appointments')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    </div>
+    <div class="sidebar-nav-spacer"></div>
+    <div class="sb-divider"></div>
+    <div class="sb-item active" data-nav="settings" data-label="Settings" onclick="navClick('Settings')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="6" x2="13" y2="6"/><line x1="17" y1="6" x2="20" y2="6"/><circle cx="15" cy="6" r="2"/><line x1="4" y1="12" x2="7" y2="12"/><line x1="11" y1="12" x2="20" y2="12"/><circle cx="9" cy="12" r="2"/><line x1="4" y1="18" x2="13" y2="18"/><line x1="17" y1="18" x2="20" y2="18"/><circle cx="15" cy="18" r="2"/></svg>
+    </div>
+  </div>
+  <div class="sb-account" onclick="navClick('Account')" title="Account">DP</div>
+</div>
+
+<!-- MOBILE DRAWER -->
+<div class="mobile-drawer-backdrop" id="mobile-drawer-backdrop" onclick="closeMobileDrawer()"></div>
+<div class="mobile-drawer" id="mobile-drawer">
+  <div class="md-nav">
+    <div class="md-item" onclick="navClick('Home');closeMobileDrawer();">
+      <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 13.5H15"/><path d="M9.5 13.5V9.5H6.5V13.5"/><path d="M2.5 7.29309V13.5"/><path d="M13.5 13.5V7.29309"/><path d="M1.5 8.29315L7.64625 2.14628C7.69269 2.09979 7.74783 2.06291 7.80853 2.03775C7.86923 2.01259 7.93429 1.99963 8 1.99963C8.06571 1.99963 8.13077 2.01259 8.19147 2.03775C8.25217 2.06291 8.30731 2.09979 8.35375 2.14628L14.5 8.29315"/></svg>
+      <span>Dashboard</span>
+    </div>
+    <div class="md-item" onclick="navClick('CRM');closeMobileDrawer();">
+      <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 9C6.38071 9 7.5 7.88071 7.5 6.5C7.5 5.11929 6.38071 4 5 4C3.61929 4 2.5 5.11929 2.5 6.5C2.5 7.88071 3.61929 9 5 9Z"/><path d="M10 5H15.5"/><path d="M10 8H15.5"/><path d="M11.5 11H15.5"/><path d="M1 12C1.44375 10.275 3.13625 9 5 9C6.86375 9 8.55625 10.275 9 12"/></svg>
+      <span>CRM Customer</span>
+    </div>
+    <div class="md-item" onclick="navClick('Call');closeMobileDrawer();">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      <span>Call History</span>
+    </div>
+    <div class="md-item" onclick="navClick('Message');closeMobileDrawer();">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span>Message History</span>
+    </div>
+    <div class="md-item" onclick="navClick('Voice mail');closeMobileDrawer();">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="12" r="4"/><circle cx="18" cy="12" r="4"/><line x1="6" y1="16" x2="18" y2="16"/></svg>
+      <span>Voice mail History</span>
+    </div>
+    <div class="md-item" onclick="navClick('Appointments');closeMobileDrawer();">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <span>Appointments</span>
+    </div>
+    <div class="md-divider"></div>
+    <div class="md-item active" onclick="navClick('Settings');closeMobileDrawer();">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="6" x2="13" y2="6"/><line x1="17" y1="6" x2="20" y2="6"/><circle cx="15" cy="6" r="2"/><line x1="4" y1="12" x2="7" y2="12"/><line x1="11" y1="12" x2="20" y2="12"/><circle cx="9" cy="12" r="2"/><line x1="4" y1="18" x2="13" y2="18"/><line x1="17" y1="18" x2="20" y2="18"/><circle cx="15" cy="18" r="2"/></svg>
+      <span>Settings</span>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE-LEVEL NAV TOAST -->
+<div class="nav-toast" id="nav-toast">
+  <div class="nav-toast-icon">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+  </div>
+  <div class="nav-toast-text">
+    <strong id="nav-toast-title">Coming soon</strong>
+    <span id="nav-toast-body">This feature is under construction.</span>
+  </div>
+  <button class="nav-toast-close" onclick="hideNavToast()" title="Dismiss">&#x2715;</button>
+</div>
+
+<!-- ASSIGN POPUP -->
+<div class="pna-assign-popup" id="pna-assign-popup" style="display:none;">
+  <div class="pna-assign-title">Assign To</div>
+  <div class="pna-assign-search">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" id="pna-assign-search-input" placeholder="Search people..." oninput="pnaAssignFilter(this.value)"/>
+  </div>
+  <div class="pna-assign-list" id="pna-assign-list"></div>
+  <div class="pna-assign-unassign" onclick="pnaAssignPick(null)">
+    <div class="pna-assign-unassign-av">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="17" y1="8" x2="23" y2="14"/><line x1="23" y1="8" x2="17" y2="14"/></svg>
+    </div>
+    <span>Unassign</span>
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal-backdrop modal-fullscreen-mobile" id="pna-modal" onclick="if(event.target===this)closePnaModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Edit Phone Number</span>
+      <button class="modal-close" onclick="closePnaModal()" aria-label="Close">&#x2715;</button>
+    </div>
+    <div class="modal-body">
+      <div>
+        <label class="pna-field-label" for="pna-edit-phone">Phone No.</label>
+        <div class="modal-field"><input type="text" id="pna-edit-phone" placeholder="Phone No." /></div>
+      </div>
+      <div>
+        <label class="pna-field-label" for="pna-edit-sid">Phone No SID</label>
+        <div class="modal-field"><input type="text" id="pna-edit-sid" placeholder="Phone No SID" /></div>
+      </div>
+      <div>
+        <label class="pna-field-label" for="pna-edit-twml">TWML App SID</label>
+        <div class="modal-field"><input type="text" id="pna-edit-twml" placeholder="TWML App SID" /></div>
+      </div>
+      <div>
+        <label class="pna-field-label" for="pna-edit-acct">Account SID</label>
+        <div class="modal-field"><input type="text" id="pna-edit-acct" placeholder="Account SID" /></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="pna-del-btn" onclick="deletePnaRow()">Delete</button>
+      <button class="modal-cancel" onclick="closePnaModal()">Cancel</button>
+      <button class="modal-save" onclick="savePnaEdit()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="root main-area" id="root">
+  <div class="set-page-head">
+    <a class="ur-back" href="../Settings_main_page/coreconnect_settings.html" title="Back to Settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      <span>Settings</span>
+    </a>
+    <span class="set-page-title">Phone Number Assignment</span>
+    <span class="ur-head-spacer"></span>
+    <label class="pna-filter"><input type="checkbox" id="pna-assigned-chk" onchange="pnaFilterAssigned()"/>Assigned</label>
+    <button class="pna-get-btn" onclick="showNavToast('Get Phone No.','This feature is coming soon.')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span>Get Phone No.</span></button>
+    <button class="pna-add-btn" onclick="openPnaAddModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><span>Add Phone Number</span></button>
+  </div>
+  <div class="set-scroll">
+    <section class="set-section">
+      <table class="pna-table">
+        <thead><tr><th>No.</th><th>Assign User</th><th>Phone No.</th><th>Admin</th><th>Phone No SID</th><th>TWML App SID</th><th>Account SID</th></tr></thead>
+        <tbody>
+          <tr onclick="openPnaEditModal(this)" data-assign-user="DP" data-assign-admin="NC">
+            <td>1</td>
+            <td><div class="pna-assign-cell" onclick="event.stopPropagation();pnaAssignOpen(this,event,'user')"><div class="pna-av" data-name="David Park" style="background:#4f7cff;">DP</div></div></td>
+            <td><span class="pna-phone">(555) 100-2001</span></td>
+            <td><div class="pna-assign-cell" onclick="event.stopPropagation();pnaAssignOpen(this,event,'admin')"><div class="pna-av" data-name="Nina Castro" style="background:#534AB7;">NC</div></div></td>
+            <td><span class="pna-sid">PNXXXXXXXXXXXXXXXX01</span></td>
+            <td><span class="pna-sid">APXXXXXXXXXXXXXXXX01</span></td>
+            <td><span class="pna-sid">ACXXXXXXXXXXXXXXXX01</span></td>
+          </tr>
+          <tr onclick="openPnaEditModal(this)" data-assign-user="JD" data-assign-admin="DP">
+            <td>2</td>
+            <td><div class="pna-assign-cell" onclick="event.stopPropagation();pnaAssignOpen(this,event,'user')"><div class="pna-av" data-name="James Donovan" style="background:#22c88a;">JD</div></div></td>
+            <td><span class="pna-phone">(555) 100-2002</span></td>
+            <td><div class="pna-assign-cell" onclick="event.stopPropagation();pnaAssignOpen(this,event,'admin')"><div class="pna-av" data-name="David Park" style="background:#4f7cff;">DP</div></div></td>
+            <td><span class="pna-sid">PNXXXXXXXXXXXXXXXX02</span></td>
+            <td><span class="pna-sid">APXXXXXXXXXXXXXXXX02</span></td>
+            <td><span class="pna-sid">ACXXXXXXXXXXXXXXXX02</span></td>
+          </tr>
+          <tr onclick="openPnaEditModal(this)" data-assign-user="MR" data-assign-admin="">
+            <td>3</td>
+            <td><div class="pna-assign-cell" onclick="event.stopPropagation();pnaAssignOpen(this,event,'user')"><div class="pna-av" data-name="Maria Rodriguez" style="background:#f5a623;">MR</div></div></td>
+            <td><span class="pna-phone">(555) 100-2003</span></td>
+            <td><div class="pna-assign-cell" onclick="event.stopPropagation();pnaAssignOpen(this,event,'admin')"><div class="pna-aus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>Assign</div></div></td>
+            <td><span class="pna-sid">PNXXXXXXXXXXXXXXXX03</span></td>
+            <td><span class="pna-sid">APXXXXXXXXXXXXXXXX03</span></td>
+            <td><span class="pna-sid">ACXXXXXXXXXXXXXXXX03</span></td>
+          </tr>
+          <tr onclick="openPnaEditModal(this)" data-assign-user="TK" data-assign-admin="NC">
+            <td>4</td>
+            <td><div class="pna-assign-cell" onclick="event.stopPropagation();pnaAssignOpen(this,event,'user')"><div class="pna-av" data-name="Tom Keller" style="background:#a78bfa;">TK</div></div></td>
+            <td><span class="pna-phone">(555) 100-2004</span></td>
+            <td><div class="pna-assign-cell" onclick="event.stopPropagation();pnaAssignOpen(this,event,'admin')"><div class="pna-av" data-name="Nina Castro" style="background:#534AB7;">NC</div></div></td>
+            <td><span class="pna-sid">PNXXXXXXXXXXXXXXXX04</span></td>
+            <td><span class="pna-sid">APXXXXXXXXXXXXXXXX04</span></td>
+            <td><span class="pna-sid">ACXXXXXXXXXXXXXXXX04</span></td>
+          </tr>
+          <tr onclick="openPnaEditModal(this)" data-assign-user="SL" data-assign-admin="DP">
+            <td>5</td>
+            <td><div class="pna-assign-cell" onclick="event.stopPropagation();pnaAssignOpen(this,event,'user')"><div class="pna-av" data-name="Sarah Lambert" style="background:#e85555;">SL</div></div></td>
+            <td><span class="pna-phone">(555) 100-2005</span></td>
+            <td><div class="pna-assign-cell" onclick="event.stopPropagation();pnaAssignOpen(this,event,'admin')"><div class="pna-av" data-name="David Park" style="background:#4f7cff;">DP</div></div></td>
+            <td><span class="pna-sid">PNXXXXXXXXXXXXXXXX05</span></td>
+            <td><span class="pna-sid">APXXXXXXXXXXXXXXXX05</span></td>
+            <td><span class="pna-sid">ACXXXXXXXXXXXXXXXX05</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </div>
+</div>
+
+<script src="../../shared/leads-comms.js"></script>
+<script>
+var _pnaUserPlusSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>';
+
+function pnaRoster(){
+  return (window.CCLeads && CCLeads.TEAM) ? CCLeads.TEAM : [];
+}
+function pnaInitials(name){
+  if(!name) return '';
+  var parts = name.trim().split(/\s+/);
+  if(parts.length >= 2) return (parts[0][0] + parts[parts.length-1][0]).toUpperCase();
+  return parts[0].substring(0,2).toUpperCase();
+}
+function pnaFullName(key){
+  if(!key) return '';
+  var roster = pnaRoster();
+  for(var i = 0; i < roster.length; i++){
+    if(roster[i].key === key) return roster[i].name;
+  }
+  return key;
+}
+function pnaUserColor(key){
+  if(!key) return 'var(--ac)';
+  var roster = pnaRoster();
+  for(var i = 0; i < roster.length; i++){
+    if(roster[i].key === key) return roster[i].color;
+  }
+  return 'var(--ac)';
+}
+function pnaEsc(s){ var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+// ── ASSIGN POPUP ──
+var _pnaAssignRow = null;
+var _pnaAssignType = null;
+
+function pnaAssignOpen(cell, ev, type){
+  ev.stopPropagation();
+  var row = cell.closest('tr');
+  _pnaAssignRow = row;
+  _pnaAssignType = type;
+  var popup = document.getElementById('pna-assign-popup');
+  var input = document.getElementById('pna-assign-search-input');
+  if(input) input.value = '';
+  pnaAssignRenderList('');
+  popup.style.display = 'block';
+  var rect = cell.getBoundingClientRect();
+  var root = document.getElementById('root');
+  var rootRect = root.getBoundingClientRect();
+  var top = rect.bottom - rootRect.top + 4;
+  var left = rect.left - rootRect.left;
+  if(left + 250 > rootRect.width) left = rootRect.width - 255;
+  if(left < 0) left = 4;
+  popup.style.top = top + 'px';
+  popup.style.left = left + 'px';
+  setTimeout(function(){ if(input) input.focus(); }, 0);
+}
+function pnaAssignClose(){
+  var popup = document.getElementById('pna-assign-popup');
+  if(popup) popup.style.display = 'none';
+  _pnaAssignRow = null;
+  _pnaAssignType = null;
+}
+function pnaAssignFilter(val){
+  pnaAssignRenderList(val);
+}
+function pnaAssignRenderList(filter){
+  var q = (filter || '').trim().toLowerCase();
+  var list = document.getElementById('pna-assign-list');
+  var roster = pnaRoster();
+  var matches = roster.filter(function(u){
+    return u.name.toLowerCase().indexOf(q) !== -1 || u.role.toLowerCase().indexOf(q) !== -1;
+  });
+  if(matches.length === 0){
+    list.innerHTML = '<div class="pna-assign-list-empty">No people found</div>';
+    return;
+  }
+  var html = '';
+  for(var i = 0; i < matches.length; i++){
+    var u = matches[i];
+    html += '<div class="pna-assign-user" onclick="pnaAssignPick({key:\''+u.key+'\',name:\''+u.name.replace(/'/g,"\\'")+'\',color:\''+u.color+'\'})">';
+    html += '<div class="pna-assign-user-av" style="background:'+u.color+';">'+pnaEsc(u.key)+'</div>';
+    html += '<div><div class="pna-assign-user-name">'+pnaEsc(u.name)+'</div><div class="pna-assign-user-role">'+pnaEsc(u.role)+'</div></div>';
+    html += '</div>';
+  }
+  list.innerHTML = html;
+}
+function pnaAssignPick(user){
+  if(!_pnaAssignRow) { pnaAssignClose(); return; }
+  var attr = _pnaAssignType === 'admin' ? 'data-assign-admin' : 'data-assign-user';
+  var cellIdx = _pnaAssignType === 'admin' ? 3 : 1;
+  var cell = _pnaAssignRow.cells[cellIdx];
+  if(user){
+    _pnaAssignRow.setAttribute(attr, user.key);
+    cell.innerHTML = '<div class="pna-assign-cell" onclick="event.stopPropagation();pnaAssignOpen(this,event,\''+_pnaAssignType+'\')"><div class="pna-av" data-name="'+pnaEsc(user.name)+'" style="background:'+user.color+';">'+pnaEsc(user.key)+'</div></div>';
+  } else {
+    _pnaAssignRow.setAttribute(attr, '');
+    cell.innerHTML = '<div class="pna-assign-cell" onclick="event.stopPropagation();pnaAssignOpen(this,event,\''+_pnaAssignType+'\')"><div class="pna-aus">'+_pnaUserPlusSvg+'Assign</div></div>';
+  }
+  pnaAssignClose();
+}
+document.addEventListener('click', function(e){
+  var popup = document.getElementById('pna-assign-popup');
+  if(popup && popup.style.display !== 'none' && !popup.contains(e.target)){
+    pnaAssignClose();
+  }
+});
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape') pnaAssignClose();
+});
+
+// ── FILTER ──
+function pnaFilterAssigned(){
+  var checked = document.getElementById('pna-assigned-chk').checked;
+  var rows = document.querySelectorAll('.pna-table tbody tr');
+  for(var i = 0; i < rows.length; i++){
+    var key = rows[i].getAttribute('data-assign-user');
+    rows[i].style.display = (checked && !key) ? 'none' : '';
+  }
+}
+
+// ── ADD / EDIT MODAL ──
+var pnaEditRow = null;
+var pnaIsAdding = false;
+
+function openPnaAddModal(){
+  pnaEditRow = null;
+  pnaIsAdding = true;
+  document.getElementById('pna-edit-phone').value = '';
+  document.getElementById('pna-edit-sid').value = '';
+  document.getElementById('pna-edit-twml').value = '';
+  document.getElementById('pna-edit-acct').value = '';
+  document.querySelector('#pna-modal .modal-title').textContent = 'Add Phone Number';
+  document.querySelector('#pna-modal .pna-del-btn').style.display = 'none';
+  document.getElementById('pna-modal').classList.add('open');
+  setTimeout(function(){ document.getElementById('pna-edit-phone').focus(); }, 0);
+}
+function openPnaEditModal(row){
+  pnaEditRow = row;
+  pnaIsAdding = false;
+  document.getElementById('pna-edit-phone').value = row.cells[2].textContent;
+  document.getElementById('pna-edit-sid').value = row.cells[4].textContent;
+  document.getElementById('pna-edit-twml').value = row.cells[5].textContent;
+  document.getElementById('pna-edit-acct').value = row.cells[6].textContent;
+  document.querySelector('#pna-modal .modal-title').textContent = 'Edit Phone Number';
+  document.querySelector('#pna-modal .pna-del-btn').style.display = '';
+  document.getElementById('pna-modal').classList.add('open');
+  setTimeout(function(){ document.getElementById('pna-edit-phone').focus(); }, 0);
+}
+function closePnaModal(){
+  document.getElementById('pna-modal').classList.remove('open');
+  pnaEditRow = null;
+  pnaIsAdding = false;
+}
+function savePnaEdit(){
+  var phone = document.getElementById('pna-edit-phone').value.trim();
+  if(!phone){ alert('Please enter a phone number.'); return; }
+  var sid = document.getElementById('pna-edit-sid').value.trim();
+  var twml = document.getElementById('pna-edit-twml').value.trim();
+  var acct = document.getElementById('pna-edit-acct').value.trim();
+  if(pnaIsAdding){
+    var tbody = document.querySelector('.pna-table tbody');
+    var rowNum = tbody.rows.length + 1;
+    var tr = document.createElement('tr');
+    tr.setAttribute('onclick','openPnaEditModal(this)');
+    tr.setAttribute('data-assign-user','');
+    tr.setAttribute('data-assign-admin','');
+    tr.innerHTML = '<td>'+rowNum+'</td>'
+      +'<td><div class="pna-assign-cell" onclick="event.stopPropagation();pnaAssignOpen(this,event,\'user\')"><div class="pna-aus">'+_pnaUserPlusSvg+'Assign</div></div></td>'
+      +'<td><span class="pna-phone">'+pnaEsc(phone)+'</span></td>'
+      +'<td><div class="pna-assign-cell" onclick="event.stopPropagation();pnaAssignOpen(this,event,\'admin\')"><div class="pna-aus">'+_pnaUserPlusSvg+'Assign</div></div></td>'
+      +'<td><span class="pna-sid">'+pnaEsc(sid)+'</span></td>'
+      +'<td><span class="pna-sid">'+pnaEsc(twml)+'</span></td>'
+      +'<td><span class="pna-sid">'+pnaEsc(acct)+'</span></td>';
+    tbody.appendChild(tr);
+    closePnaModal();
+    showNavToast('Phone Number','Phone number added successfully.');
+  } else if(pnaEditRow){
+    pnaEditRow.cells[2].innerHTML = '<span class="pna-phone">'+pnaEsc(phone)+'</span>';
+    pnaEditRow.cells[4].innerHTML = '<span class="pna-sid">'+pnaEsc(sid)+'</span>';
+    pnaEditRow.cells[5].innerHTML = '<span class="pna-sid">'+pnaEsc(twml)+'</span>';
+    pnaEditRow.cells[6].innerHTML = '<span class="pna-sid">'+pnaEsc(acct)+'</span>';
+    closePnaModal();
+    showNavToast('Phone Number','Phone number updated successfully.');
+  }
+}
+function deletePnaRow(){
+  if(pnaEditRow){ pnaEditRow.remove(); }
+  closePnaModal();
+  showNavToast('Phone Number','Phone number deleted successfully.');
+}
+
+// ── NAV / DRAWER / TOAST ──
+function navClick(label){
+  if(label === 'Settings') return;
+  var routes = {
+    'Home':'../../coreconnect_dashboard_v41/coreconnect_dashboard_v41.html',
+    'CRM':'../../coreconnect_leads_v83/coreconnect_leads_v83.html',
+    'Call':'../../call_history/coreconnect_call_history_v31.html',
+    'Message':'../../coreconnect_message_history_v41/coreconnect_message_history_v41.html',
+    'Voice mail':'../../coreconnect_voicemail_history_v9/coreconnect_voicemail_history_v9.html',
+    'Appointments':'../../coreconnect_appointments/coreconnect_appointments.html'
+  };
+  if(routes[label]){ window.location.href = routes[label]; return; }
+  showNavToast(label + ' is coming soon', 'This feature is under construction.');
+}
+function toggleMobileDrawer(){
+  var d = document.getElementById('mobile-drawer'), b = document.getElementById('mobile-drawer-backdrop');
+  if(!d || !b) return;
+  if(d.classList.contains('open')) closeMobileDrawer();
+  else { d.classList.add('open'); b.classList.add('open'); }
+}
+function closeMobileDrawer(){
+  var d = document.getElementById('mobile-drawer'), b = document.getElementById('mobile-drawer-backdrop');
+  if(d) d.classList.remove('open'); if(b) b.classList.remove('open');
+}
+var navToastTimer = null;
+function showNavToast(title, body){
+  var t = document.getElementById('nav-toast'); if(!t) return;
+  if(title) document.getElementById('nav-toast-title').textContent = title;
+  if(body)  document.getElementById('nav-toast-body').textContent  = body;
+  t.classList.add('show');
+  if(navToastTimer) clearTimeout(navToastTimer);
+  navToastTimer = setTimeout(hideNavToast, 4000);
+}
+function hideNavToast(){
+  var t = document.getElementById('nav-toast'); if(t) t.classList.remove('show');
+  if(navToastTimer){ clearTimeout(navToastTimer); navToastTimer = null; }
+}
+function toggleProductSwitcher(e){ e.stopPropagation(); document.getElementById('product-switcher').classList.toggle('open'); }
+document.addEventListener('click', function(){ var ps = document.getElementById('product-switcher'); if(ps) ps.classList.remove('open'); });
+function toggleNotifications(e){ e.stopPropagation(); document.getElementById('notif-panel').classList.toggle('open'); }
+function closeNotifications(){ document.getElementById('notif-panel').classList.remove('open'); }
+</script>
+<script src="../../shared/notifications.js?v=6"></script>

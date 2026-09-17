@@ -1,0 +1,491 @@
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CoreConnect — Custom Tab Rules</title>
+<script>try{document.documentElement.setAttribute('data-theme',localStorage.getItem('cc_theme')==='light'?'light':'dark')}catch(e){}</script>
+<link rel="stylesheet" href="../../shared/app.css?v=2">
+<link rel="stylesheet" href="../../shared/settings.css">
+<link rel="stylesheet" href="../../shared/contact-panel.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{background:var(--bg);margin:0;padding:0;font-family:'DM Sans',sans-serif;}
+.root.main-area{height:calc(100vh - 64px);min-height:0;overflow:hidden;display:flex;flex-direction:column;}
+@media (max-width:640px){
+  .root.main-area{height:auto;min-height:0;overflow:visible;}
+}
+.ur-head-spacer{flex:1;}
+.ctr-add-btn{display:flex;align-items:center;gap:5px;background:var(--ac);border:none;border-radius:8px;padding:0 14px;height:32px;color:#fff;font-size:12.5px;font-weight:500;font-family:var(--font);cursor:pointer;transition:all .15s;white-space:nowrap;}
+.ctr-add-btn:hover{background:var(--ac2);}
+.ctr-add-btn svg{width:15px;height:15px;}
+.table-wrap{flex:none;overflow-x:auto;overflow-y:visible;margin:0;border:0.5px solid var(--brd2);border-radius:12px;background:var(--sur);scrollbar-width:thin;scrollbar-color:var(--brd2) transparent;}
+.table-wrap::-webkit-scrollbar{height:8px;}
+.table-wrap::-webkit-scrollbar-track{background:transparent;}
+.table-wrap::-webkit-scrollbar-thumb{background:var(--brd2);border-radius:4px;}
+.table-wrap::-webkit-scrollbar-thumb:hover{background:var(--mu);}
+.table-wrap table{border-collapse:separate;border-spacing:0;font-size:12.5px;width:max-content;min-width:100%;}
+.table-wrap thead th{background:var(--sur2);padding:13px 16px;text-align:left;font-size:11px;font-weight:600;color:var(--mu);text-transform:uppercase;letter-spacing:.5px;border-bottom:0.5px solid var(--brd2);white-space:nowrap;position:sticky;top:0;z-index:10;}
+.table-wrap thead th:first-child{border-radius:12px 0 0 0;padding-left:16px;}
+.table-wrap thead th:last-child{border-radius:0 12px 0 0;}
+.table-wrap tbody tr{transition:background .1s;cursor:pointer;}
+.table-wrap tbody tr:hover{background:rgba(79,124,255,.04);}
+.table-wrap tbody td{padding:13px 16px;vertical-align:middle;border-bottom:0.5px solid var(--brd);white-space:nowrap;font-size:13px;overflow:hidden;text-overflow:ellipsis;}
+.table-wrap tbody td:nth-child(3){overflow:visible;}
+.table-wrap tbody td:first-child{padding-left:16px;}
+.table-wrap tbody tr:last-child td{border-bottom:none;}
+.table-wrap tbody tr:last-child td:first-child{border-radius:0 0 0 12px;}
+.table-wrap tbody tr:last-child td:last-child{border-radius:0 0 12px 0;}
+.ctr-no{font-family:var(--mono);font-size:11px;color:var(--mu);}
+.ctr-name{font-weight:500;color:var(--tx2);font-size:12.5px;cursor:pointer;transition:color .12s;}
+.ctr-name:hover{color:var(--ac2);}
+.ctr-op{font-family:var(--mono);font-size:12px;color:var(--mu);}
+.ctr-assign-cell{display:flex;align-items:center;gap:4px;overflow:visible;}
+.ctr-assign-avatars{display:flex;align-items:center;}
+.ctr-assign-avatars:empty{display:none;}
+.ctr-assign-avatars .ctr-av{margin-left:-6px;border:2px solid var(--sur);}
+.ctr-assign-avatars .ctr-av:first-child{margin-left:0;}
+.ctr-av-more{background:var(--sur2);color:var(--mu);font-size:9px;position:relative;cursor:default;}
+.ctr-av-more[data-names]:not([data-names=""])::after{content:attr(data-names);position:absolute;left:50%;top:calc(100% + 7px);transform:translateX(-50%);background:var(--sur2);color:var(--ac2);font-size:12px;font-weight:500;padding:6px 11px;border-radius:8px;border:0.5px solid var(--ac);white-space:pre;opacity:0;pointer-events:none;transition:opacity .12s;z-index:200;}
+.ctr-av-more[data-names]:not([data-names=""]):hover::after{opacity:1;}
+.ctr-assign-btn{background:none;border:none;cursor:pointer;color:var(--mu);padding:4px;border-radius:6px;transition:all .12s;display:inline-flex;align-items:center;justify-content:center;}
+.ctr-assign-btn:hover{color:var(--ac);background:rgba(79,124,255,.08);}
+.ctr-assign-btn.has-users{color:var(--ac);}
+.ctr-assign-btn svg{width:16px;height:16px;}
+.ctr-av{width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:600;flex:none;position:relative;}
+.ctr-assign-avatars .ctr-av[data-name]:not([data-name=""])::after{content:attr(data-name);position:absolute;left:50%;top:calc(100% + 7px);transform:translateX(-50%);background:var(--sur2);color:var(--ac2);font-size:12px;font-weight:500;padding:6px 11px;border-radius:8px;border:0.5px solid var(--ac);white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .12s;z-index:200;}
+.ctr-assign-avatars .ctr-av[data-name]:not([data-name=""]):hover::after{opacity:1;}
+#ctr-assign-popup{padding:6px;width:240px;}
+#ctr-assign-list{max-height:280px;overflow-y:auto;}
+#ctr-assign-list .lblp-item{padding:9px 10px;gap:10px;cursor:pointer;}
+#ctr-assign-list .lblp-item-txt{display:flex;flex-direction:column;gap:1px;flex:1;min-width:0;}
+#ctr-assign-list .lblp-item-name{font-size:13px;color:var(--tx);font-weight:500;}
+#ctr-assign-list .lblp-item-sub{font-size:11.5px;color:var(--mu);}
+.ctr-assign-search{display:flex;align-items:center;gap:8px;padding:4px 10px 8px;}
+.ctr-assign-search svg{width:14px;height:14px;color:var(--mu);flex:none;}
+.ctr-assign-search input{flex:1;background:none;border:none;color:var(--tx);font-family:var(--font);font-size:13px;padding:0;outline:none;}
+.ctr-assign-search input::placeholder{color:var(--mu);}
+.ctr-assign-empty{padding:16px 12px;text-align:center;color:var(--mu);font-size:12.5px;}
+.ctr-field-label{font-size:12px;font-weight:500;color:var(--mu);padding-left:2px;margin-bottom:4px;}
+.ctr-del-btn{background:none;border:0.5px solid var(--rd);border-radius:8px;padding:0 16px;height:34px;color:var(--rd);font-size:13px;font-family:var(--font);cursor:pointer;transition:all .15s;margin-right:auto;}
+.ctr-del-btn:hover{background:var(--rd);color:#fff;}
+.ctr-op-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+@media (max-width:640px){
+  .ctr-op-grid{grid-template-columns:1fr;}
+}
+</style>
+
+<div class="top-header">
+  <div class="th-left">
+    <button class="hamburger-btn" id="hamburger-btn" onclick="toggleMobileDrawer()" aria-label="Open menu">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+    <div class="logo" onclick="toggleProductSwitcher(event)">
+      <div class="logo-mark"><svg class="logo-mark-svg" viewBox="0 0 324 221" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="CoreConnect logo" style="width:100%;height:100%;"><path d="M72.30,32.52 L72.30,32.52 Q85.97,12.00 110.63,12.00 L246.25,12.00 Q270.90,12.00 257.23,32.52 L210.61,102.44 Q196.93,122.96 172.27,122.96 L36.66,122.96 Q12.00,122.96 25.68,102.44 Z" fill="#1E6BFF"/><path d="M113.39,118.82 L113.39,118.82 Q127.07,98.30 151.73,98.30 L287.34,98.30 Q312.00,98.30 298.32,118.82 L251.70,188.74 Q238.03,209.26 213.37,209.26 L77.75,209.26 Q53.10,209.26 66.77,188.74 Z" fill="#3D3DCC"/></svg></div>
+      <span class="logo-text">CoreConnect</span>
+      <svg class="logo-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+      <div class="product-switcher" id="product-switcher">
+        <a class="ps-item" data-pid="coreconnect" href="../../coreconnect_dashboard_v41/coreconnect_dashboard_v41.html"><svg class="ps-ic" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span>CoreConnect</span></a>
+        <a class="ps-item" data-pid="reputation" href="../../reputation/reputation_dashboard/Dashboard.html"><svg class="ps-ic" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span>Reputation</span></a>
+      </div>
+    </div>
+  </div>
+  <div class="top-header-right">
+    <button class="header-bell" id="header-bell" data-label="Notifications" onclick="toggleNotifications(event)" aria-label="Notifications">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+      </svg>
+      <span class="header-bell-dot" id="header-bell-dot"></span>
+      <span class="header-bell-call-dot" id="header-bell-call-dot"></span>
+    </button>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="sidebar-nav">
+    <div class="sb-item" data-nav="home" data-label="Dashboard" onclick="navClick('Home')">
+      <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 13.5H15"/><path d="M9.5 13.5V9.5H6.5V13.5"/><path d="M2.5 7.29309V13.5"/><path d="M13.5 13.5V7.29309"/><path d="M1.5 8.29315L7.64625 2.14628C7.69269 2.09979 7.74783 2.06291 7.80853 2.03775C7.86923 2.01259 7.93429 1.99963 8 1.99963C8.06571 1.99963 8.13077 2.01259 8.19147 2.03775C8.25217 2.06291 8.30731 2.09979 8.35375 2.14628L14.5 8.29315"/></svg>
+    </div>
+    <div class="sb-item" data-nav="crm" data-label="CRM Customer" onclick="navClick('CRM')">
+      <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 9C6.38071 9 7.5 7.88071 7.5 6.5C7.5 5.11929 6.38071 4 5 4C3.61929 4 2.5 5.11929 2.5 6.5C2.5 7.88071 3.61929 9 5 9Z"/><path d="M10 5H15.5"/><path d="M10 8H15.5"/><path d="M11.5 11H15.5"/><path d="M1 12C1.44375 10.275 3.13625 9 5 9C6.86375 9 8.55625 10.275 9 12"/></svg>
+    </div>
+    <div class="sb-item" data-nav="call" data-label="Call History" onclick="navClick('Call')">
+      <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.2744 9.08374C10.3436 9.03766 10.4233 9.00959 10.5061 9.00206C10.5889 8.99453 10.6723 9.00778 10.7488 9.04061L13.6963 10.3612C13.7956 10.4037 13.8785 10.4772 13.9326 10.5707C13.9867 10.6642 14.009 10.7727 13.9963 10.88C13.8991 11.6056 13.5418 12.2713 12.9907 12.7533C12.4395 13.2352 11.7321 13.5005 11 13.5C8.74566 13.5 6.58365 12.6045 4.98959 11.0104C3.39553 9.41633 2.5 7.25433 2.5 4.99999C2.49944 4.26786 2.7648 3.56045 3.24673 3.00932C3.72865 2.45818 4.39435 2.10084 5.12 2.00374C5.22727 1.99099 5.33578 2.01333 5.4293 2.06741C5.52281 2.12149 5.5963 2.2044 5.63875 2.30374L6.95938 5.25374C6.99182 5.3295 7.00504 5.41212 6.99784 5.49423C6.99064 5.57634 6.96326 5.65539 6.91813 5.72436L5.5825 7.31249C5.53512 7.38398 5.50711 7.46654 5.50119 7.55209C5.49528 7.63765 5.51166 7.72328 5.54875 7.80061C6.06563 8.85874 7.15938 9.93936 8.22063 10.4512C8.29836 10.4882 8.38439 10.5042 8.47021 10.4977C8.55602 10.4912 8.63867 10.4625 8.71 10.4144L10.2744 9.08374Z"/></svg>
+    </div>
+    <div class="sb-item" data-nav="message" data-label="Message History" onclick="navClick('Message')">
+      <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.47375 9L2 11V3C2 2.86739 2.05268 2.74021 2.14645 2.64645C2.24021 2.55268 2.36739 2.5 2.5 2.5H10.5C10.6326 2.5 10.7598 2.55268 10.8536 2.64645C10.9473 2.74021 11 2.86739 11 3V8.5C11 8.63261 10.9473 8.75979 10.8536 8.85355C10.7598 8.94732 10.6326 9 10.5 9H4.47375Z"/><path d="M5 9V11.5C5 11.6326 5.05268 11.7598 5.14645 11.8536C5.24021 11.9473 5.36739 12 5.5 12H11.5262L14 14V6C14 5.86739 13.9473 5.74021 13.8536 5.64645C13.7598 5.55268 13.6326 5.5 13.5 5.5H11"/></svg>
+    </div>
+    <div class="sb-item" data-nav="voicemail" data-label="Voice mail History" onclick="navClick('Voice mail')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="12" r="4"/><circle cx="18" cy="12" r="4"/><line x1="6" y1="16" x2="18" y2="16"/></svg>
+    </div>
+    <div class="sb-item" data-nav="appointments" data-label="Appointments" onclick="navClick('Appointments')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    </div>
+    <div class="sidebar-nav-spacer"></div>
+    <div class="sb-divider"></div>
+    <div class="sb-item active" data-nav="settings" data-label="Settings" onclick="navClick('Settings')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="6" x2="13" y2="6"/><line x1="17" y1="6" x2="20" y2="6"/><circle cx="15" cy="6" r="2"/><line x1="4" y1="12" x2="7" y2="12"/><line x1="11" y1="12" x2="20" y2="12"/><circle cx="9" cy="12" r="2"/><line x1="4" y1="18" x2="13" y2="18"/><line x1="17" y1="18" x2="20" y2="18"/><circle cx="15" cy="18" r="2"/></svg>
+    </div>
+  </div>
+  <div class="sb-account" onclick="navClick('Account')" title="Account">DP</div>
+</div>
+
+<!-- MOBILE DRAWER -->
+<div class="mobile-drawer-backdrop" id="mobile-drawer-backdrop" onclick="closeMobileDrawer()"></div>
+<div class="mobile-drawer" id="mobile-drawer">
+  <div class="md-nav">
+    <div class="md-item" onclick="navClick('Home');closeMobileDrawer();">
+      <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 13.5H15"/><path d="M9.5 13.5V9.5H6.5V13.5"/><path d="M2.5 7.29309V13.5"/><path d="M13.5 13.5V7.29309"/><path d="M1.5 8.29315L7.64625 2.14628C7.69269 2.09979 7.74783 2.06291 7.80853 2.03775C7.86923 2.01259 7.93429 1.99963 8 1.99963C8.06571 1.99963 8.13077 2.01259 8.19147 2.03775C8.25217 2.06291 8.30731 2.09979 8.35375 2.14628L14.5 8.29315"/></svg>
+      <span>Dashboard</span>
+    </div>
+    <div class="md-item" onclick="navClick('CRM');closeMobileDrawer();">
+      <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 9C6.38071 9 7.5 7.88071 7.5 6.5C7.5 5.11929 6.38071 4 5 4C3.61929 4 2.5 5.11929 2.5 6.5C2.5 7.88071 3.61929 9 5 9Z"/><path d="M10 5H15.5"/><path d="M10 8H15.5"/><path d="M11.5 11H15.5"/><path d="M1 12C1.44375 10.275 3.13625 9 5 9C6.86375 9 8.55625 10.275 9 12"/></svg>
+      <span>CRM Customer</span>
+    </div>
+    <div class="md-item" onclick="navClick('Call');closeMobileDrawer();">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      <span>Call History</span>
+    </div>
+    <div class="md-item" onclick="navClick('Message');closeMobileDrawer();">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span>Message History</span>
+    </div>
+    <div class="md-item" onclick="navClick('Voice mail');closeMobileDrawer();">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="12" r="4"/><circle cx="18" cy="12" r="4"/><line x1="6" y1="16" x2="18" y2="16"/></svg>
+      <span>Voice mail History</span>
+    </div>
+    <div class="md-item" onclick="navClick('Appointments');closeMobileDrawer();">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <span>Appointments</span>
+    </div>
+    <div class="md-divider"></div>
+    <div class="md-item active" onclick="navClick('Settings');closeMobileDrawer();">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="6" x2="13" y2="6"/><line x1="17" y1="6" x2="20" y2="6"/><circle cx="15" cy="6" r="2"/><line x1="4" y1="12" x2="7" y2="12"/><line x1="11" y1="12" x2="20" y2="12"/><circle cx="9" cy="12" r="2"/><line x1="4" y1="18" x2="13" y2="18"/><line x1="17" y1="18" x2="20" y2="18"/><circle cx="15" cy="18" r="2"/></svg>
+      <span>Settings</span>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE-LEVEL NAV TOAST -->
+<div class="nav-toast" id="nav-toast">
+  <div class="nav-toast-icon">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+  </div>
+  <div class="nav-toast-text">
+    <strong id="nav-toast-title">Coming soon</strong>
+    <span id="nav-toast-body">This feature is under construction.</span>
+  </div>
+  <button class="nav-toast-close" onclick="hideNavToast()" title="Dismiss">&#x2715;</button>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="root main-area" id="root">
+  <div class="set-page-head">
+    <a class="ur-back" href="../Settings_main_page/coreconnect_settings.html" title="Back to Settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      <span>Settings</span>
+    </a>
+    <span class="set-page-title">Custom Tab Rules</span>
+    <span class="ur-head-spacer"></span>
+    <button class="ctr-add-btn" onclick="openCtrAddModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><span>Add Rule</span></button>
+  </div>
+  <div class="set-scroll">
+    <section class="set-section">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th style="width:50px;">No</th><th>Custom Tab Name</th><th>Assign User</th><th style="width:110px;">Inbound Call</th><th style="width:120px;">Outbound Call</th><th style="width:110px;">Inbound SMS</th><th style="width:120px;">Outbound SMS</th><th style="width:140px;">Inbound Talk time</th><th style="width:150px;">Outbound Talk time</th><th style="width:120px;">Last Call Date</th><th style="width:120px;">Last SMS Date</th><th style="width:120px;">Last Note Date</th><th style="width:130px;">Outbound Email</th><th style="width:120px;">Inbound Email</th></tr></thead>
+          <tbody id="ctr-tbody">
+            <tr onclick="openCtrEditModal(this)"><td><span class="ctr-no">1</span></td><td><span class="ctr-name">Sales Pipeline</span></td><td><div class="ctr-assign-cell"><div class="ctr-assign-avatars"></div><button class="ctr-assign-btn" onclick="ctrAssignOpen(this,event)" title="Assign users"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg></button></div></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">!=</span></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">&gt;</span></td><td><span class="ctr-op">&gt;=</span></td><td><span class="ctr-op">&lt;</span></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">&lt;=</span></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">!=</span></td><td><span class="ctr-op">=</span></td></tr>
+            <tr onclick="openCtrEditModal(this)"><td><span class="ctr-no">2</span></td><td><span class="ctr-name">Follow Up</span></td><td><div class="ctr-assign-cell"><div class="ctr-assign-avatars"></div><button class="ctr-assign-btn" onclick="ctrAssignOpen(this,event)" title="Assign users"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg></button></div></td><td><span class="ctr-op">&gt;</span></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">&lt;</span></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">!=</span></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">&gt;=</span></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">&lt;=</span></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">&gt;</span></td></tr>
+            <tr onclick="openCtrEditModal(this)"><td><span class="ctr-no">3</span></td><td><span class="ctr-name">Service Desk</span></td><td><div class="ctr-assign-cell"><div class="ctr-assign-avatars"></div><button class="ctr-assign-btn" onclick="ctrAssignOpen(this,event)" title="Assign users"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg></button></div></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">=</span></td></tr>
+            <tr onclick="openCtrEditModal(this)"><td><span class="ctr-no">4</span></td><td><span class="ctr-name">BDC Queue</span></td><td><div class="ctr-assign-cell"><div class="ctr-assign-avatars"></div><button class="ctr-assign-btn" onclick="ctrAssignOpen(this,event)" title="Assign users"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg></button></div></td><td><span class="ctr-op">&gt;=</span></td><td><span class="ctr-op">&lt;=</span></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">!=</span></td><td><span class="ctr-op">&gt;</span></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">&lt;</span></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">&gt;</span></td><td><span class="ctr-op">=</span></td></tr>
+            <tr onclick="openCtrEditModal(this)"><td><span class="ctr-no">5</span></td><td><span class="ctr-name">New Leads</span></td><td><div class="ctr-assign-cell"><div class="ctr-assign-avatars"></div><button class="ctr-assign-btn" onclick="ctrAssignOpen(this,event)" title="Assign users"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg></button></div></td><td><span class="ctr-op">!=</span></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">&gt;</span></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">&gt;=</span></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">&lt;</span></td><td><span class="ctr-op">!=</span></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">&lt;=</span></td></tr>
+            <tr onclick="openCtrEditModal(this)"><td><span class="ctr-no">6</span></td><td><span class="ctr-name">Internet Leads</span></td><td><div class="ctr-assign-cell"><div class="ctr-assign-avatars"></div><button class="ctr-assign-btn" onclick="ctrAssignOpen(this,event)" title="Assign users"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg></button></div></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">&gt;</span></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">&lt;=</span></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">!=</span></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">&gt;</span></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">=</span></td></tr>
+            <tr onclick="openCtrEditModal(this)"><td><span class="ctr-no">7</span></td><td><span class="ctr-name">Active Deals</span></td><td><div class="ctr-assign-cell"><div class="ctr-assign-avatars"></div><button class="ctr-assign-btn" onclick="ctrAssignOpen(this,event)" title="Assign users"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg></button></div></td><td><span class="ctr-op">&lt;</span></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">&gt;=</span></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">!=</span></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">&lt;</span></td><td><span class="ctr-op">=</span></td></tr>
+            <tr onclick="openCtrEditModal(this)"><td><span class="ctr-no">8</span></td><td><span class="ctr-name">Appointments</span></td><td><div class="ctr-assign-cell"><div class="ctr-assign-avatars"></div><button class="ctr-assign-btn" onclick="ctrAssignOpen(this,event)" title="Assign users"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg></button></div></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">!=</span></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">&lt;=</span></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">&gt;</span></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">&gt;=</span></td></tr>
+            <tr onclick="openCtrEditModal(this)"><td><span class="ctr-no">9</span></td><td><span class="ctr-name">Sold Deals</span></td><td><div class="ctr-assign-cell"><div class="ctr-assign-avatars"></div><button class="ctr-assign-btn" onclick="ctrAssignOpen(this,event)" title="Assign users"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg></button></div></td><td><span class="ctr-op">&gt;</span></td><td><span class="ctr-op">&lt;</span></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">&gt;=</span></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">&lt;=</span></td><td><span class="ctr-op">!=</span></td></tr>
+            <tr onclick="openCtrEditModal(this)"><td><span class="ctr-no">10</span></td><td><span class="ctr-name">Finance</span></td><td><div class="ctr-assign-cell"><div class="ctr-assign-avatars"></div><button class="ctr-assign-btn" onclick="ctrAssignOpen(this,event)" title="Assign users"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg></button></div></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">!=</span></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">&lt;</span></td><td><span class="ctr-op">&gt;</span></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">=</span></td><td><span class="ctr-op">&gt;=</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal-backdrop modal-fullscreen-mobile" id="ctr-modal-backdrop" onclick="if(event.target===this)closeCtrEditModal()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <span class="modal-title">Edit Custom Tab Rule</span>
+      <button class="modal-close" onclick="closeCtrEditModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div>
+        <label class="ctr-field-label" for="ctr-edit-name">Custom Tab Name</label>
+        <div class="modal-field"><input type="text" id="ctr-edit-name" placeholder="Custom Tab Name" /></div>
+      </div>
+      <div class="ctr-op-grid">
+        <div>
+          <label class="ctr-field-label" for="ctr-edit-op0">Inbound Call</label>
+          <div class="modal-field"><select id="ctr-edit-op0"><option>=</option><option>!=</option><option>&lt;</option><option>&gt;</option><option>&lt;=</option><option>&gt;=</option></select></div>
+        </div>
+        <div>
+          <label class="ctr-field-label" for="ctr-edit-op1">Outbound Call</label>
+          <div class="modal-field"><select id="ctr-edit-op1"><option>=</option><option>!=</option><option>&lt;</option><option>&gt;</option><option>&lt;=</option><option>&gt;=</option></select></div>
+        </div>
+        <div>
+          <label class="ctr-field-label" for="ctr-edit-op2">Inbound SMS</label>
+          <div class="modal-field"><select id="ctr-edit-op2"><option>=</option><option>!=</option><option>&lt;</option><option>&gt;</option><option>&lt;=</option><option>&gt;=</option></select></div>
+        </div>
+        <div>
+          <label class="ctr-field-label" for="ctr-edit-op3">Outbound SMS</label>
+          <div class="modal-field"><select id="ctr-edit-op3"><option>=</option><option>!=</option><option>&lt;</option><option>&gt;</option><option>&lt;=</option><option>&gt;=</option></select></div>
+        </div>
+        <div>
+          <label class="ctr-field-label" for="ctr-edit-op4">Inbound Talk time</label>
+          <div class="modal-field"><select id="ctr-edit-op4"><option>=</option><option>!=</option><option>&lt;</option><option>&gt;</option><option>&lt;=</option><option>&gt;=</option></select></div>
+        </div>
+        <div>
+          <label class="ctr-field-label" for="ctr-edit-op5">Outbound Talk time</label>
+          <div class="modal-field"><select id="ctr-edit-op5"><option>=</option><option>!=</option><option>&lt;</option><option>&gt;</option><option>&lt;=</option><option>&gt;=</option></select></div>
+        </div>
+        <div>
+          <label class="ctr-field-label" for="ctr-edit-op6">Last Call Date</label>
+          <div class="modal-field"><select id="ctr-edit-op6"><option>=</option><option>!=</option><option>&lt;</option><option>&gt;</option><option>&lt;=</option><option>&gt;=</option></select></div>
+        </div>
+        <div>
+          <label class="ctr-field-label" for="ctr-edit-op7">Last SMS Date</label>
+          <div class="modal-field"><select id="ctr-edit-op7"><option>=</option><option>!=</option><option>&lt;</option><option>&gt;</option><option>&lt;=</option><option>&gt;=</option></select></div>
+        </div>
+        <div>
+          <label class="ctr-field-label" for="ctr-edit-op8">Last Note Date</label>
+          <div class="modal-field"><select id="ctr-edit-op8"><option>=</option><option>!=</option><option>&lt;</option><option>&gt;</option><option>&lt;=</option><option>&gt;=</option></select></div>
+        </div>
+        <div>
+          <label class="ctr-field-label" for="ctr-edit-op9">Outbound Email</label>
+          <div class="modal-field"><select id="ctr-edit-op9"><option>=</option><option>!=</option><option>&lt;</option><option>&gt;</option><option>&lt;=</option><option>&gt;=</option></select></div>
+        </div>
+        <div>
+          <label class="ctr-field-label" for="ctr-edit-op10">Inbound Email</label>
+          <div class="modal-field"><select id="ctr-edit-op10"><option>=</option><option>!=</option><option>&lt;</option><option>&gt;</option><option>&lt;=</option><option>&gt;=</option></select></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="ctr-del-btn" onclick="deleteCtrRow()">Delete</button>
+      <button class="modal-cancel" onclick="closeCtrEditModal()">Cancel</button>
+      <button class="modal-save" onclick="saveCtrEdit()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ASSIGN USER POPUP -->
+<div class="assign-popup" id="ctr-assign-popup" style="display:none;">
+  <div class="assign-popup-title">Assign To</div>
+  <div class="ctr-assign-search">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" id="ctr-assign-search-input" placeholder="Search people..." oninput="ctrAssignSearch(this.value)"/>
+  </div>
+  <div class="lblp-list" id="ctr-assign-list"></div>
+</div>
+
+<script>
+var ctrEditRow = null;
+var ctrIsAdding = false;
+var _ctrAssignSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>';
+function openCtrAddModal(){
+  ctrEditRow = null;
+  ctrIsAdding = true;
+  document.getElementById('ctr-edit-name').value = '';
+  for(var i = 0; i < 11; i++){
+    document.getElementById('ctr-edit-op'+i).value = '=';
+  }
+  document.querySelector('#ctr-modal-backdrop .modal-title').textContent = 'Add Custom Tab Rule';
+  document.querySelector('#ctr-modal-backdrop .ctr-del-btn').style.display = 'none';
+  document.getElementById('ctr-modal-backdrop').classList.add('open');
+  setTimeout(function(){ document.getElementById('ctr-edit-name').focus(); }, 0);
+}
+function openCtrEditModal(row){
+  ctrEditRow = row;
+  ctrIsAdding = false;
+  document.getElementById('ctr-edit-name').value = row.cells[1].querySelector('.ctr-name').textContent;
+  for(var i = 0; i < 11; i++){
+    document.getElementById('ctr-edit-op'+i).value = row.cells[i+3].querySelector('.ctr-op').textContent;
+  }
+  document.querySelector('#ctr-modal-backdrop .modal-title').textContent = 'Edit Custom Tab Rule';
+  document.querySelector('#ctr-modal-backdrop .ctr-del-btn').style.display = '';
+  document.getElementById('ctr-modal-backdrop').classList.add('open');
+  setTimeout(function(){ document.getElementById('ctr-edit-name').focus(); }, 0);
+}
+function closeCtrEditModal(){
+  document.getElementById('ctr-modal-backdrop').classList.remove('open');
+  ctrEditRow = null;
+  ctrIsAdding = false;
+}
+function saveCtrEdit(){
+  var name = document.getElementById('ctr-edit-name').value.trim();
+  if(!name){ alert('Please enter a name.'); return; }
+  if(ctrIsAdding){
+    var tbody = document.getElementById('ctr-tbody');
+    var rowNum = tbody.rows.length + 1;
+    var tr = document.createElement('tr');
+    tr.setAttribute('onclick','openCtrEditModal(this)');
+    var html = '<td><span class="ctr-no">'+rowNum+'</span></td>';
+    html += '<td><span class="ctr-name">'+ctrEsc(name)+'</span></td>';
+    html += '<td><div class="ctr-assign-cell" data-users=""><div class="ctr-assign-avatars"></div><button class="ctr-assign-btn" onclick="ctrAssignOpen(this,event)" title="Assign users">'+_ctrAssignSvg+'</button></div></td>';
+    for(var i = 0; i < 11; i++){
+      html += '<td><span class="ctr-op">'+ctrEsc(document.getElementById('ctr-edit-op'+i).value)+'</span></td>';
+    }
+    tr.innerHTML = html;
+    tbody.appendChild(tr);
+    closeCtrEditModal();
+    showNavToast('Custom Tab Rules','Custom tab rule added successfully.');
+  } else if(ctrEditRow){
+    ctrEditRow.cells[1].querySelector('.ctr-name').textContent = name;
+    for(var i = 0; i < 11; i++){
+      ctrEditRow.cells[i+3].querySelector('.ctr-op').textContent = document.getElementById('ctr-edit-op'+i).value;
+    }
+    closeCtrEditModal();
+    showNavToast('Custom Tab Rules','Custom tab rule updated successfully.');
+  }
+}
+function deleteCtrRow(){
+  if(ctrEditRow){ ctrEditRow.remove(); }
+  closeCtrEditModal();
+  document.querySelectorAll('.ctr-no').forEach(function(el,i){ el.textContent = i+1; });
+  showNavToast('Custom Tab Rules','Custom tab rule deleted successfully.');
+}
+
+/* ===== Assign User popup ===== */
+var _ctrAssignRow = null;
+var _ctrAssignSel = [];
+var _ctrAssignQuery = '';
+
+function ctrEsc(s){ return String(s||'').replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function ctrInitials(name){ return String(name||'').trim().split(/\s+/).slice(0,2).map(function(s){return s.charAt(0).toUpperCase();}).join(''); }
+function ctrRoster(){ return (window.CCLeads && Array.isArray(CCLeads.TEAM)) ? CCLeads.TEAM : []; }
+
+function ctrAssignOpen(btn, ev){
+  ev.stopPropagation();
+  var pop = document.getElementById('ctr-assign-popup'); if(!pop) return;
+  if(pop.style.display === 'block'){ ctrAssignClose(); return; }
+  var row = btn.closest('tr');
+  _ctrAssignRow = row;
+  var saved = row.getAttribute('data-users');
+  _ctrAssignSel = saved ? saved.split(',').filter(Boolean) : [];
+  _ctrAssignQuery = '';
+  var s = document.getElementById('ctr-assign-search-input'); if(s) s.value = '';
+  ctrAssignRenderList();
+  var r = btn.getBoundingClientRect();
+  pop.style.left = Math.max(8, Math.min(Math.round(r.left), window.innerWidth - 248)) + 'px';
+  pop.style.top = (r.bottom + 6) + 'px';
+  pop.style.display = 'block';
+  setTimeout(function(){ if(s) s.focus(); }, 30);
+}
+function ctrAssignClose(){
+  var pop = document.getElementById('ctr-assign-popup'); if(pop) pop.style.display = 'none';
+  _ctrAssignRow = null;
+}
+function ctrAssignRenderList(){
+  var list = document.getElementById('ctr-assign-list'); if(!list) return;
+  var q = (_ctrAssignQuery||'').trim().toLowerCase();
+  var rows = ctrRoster().filter(function(m){
+    if(!q) return true;
+    return (m.name||'').toLowerCase().indexOf(q) >= 0
+        || (m.role||'').toLowerCase().indexOf(q) >= 0
+        || (m.dept||'').toLowerCase().indexOf(q) >= 0;
+  });
+  if(!rows.length){ list.innerHTML = '<div class="ctr-assign-empty">No users match your search.</div>'; return; }
+  var sel = {}; _ctrAssignSel.forEach(function(k){ sel[k] = 1; });
+  list.innerHTML = rows.map(function(m){
+    var on = sel[m.key] ? ' on' : '';
+    return '<div class="lblp-item'+on+'" onclick="ctrAssignToggle(\''+ctrEsc(m.key)+'\')">'
+      + '<span class="ctr-av" style="background:'+ctrEsc(m.color||'#4f7cff')+';">'+ctrEsc(ctrInitials(m.name))+'</span>'
+      + '<span class="lblp-item-txt"><span class="lblp-item-name">'+ctrEsc(m.name)+'</span>'+(m.role?'<span class="lblp-item-sub">'+ctrEsc(m.role)+'</span>':'')+'</span>'
+      + '<span class="lblp-check"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>'
+    + '</div>';
+  }).join('');
+}
+function ctrAssignRenderCell(row){
+  if(!row) return;
+  var wrap = row.querySelector('.ctr-assign-avatars'); if(!wrap) return;
+  var btn = row.querySelector('.ctr-assign-btn');
+  var saved = row.getAttribute('data-users');
+  var keys = saved ? saved.split(',').filter(Boolean) : [];
+  var byKey = {}; ctrRoster().forEach(function(m){ byKey[m.key] = m; });
+  keys = keys.filter(function(k){ return !!byKey[k]; });
+  if(btn) btn.classList.toggle('has-users', keys.length > 0);
+  var show = keys.slice(0, 4);
+  var extra = keys.length - 4;
+  wrap.innerHTML = show.map(function(k){
+    var m = byKey[k];
+    return '<span class="ctr-av" data-name="'+ctrEsc(m.name)+'" style="background:'+ctrEsc(m.color||'#4f7cff')+';"><span>'+ctrEsc(ctrInitials(m.name))+'</span></span>';
+  }).join('') + (extra > 0 ? '<span class="ctr-av ctr-av-more" data-names="'+ctrEsc(keys.slice(4).map(function(k){ return byKey[k].name; }).join('\n'))+'">+'+extra+'</span>' : '');
+}
+function ctrAssignToggle(key){
+  var i = _ctrAssignSel.indexOf(key);
+  if(i < 0){ _ctrAssignSel.push(key); }
+  else { _ctrAssignSel.splice(i, 1); }
+  if(_ctrAssignRow){
+    _ctrAssignRow.setAttribute('data-users', _ctrAssignSel.join(','));
+    ctrAssignRenderCell(_ctrAssignRow);
+  }
+  ctrAssignRenderList();
+}
+function ctrAssignSearch(v){ _ctrAssignQuery = v || ''; ctrAssignRenderList(); }
+
+document.addEventListener('mousedown', function(e){
+  if(!e.target.closest) return;
+  if(!e.target.closest('#ctr-assign-popup') && !e.target.closest('.ctr-assign-btn')) ctrAssignClose();
+});
+document.addEventListener('keydown', function(e){
+  if(e.key !== 'Escape') return;
+  var ap = document.getElementById('ctr-assign-popup');
+  if(ap && ap.style.display === 'block'){ ctrAssignClose(); return; }
+  var mo = document.getElementById('ctr-modal-backdrop');
+  if(mo && mo.classList.contains('open')) closeCtrEditModal();
+});
+</script>
+
+<script>
+function navClick(label){
+  if(label === 'Settings') return;
+  var routes = {
+    'Home':'../../coreconnect_dashboard_v41/coreconnect_dashboard_v41.html',
+    'CRM':'../../coreconnect_leads_v83/coreconnect_leads_v83.html',
+    'Call':'../../call_history/coreconnect_call_history_v31.html',
+    'Message':'../../coreconnect_message_history_v41/coreconnect_message_history_v41.html',
+    'Voice mail':'../../coreconnect_voicemail_history_v9/coreconnect_voicemail_history_v9.html',
+    'Appointments':'../../coreconnect_appointments/coreconnect_appointments.html'
+  };
+  if(routes[label]){ window.location.href = routes[label]; return; }
+  showNavToast(label + ' is coming soon', 'This feature is under construction.');
+}
+function toggleMobileDrawer(){
+  var d = document.getElementById('mobile-drawer'), b = document.getElementById('mobile-drawer-backdrop');
+  if(!d || !b) return;
+  if(d.classList.contains('open')) closeMobileDrawer();
+  else { d.classList.add('open'); b.classList.add('open'); }
+}
+function closeMobileDrawer(){
+  var d = document.getElementById('mobile-drawer'), b = document.getElementById('mobile-drawer-backdrop');
+  if(d) d.classList.remove('open'); if(b) b.classList.remove('open');
+}
+var navToastTimer = null;
+function showNavToast(title, body){
+  var t = document.getElementById('nav-toast'); if(!t) return;
+  if(title) document.getElementById('nav-toast-title').textContent = title;
+  if(body)  document.getElementById('nav-toast-body').textContent  = body;
+  t.classList.add('show');
+  if(navToastTimer) clearTimeout(navToastTimer);
+  navToastTimer = setTimeout(hideNavToast, 4000);
+}
+function hideNavToast(){
+  var t = document.getElementById('nav-toast'); if(t) t.classList.remove('show');
+  if(navToastTimer){ clearTimeout(navToastTimer); navToastTimer = null; }
+}
+function toggleProductSwitcher(e){ e.stopPropagation(); document.getElementById('product-switcher').classList.toggle('open'); }
+document.addEventListener('click', function(){ var ps = document.getElementById('product-switcher'); if(ps) ps.classList.remove('open'); });
+function toggleNotifications(e){ e.stopPropagation(); document.getElementById('notif-panel').classList.toggle('open'); }
+function closeNotifications(){ document.getElementById('notif-panel').classList.remove('open'); }
+</script>
+<script src="../../shared/notifications.js?v=6"></script>
