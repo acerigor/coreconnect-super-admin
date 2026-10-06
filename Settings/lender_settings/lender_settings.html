@@ -1,0 +1,833 @@
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CoreConnect — Lender Settings</title>
+<script>try{document.documentElement.setAttribute('data-theme',localStorage.getItem('cc_theme')==='light'?'light':'dark')}catch(e){}</script>
+<link rel="stylesheet" href="../../shared/app.css?v=2">
+<link rel="stylesheet" href="../../shared/settings.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{background:var(--bg);margin:0;padding:0;font-family:'DM Sans',sans-serif;}
+.root.main-area{height:calc(100vh - 64px);min-height:0;overflow:hidden;display:flex;flex-direction:column;}
+@media (max-width:640px){
+  .root.main-area{height:auto;min-height:0;overflow:visible;}
+}
+.ur-head-spacer{flex:1;}
+.lnd-add-btn{display:flex;align-items:center;gap:5px;background:var(--ac);border:none;border-radius:8px;padding:0 14px;height:32px;color:#fff;font-size:12.5px;font-weight:500;font-family:var(--font);cursor:pointer;transition:all .15s;white-space:nowrap;}
+.lnd-add-btn:hover{background:var(--ac2);}
+.lnd-add-btn svg{width:15px;height:15px;}
+.lnd-table{width:100%;border-collapse:separate;border-spacing:0;border:0.5px solid var(--brd);border-radius:10px;overflow:hidden;}
+.lnd-table th,.lnd-table td{text-align:left;padding:12px 18px;font-size:13px;font-family:var(--font);border-bottom:0.5px solid var(--brd);}
+.lnd-table th{font-size:11.5px;font-weight:600;color:var(--mu);text-transform:uppercase;letter-spacing:.4px;background:var(--sur2);position:sticky;top:0;z-index:1;}
+.lnd-table th:first-child{width:60px;}
+.lnd-table td{color:var(--tx);}
+.lnd-table td:first-child{color:var(--mu);font-family:var(--mono);font-size:12px;}
+.lnd-table tr:last-child td{border-bottom:none;}
+.lnd-table tbody tr{cursor:pointer;}
+.lnd-table tbody tr:hover td{background:var(--sur2);}
+.lnd-status{display:inline-block;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:.3px;}
+.lnd-status-active{background:rgba(52,199,89,.12);color:#34c759;}
+.lnd-status-inactive{background:rgba(255,69,58,.1);color:#ff453a;}
+.lnd-rules-count{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--mu);}
+.lnd-rules-count svg{width:14px;height:14px;}
+.lnd-arrow-btn{background:transparent;border:none;cursor:pointer;padding:4px;border-radius:4px;display:flex;align-items:center;justify-content:center;}
+.lnd-arrow-btn:hover{background:var(--sur2);}
+.lnd-arrow{width:16px;height:16px;color:var(--mu);transition:transform .2s;}
+.lnd-row-expanded .lnd-arrow{transform:rotate(90deg);}
+.lnd-rules-row{display:none;}
+.lnd-rules-row.open{display:table-row;}
+.lnd-rules-row td{padding:0 !important;border-bottom:0.5px solid var(--brd);}
+.lnd-rules-wrap{background:var(--bg);padding:14px 18px 14px 60px;}
+.lnd-rules-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.lnd-rules-title{font-size:12px;font-weight:600;color:var(--tx);text-transform:uppercase;letter-spacing:.3px;}
+.lnd-rule-add{display:flex;align-items:center;gap:4px;background:transparent;border:1px solid var(--brd);border-radius:6px;padding:4px 10px;font-size:11.5px;color:var(--ac);font-family:var(--font);cursor:pointer;transition:all .15s;}
+.lnd-rule-add:hover{background:var(--sur);border-color:var(--ac);}
+.lnd-rule-add svg{width:12px;height:12px;}
+.lnd-rule-list{display:flex;flex-direction:column;gap:6px;}
+.lnd-rule{display:flex;align-items:center;gap:10px;background:var(--sur);border:0.5px solid var(--brd2);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--tx);}
+.lnd-rule-field{font-weight:600;min-width:120px;}
+.lnd-rule-op{color:var(--mu);font-size:12px;min-width:24px;text-align:center;}
+.lnd-rule-val{color:var(--ac);font-weight:600;}
+.lnd-rule-actions{margin-left:auto;display:flex;gap:6px;}
+.lnd-rule-btn{background:transparent;border:none;cursor:pointer;color:var(--mu);padding:4px;border-radius:4px;display:flex;align-items:center;justify-content:center;transition:color .15s;}
+.lnd-rule-btn:hover{color:var(--tx);}
+.lnd-rule-btn svg{width:14px;height:14px;}
+.lnd-empty-rules{font-size:12.5px;color:var(--mu);padding:8px 0;}
+.lnd-field-label{font-size:12px;font-weight:500;color:var(--mu);padding-left:2px;margin-bottom:4px;}
+
+/* Add lender modal */
+#lnd-add-modal .modal,#lnd-edit-modal .modal,#lnd-rule-modal .modal{overflow:visible;}
+#lnd-add-modal .modal-body,#lnd-edit-modal .modal-body,#lnd-rule-modal .modal-body{overflow:visible;}
+.lnd-modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 12px;}
+.lnd-modal-full{grid-column:1 / -1;}
+.lnd-modal-full textarea{width:100%;min-height:60px;resize:vertical;background:var(--sur);border:0.5px solid var(--brd);border-radius:8px;padding:10px 12px;font-size:13px;font-family:var(--font);color:var(--tx);outline:none;transition:border-color .15s;}
+.lnd-modal-full textarea:focus{border-color:var(--ac);}
+.lnd-modal-full textarea::placeholder{color:var(--mu);}
+@media(max-width:480px){.lnd-modal-grid{grid-template-columns:1fr;}}
+
+/* Custom dropdown */
+.lnd-dropdown{position:relative;width:100%;}
+.lnd-dropdown-trigger{display:flex;align-items:center;justify-content:space-between;width:100%;background:var(--sur);border:0.5px solid var(--brd);border-radius:8px;padding:10px 12px;font-size:13px;font-family:var(--font);color:var(--tx);cursor:pointer;transition:border-color .15s;outline:none;}
+.lnd-dropdown-trigger:hover,.lnd-dropdown-trigger.open{border-color:var(--ac);}
+.lnd-dropdown-trigger svg{width:14px;height:14px;color:var(--mu);transition:transform .2s;flex-shrink:0;}
+.lnd-dropdown-trigger.open svg{transform:rotate(180deg);}
+.lnd-dropdown-menu{display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--sur);border:0.5px solid var(--brd2);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.45);z-index:20;overflow:hidden;max-height:300px;overflow-y:auto;scrollbar-width:none;}
+.lnd-dropdown-menu::-webkit-scrollbar{display:none;}
+.lnd-dropdown-menu.open{display:block;}
+.lnd-dropdown-item{display:flex;align-items:center;gap:8px;padding:9px 12px;font-size:13px;font-family:var(--font);color:var(--tx);cursor:pointer;transition:background .1s;}
+.lnd-dropdown-item:hover{background:var(--sur2);}
+.lnd-dropdown-item.selected{color:var(--ac);font-weight:600;}
+
+/* Edit rule modal */
+#lnd-rule-modal .modal{width:560px;}
+.lnd-rule-modal-row{display:flex;gap:10px;align-items:flex-end;}
+.lnd-rule-modal-row>div{flex:1;}
+@media(max-width:480px){.lnd-rule-modal-row{flex-direction:column;align-items:stretch;}.lnd-rule-modal-row>div{flex:none;}}
+
+/* Mobile */
+@media(max-width:640px){
+  .sidebar{display:none;}
+  .main-area{margin-left:0;}
+  .hamburger-btn{display:flex;}
+  .lnd-rules-wrap{padding:14px 14px 14px 14px;}
+  .lnd-rule-field{min-width:80px;}
+}
+</style>
+
+<div class="top-header">
+  <div class="th-left">
+    <button class="hamburger-btn" id="hamburger-btn" onclick="toggleMobileDrawer()" aria-label="Open menu">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+    <div class="logo" onclick="toggleProductSwitcher(event)">
+      <div class="logo-mark"><svg class="logo-mark-svg" viewBox="0 0 324 221" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="CoreConnect logo" style="width:100%;height:100%;"><path d="M72.30,32.52 L72.30,32.52 Q85.97,12.00 110.63,12.00 L246.25,12.00 Q270.90,12.00 257.23,32.52 L210.61,102.44 Q196.93,122.96 172.27,122.96 L36.66,122.96 Q12.00,122.96 25.68,102.44 Z" fill="#1E6BFF"/><path d="M113.39,118.82 L113.39,118.82 Q127.07,98.30 151.73,98.30 L287.34,98.30 Q312.00,98.30 298.32,118.82 L251.70,188.74 Q238.03,209.26 213.37,209.26 L77.75,209.26 Q53.10,209.26 66.77,188.74 Z" fill="#3D3DCC"/></svg></div>
+      <span class="logo-text">CoreConnect</span>
+      <svg class="logo-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+      <div class="product-switcher" id="product-switcher">
+        <a class="ps-item" data-pid="coreconnect" href="../../coreconnect_dashboard_v41/coreconnect_dashboard_v41.html"><svg class="ps-ic" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span>CoreConnect</span></a>
+        <a class="ps-item" data-pid="reputation" href="../../reputation/reputation_dashboard/Dashboard.html"><svg class="ps-ic" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span>Reputation</span></a>
+      </div>
+    </div>
+  </div>
+  <div class="top-header-right">
+    <button class="header-bell" id="header-bell" data-label="Notifications" onclick="toggleNotifications(event)" aria-label="Notifications">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+      </svg>
+      <span class="header-bell-dot" id="header-bell-dot"></span>
+      <span class="header-bell-call-dot" id="header-bell-call-dot"></span>
+    </button>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="sidebar-nav">
+    <div class="sb-item" data-nav="home" data-label="Dashboard" onclick="navClick('Home')">
+      <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 13.5H15"/><path d="M9.5 13.5V9.5H6.5V13.5"/><path d="M2.5 7.29309V13.5"/><path d="M13.5 13.5V7.29309"/><path d="M1.5 8.29315L7.64625 2.14628C7.69269 2.09979 7.74783 2.06291 7.80853 2.03775C7.86923 2.01259 7.93429 1.99963 8 1.99963C8.06571 1.99963 8.13077 2.01259 8.19147 2.03775C8.25217 2.06291 8.30731 2.09979 8.35375 2.14628L14.5 8.29315"/></svg>
+    </div>
+    <div class="sb-item" data-nav="crm" data-label="CRM Customer" onclick="navClick('CRM')">
+      <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 9C6.38071 9 7.5 7.88071 7.5 6.5C7.5 5.11929 6.38071 4 5 4C3.61929 4 2.5 5.11929 2.5 6.5C2.5 7.88071 3.61929 9 5 9Z"/><path d="M10 5H15.5"/><path d="M10 8H15.5"/><path d="M11.5 11H15.5"/><path d="M1 12C1.44375 10.275 3.13625 9 5 9C6.86375 9 8.55625 10.275 9 12"/></svg>
+    </div>
+    <div class="sb-item" data-nav="call" data-label="Call History" onclick="navClick('Call')">
+      <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.2744 9.08374C10.3436 9.03766 10.4233 9.00959 10.5061 9.00206C10.5889 8.99453 10.6723 9.00778 10.7488 9.04061L13.6963 10.3612C13.7956 10.4037 13.8785 10.4772 13.9326 10.5707C13.9867 10.6642 14.009 10.7727 13.9963 10.88C13.8991 11.6056 13.5418 12.2713 12.9907 12.7533C12.4395 13.2352 11.7321 13.5005 11 13.5C8.74566 13.5 6.58365 12.6045 4.98959 11.0104C3.39553 9.41633 2.5 7.25433 2.5 4.99999C2.49944 4.26786 2.7648 3.56045 3.24673 3.00932C3.72865 2.45818 4.39435 2.10084 5.12 2.00374C5.22727 1.99099 5.33578 2.01333 5.4293 2.06741C5.52281 2.12149 5.5963 2.2044 5.63875 2.30374L6.95938 5.25374C6.99182 5.3295 7.00504 5.41212 6.99784 5.49423C6.99064 5.57634 6.96326 5.65539 6.91813 5.72436L5.5825 7.31249C5.53512 7.38398 5.50711 7.46654 5.50119 7.55209C5.49528 7.63765 5.51166 7.72328 5.54875 7.80061C6.06563 8.85874 7.15938 9.93936 8.22063 10.4512C8.29836 10.4882 8.38439 10.5042 8.47021 10.4977C8.55602 10.4912 8.63867 10.4625 8.71 10.4144L10.2744 9.08374Z"/></svg>
+    </div>
+    <div class="sb-item" data-nav="message" data-label="Message History" onclick="navClick('Message')">
+      <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.47375 9L2 11V3C2 2.86739 2.05268 2.74021 2.14645 2.64645C2.24021 2.55268 2.36739 2.5 2.5 2.5H10.5C10.6326 2.5 10.7598 2.55268 10.8536 2.64645C10.9473 2.74021 11 2.86739 11 3V8.5C11 8.63261 10.9473 8.75979 10.8536 8.85355C10.7598 8.94732 10.6326 9 10.5 9H4.47375Z"/><path d="M5 9V11.5C5 11.6326 5.05268 11.7598 5.14645 11.8536C5.24021 11.9473 5.36739 12 5.5 12H11.5262L14 14V6C14 5.86739 13.9473 5.74021 13.8536 5.64645C13.7598 5.55268 13.6326 5.5 13.5 5.5H11"/></svg>
+    </div>
+    <div class="sb-item" data-nav="voicemail" data-label="Voice mail History" onclick="navClick('Voice mail')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="12" r="4"/><circle cx="18" cy="12" r="4"/><line x1="6" y1="16" x2="18" y2="16"/></svg>
+    </div>
+    <div class="sb-item" data-nav="appointments" data-label="Appointments" onclick="navClick('Appointments')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    </div>
+    <div class="sidebar-nav-spacer"></div>
+    <div class="sb-divider"></div>
+    <div class="sb-item active" data-nav="settings" data-label="Settings" onclick="navClick('Settings')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="6" x2="13" y2="6"/><line x1="17" y1="6" x2="20" y2="6"/><circle cx="15" cy="6" r="2"/><line x1="4" y1="12" x2="7" y2="12"/><line x1="11" y1="12" x2="20" y2="12"/><circle cx="9" cy="12" r="2"/><line x1="4" y1="18" x2="13" y2="18"/><line x1="17" y1="18" x2="20" y2="18"/><circle cx="15" cy="18" r="2"/></svg>
+    </div>
+  </div>
+  <div class="sb-account" onclick="navClick('Account')" title="Account">DP</div>
+</div>
+
+<!-- MOBILE DRAWER -->
+<div class="mobile-drawer-backdrop" id="mobile-drawer-backdrop" onclick="closeMobileDrawer()"></div>
+<div class="mobile-drawer" id="mobile-drawer">
+  <div class="md-nav">
+    <div class="md-item" onclick="navClick('Home');closeMobileDrawer();">
+      <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 13.5H15"/><path d="M9.5 13.5V9.5H6.5V13.5"/><path d="M2.5 7.29309V13.5"/><path d="M13.5 13.5V7.29309"/><path d="M1.5 8.29315L7.64625 2.14628C7.69269 2.09979 7.74783 2.06291 7.80853 2.03775C7.86923 2.01259 7.93429 1.99963 8 1.99963C8.06571 1.99963 8.13077 2.01259 8.19147 2.03775C8.25217 2.06291 8.30731 2.09979 8.35375 2.14628L14.5 8.29315"/></svg>
+      <span>Dashboard</span>
+    </div>
+    <div class="md-item" onclick="navClick('CRM');closeMobileDrawer();">
+      <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 9C6.38071 9 7.5 7.88071 7.5 6.5C7.5 5.11929 6.38071 4 5 4C3.61929 4 2.5 5.11929 2.5 6.5C2.5 7.88071 3.61929 9 5 9Z"/><path d="M10 5H15.5"/><path d="M10 8H15.5"/><path d="M11.5 11H15.5"/><path d="M1 12C1.44375 10.275 3.13625 9 5 9C6.86375 9 8.55625 10.275 9 12"/></svg>
+      <span>CRM Customer</span>
+    </div>
+    <div class="md-item" onclick="navClick('Call');closeMobileDrawer();">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      <span>Call History</span>
+    </div>
+    <div class="md-item" onclick="navClick('Message');closeMobileDrawer();">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span>Message History</span>
+    </div>
+    <div class="md-item" onclick="navClick('Voice mail');closeMobileDrawer();">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="12" r="4"/><circle cx="18" cy="12" r="4"/><line x1="6" y1="16" x2="18" y2="16"/></svg>
+      <span>Voice mail History</span>
+    </div>
+    <div class="md-item" onclick="navClick('Appointments');closeMobileDrawer();">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <span>Appointments</span>
+    </div>
+    <div class="md-divider"></div>
+    <div class="md-item active" onclick="navClick('Settings');closeMobileDrawer();">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="6" x2="13" y2="6"/><line x1="17" y1="6" x2="20" y2="6"/><circle cx="15" cy="6" r="2"/><line x1="4" y1="12" x2="7" y2="12"/><line x1="11" y1="12" x2="20" y2="12"/><circle cx="9" cy="12" r="2"/><line x1="4" y1="18" x2="13" y2="18"/><line x1="17" y1="18" x2="20" y2="18"/><circle cx="15" cy="18" r="2"/></svg>
+      <span>Settings</span>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE-LEVEL NAV TOAST -->
+<div class="nav-toast" id="nav-toast">
+  <div class="nav-toast-icon">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+  </div>
+  <div class="nav-toast-text">
+    <strong id="nav-toast-title">Coming soon</strong>
+    <span id="nav-toast-body">This feature is under construction.</span>
+  </div>
+  <button class="nav-toast-close" onclick="hideNavToast()" title="Dismiss">&#x2715;</button>
+</div>
+
+<!-- ADD LENDER MODAL -->
+<div class="modal-backdrop modal-fullscreen-mobile" id="lnd-add-modal" onclick="if(event.target===this)lndCloseAddModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Add Lender</span>
+      <button class="modal-close" onclick="lndCloseAddModal()" aria-label="Close">&#x2715;</button>
+    </div>
+    <div class="modal-body">
+      <div class="lnd-modal-grid">
+        <div>
+          <label class="lnd-field-label" for="lnd-add-name">Lender Name</label>
+          <div class="modal-field"><input type="text" id="lnd-add-name" placeholder="e.g. Chase Auto Finance" /></div>
+        </div>
+        <div>
+          <label class="lnd-field-label" for="lnd-add-code">Lender Code</label>
+          <div class="modal-field"><input type="text" id="lnd-add-code" placeholder="e.g. CHASE01" /></div>
+        </div>
+        <div>
+          <label class="lnd-field-label" for="lnd-add-email">Contact Email</label>
+          <div class="modal-field"><input type="email" id="lnd-add-email" placeholder="e.g. dealer@lender.com" /></div>
+        </div>
+        <div>
+          <label class="lnd-field-label" for="lnd-add-phone">Contact Phone</label>
+          <div class="modal-field"><input type="tel" id="lnd-add-phone" placeholder="e.g. (800) 555-0100" /></div>
+        </div>
+        <div>
+          <label class="lnd-field-label">Lender Type</label>
+          <div class="lnd-dropdown" id="lnd-add-type" data-value="Bank">
+            <button type="button" class="lnd-dropdown-trigger" onclick="lndToggleDrop(this)"><span>Bank</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
+            <div class="lnd-dropdown-menu">
+              <div class="lnd-dropdown-item selected" onclick="lndSelectDrop(this,'Bank')">Bank</div>
+              <div class="lnd-dropdown-item" onclick="lndSelectDrop(this,'Credit Union')">Credit Union</div>
+              <div class="lnd-dropdown-item" onclick="lndSelectDrop(this,'Captive')">Captive</div>
+              <div class="lnd-dropdown-item" onclick="lndSelectDrop(this,'BHPH')">BHPH</div>
+              <div class="lnd-dropdown-item" onclick="lndSelectDrop(this,'Online')">Online</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <label class="lnd-field-label">Status</label>
+          <div class="lnd-dropdown" id="lnd-add-status" data-value="Active">
+            <button type="button" class="lnd-dropdown-trigger" onclick="lndToggleDrop(this)"><span>Active</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
+            <div class="lnd-dropdown-menu">
+              <div class="lnd-dropdown-item selected" onclick="lndSelectDrop(this,'Active')">Active</div>
+              <div class="lnd-dropdown-item" onclick="lndSelectDrop(this,'Inactive')">Inactive</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <label class="lnd-field-label" for="lnd-add-minscore">Min Credit Score</label>
+          <div class="modal-field"><input type="number" id="lnd-add-minscore" placeholder="e.g. 580" /></div>
+        </div>
+        <div>
+          <label class="lnd-field-label" for="lnd-add-maxloan">Max Loan Amount</label>
+          <div class="modal-field"><input type="number" id="lnd-add-maxloan" placeholder="e.g. 75000" /></div>
+        </div>
+        <div class="lnd-modal-full">
+          <label class="lnd-field-label" for="lnd-add-notes">Notes</label>
+          <textarea id="lnd-add-notes" placeholder="Additional notes about this lender..."></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-cancel" onclick="lndCloseAddModal()">Cancel</button>
+      <button class="modal-save" onclick="lndSaveAdd()">Add Lender</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT LENDER MODAL -->
+<div class="modal-backdrop modal-fullscreen-mobile" id="lnd-edit-modal" onclick="if(event.target===this)lndCloseEditModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Edit Lender</span>
+      <button class="modal-close" onclick="lndCloseEditModal()" aria-label="Close">&#x2715;</button>
+    </div>
+    <div class="modal-body">
+      <div class="lnd-modal-grid">
+        <div>
+          <label class="lnd-field-label" for="lnd-edit-name">Lender Name</label>
+          <div class="modal-field"><input type="text" id="lnd-edit-name" placeholder="e.g. Chase Auto Finance" /></div>
+        </div>
+        <div>
+          <label class="lnd-field-label" for="lnd-edit-code">Lender Code</label>
+          <div class="modal-field"><input type="text" id="lnd-edit-code" placeholder="e.g. CHASE01" /></div>
+        </div>
+        <div>
+          <label class="lnd-field-label" for="lnd-edit-email">Contact Email</label>
+          <div class="modal-field"><input type="email" id="lnd-edit-email" placeholder="e.g. dealer@lender.com" /></div>
+        </div>
+        <div>
+          <label class="lnd-field-label" for="lnd-edit-phone">Contact Phone</label>
+          <div class="modal-field"><input type="tel" id="lnd-edit-phone" placeholder="e.g. (800) 555-0100" /></div>
+        </div>
+        <div>
+          <label class="lnd-field-label">Lender Type</label>
+          <div class="lnd-dropdown" id="lnd-edit-type" data-value="Bank">
+            <button type="button" class="lnd-dropdown-trigger" onclick="lndToggleDrop(this)"><span>Bank</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
+            <div class="lnd-dropdown-menu">
+              <div class="lnd-dropdown-item selected" onclick="lndSelectDrop(this,'Bank')">Bank</div>
+              <div class="lnd-dropdown-item" onclick="lndSelectDrop(this,'Credit Union')">Credit Union</div>
+              <div class="lnd-dropdown-item" onclick="lndSelectDrop(this,'Captive')">Captive</div>
+              <div class="lnd-dropdown-item" onclick="lndSelectDrop(this,'BHPH')">BHPH</div>
+              <div class="lnd-dropdown-item" onclick="lndSelectDrop(this,'Online')">Online</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <label class="lnd-field-label">Status</label>
+          <div class="lnd-dropdown" id="lnd-edit-status" data-value="Active">
+            <button type="button" class="lnd-dropdown-trigger" onclick="lndToggleDrop(this)"><span>Active</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
+            <div class="lnd-dropdown-menu">
+              <div class="lnd-dropdown-item selected" onclick="lndSelectDrop(this,'Active')">Active</div>
+              <div class="lnd-dropdown-item" onclick="lndSelectDrop(this,'Inactive')">Inactive</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <label class="lnd-field-label" for="lnd-edit-minscore">Min Credit Score</label>
+          <div class="modal-field"><input type="number" id="lnd-edit-minscore" placeholder="e.g. 580" /></div>
+        </div>
+        <div>
+          <label class="lnd-field-label" for="lnd-edit-maxloan">Max Loan Amount</label>
+          <div class="modal-field"><input type="number" id="lnd-edit-maxloan" placeholder="e.g. 75000" /></div>
+        </div>
+        <div class="lnd-modal-full">
+          <label class="lnd-field-label" for="lnd-edit-notes">Notes</label>
+          <textarea id="lnd-edit-notes" placeholder="Additional notes about this lender..."></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-cancel" onclick="lndCloseEditModal()">Cancel</button>
+      <button class="modal-save" onclick="lndSaveEdit()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD/EDIT RULE MODAL -->
+<div class="modal-backdrop modal-fullscreen-mobile" id="lnd-rule-modal" onclick="if(event.target===this)lndCloseRuleModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="lnd-rule-modal-title">Add Rule</span>
+      <button class="modal-close" onclick="lndCloseRuleModal()" aria-label="Close">&#x2715;</button>
+    </div>
+    <div class="modal-body">
+      <div class="lnd-rule-modal-row">
+        <div>
+          <label class="lnd-field-label">Field</label>
+          <div class="lnd-dropdown" id="lnd-rule-field" data-value="Down Payment">
+            <button type="button" class="lnd-dropdown-trigger" onclick="lndToggleDrop(this)"><span>Down Payment</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
+            <div class="lnd-dropdown-menu">
+              <div class="lnd-dropdown-item selected" onclick="lndSelectDrop(this,'Down Payment')">Down Payment</div>
+              <div class="lnd-dropdown-item" onclick="lndSelectDrop(this,'Credit Score')">Credit Score</div>
+              <div class="lnd-dropdown-item" onclick="lndSelectDrop(this,'Loan Amount')">Loan Amount</div>
+              <div class="lnd-dropdown-item" onclick="lndSelectDrop(this,'Interest Rate')">Interest Rate</div>
+              <div class="lnd-dropdown-item" onclick="lndSelectDrop(this,'Term (months)')">Term (months)</div>
+              <div class="lnd-dropdown-item" onclick="lndSelectDrop(this,'Vehicle Year')">Vehicle Year</div>
+              <div class="lnd-dropdown-item" onclick="lndSelectDrop(this,'Mileage')">Mileage</div>
+              <div class="lnd-dropdown-item" onclick="lndSelectDrop(this,'LTV Ratio')">LTV Ratio</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <label class="lnd-field-label">Operator</label>
+          <div class="lnd-dropdown" id="lnd-rule-operator" data-value=">">
+            <button type="button" class="lnd-dropdown-trigger" onclick="lndToggleDrop(this)"><span>&gt;</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
+            <div class="lnd-dropdown-menu">
+              <div class="lnd-dropdown-item selected" data-short="&gt;" onclick="lndSelectDrop(this,'>')"> &gt; Greater than</div>
+              <div class="lnd-dropdown-item" data-short="&lt;" onclick="lndSelectDrop(this,'<')">&lt; Less than</div>
+              <div class="lnd-dropdown-item" data-short="&#8805;" onclick="lndSelectDrop(this,'>=')">&#8805; Greater or equal</div>
+              <div class="lnd-dropdown-item" data-short="&#8804;" onclick="lndSelectDrop(this,'<=')">&#8804; Less or equal</div>
+              <div class="lnd-dropdown-item" data-short="&#61;" onclick="lndSelectDrop(this,'=')">&#61; Equal to</div>
+              <div class="lnd-dropdown-item" data-short="&#8800;" onclick="lndSelectDrop(this,'!=')">&#8800; Not equal</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <label class="lnd-field-label" for="lnd-rule-value">Value</label>
+          <div class="modal-field"><input type="text" id="lnd-rule-value" placeholder="e.g. 1000" /></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-cancel" onclick="lndCloseRuleModal()">Cancel</button>
+      <button class="modal-save" id="lnd-rule-save-btn" onclick="lndSaveRule()">Add Rule</button>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="root main-area" id="root">
+  <div class="set-page-head">
+    <a class="ur-back" href="../Settings_main_page/coreconnect_settings.html" title="Back to Settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      <span>Settings</span>
+    </a>
+    <span class="set-page-title">Lender Settings</span>
+    <span class="ur-head-spacer"></span>
+    <button class="lnd-add-btn" onclick="lndOpenAddModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><span>Add Lender</span></button>
+  </div>
+  <div class="set-scroll">
+    <section class="set-section">
+      <table class="lnd-table" id="lnd-table">
+        <thead><tr><th style="width:40px"></th><th>No</th><th>Lender Name</th><th>Rules</th><th>Status</th></tr></thead>
+        <tbody id="lnd-tbody">
+          <!-- Lender 1 -->
+          <tr class="lnd-lender-row" onclick="lndOpenEditModal(this)" data-name="Chase Auto Finance" data-code="CHASE01" data-email="dealer@chase.com" data-phone="(800) 935-9935" data-type="Bank" data-status="Active" data-minscore="620" data-maxloan="50000" data-notes="">
+            <td><button class="lnd-arrow-btn" onclick="event.stopPropagation();lndToggleRules(this.closest('.lnd-lender-row'))"><svg class="lnd-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></td>
+            <td>1</td>
+            <td>Chase Auto Finance</td>
+            <td><span class="lnd-rules-count"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>3 rules</span></td>
+            <td><span class="lnd-status lnd-status-active">Active</span></td>
+          </tr>
+          <tr class="lnd-rules-row" data-lender-idx="0">
+            <td colspan="5">
+              <div class="lnd-rules-wrap">
+                <div class="lnd-rules-header">
+                  <span class="lnd-rules-title">Rules</span>
+                  <button class="lnd-rule-add" onclick="event.stopPropagation();lndOpenRuleModal(0)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Rule</button>
+                </div>
+                <div class="lnd-rule-list">
+                  <div class="lnd-rule">
+                    <span class="lnd-rule-field">Down Payment</span>
+                    <span class="lnd-rule-op">&gt;</span>
+                    <span class="lnd-rule-val">$1,000</span>
+                    <div class="lnd-rule-actions">
+                      <button class="lnd-rule-btn" title="Edit" onclick="event.stopPropagation();lndEditRule(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                      <button class="lnd-rule-btn" title="Delete" onclick="event.stopPropagation();lndDeleteRule(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                    </div>
+                  </div>
+                  <div class="lnd-rule">
+                    <span class="lnd-rule-field">Credit Score</span>
+                    <span class="lnd-rule-op">&ge;</span>
+                    <span class="lnd-rule-val">620</span>
+                    <div class="lnd-rule-actions">
+                      <button class="lnd-rule-btn" title="Edit" onclick="event.stopPropagation();lndEditRule(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                      <button class="lnd-rule-btn" title="Delete" onclick="event.stopPropagation();lndDeleteRule(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                    </div>
+                  </div>
+                  <div class="lnd-rule">
+                    <span class="lnd-rule-field">Loan Amount</span>
+                    <span class="lnd-rule-op">&le;</span>
+                    <span class="lnd-rule-val">$50,000</span>
+                    <div class="lnd-rule-actions">
+                      <button class="lnd-rule-btn" title="Edit" onclick="event.stopPropagation();lndEditRule(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                      <button class="lnd-rule-btn" title="Delete" onclick="event.stopPropagation();lndDeleteRule(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Lender 2 -->
+          <tr class="lnd-lender-row" onclick="lndOpenEditModal(this)" data-name="Capital One Auto" data-code="CAPONE01" data-email="dealer@capitalone.com" data-phone="(800) 689-1789" data-type="Bank" data-status="Active" data-minscore="580" data-maxloan="60000" data-notes="">
+            <td><button class="lnd-arrow-btn" onclick="event.stopPropagation();lndToggleRules(this.closest('.lnd-lender-row'))"><svg class="lnd-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></td>
+            <td>2</td>
+            <td>Capital One Auto</td>
+            <td><span class="lnd-rules-count"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>2 rules</span></td>
+            <td><span class="lnd-status lnd-status-active">Active</span></td>
+          </tr>
+          <tr class="lnd-rules-row" data-lender-idx="1">
+            <td colspan="5">
+              <div class="lnd-rules-wrap">
+                <div class="lnd-rules-header">
+                  <span class="lnd-rules-title">Rules</span>
+                  <button class="lnd-rule-add" onclick="event.stopPropagation();lndOpenRuleModal(1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Rule</button>
+                </div>
+                <div class="lnd-rule-list">
+                  <div class="lnd-rule">
+                    <span class="lnd-rule-field">Credit Score</span>
+                    <span class="lnd-rule-op">&ge;</span>
+                    <span class="lnd-rule-val">580</span>
+                    <div class="lnd-rule-actions">
+                      <button class="lnd-rule-btn" title="Edit" onclick="event.stopPropagation();lndEditRule(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                      <button class="lnd-rule-btn" title="Delete" onclick="event.stopPropagation();lndDeleteRule(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                    </div>
+                  </div>
+                  <div class="lnd-rule">
+                    <span class="lnd-rule-field">Down Payment</span>
+                    <span class="lnd-rule-op">&gt;</span>
+                    <span class="lnd-rule-val">$500</span>
+                    <div class="lnd-rule-actions">
+                      <button class="lnd-rule-btn" title="Edit" onclick="event.stopPropagation();lndEditRule(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                      <button class="lnd-rule-btn" title="Delete" onclick="event.stopPropagation();lndDeleteRule(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Lender 3 -->
+          <tr class="lnd-lender-row" onclick="lndOpenEditModal(this)" data-name="Ally Financial" data-code="ALLY01" data-email="dealer@ally.com" data-phone="(888) 925-2559" data-type="Bank" data-status="Active" data-minscore="0" data-maxloan="100000" data-notes="">
+            <td><button class="lnd-arrow-btn" onclick="event.stopPropagation();lndToggleRules(this.closest('.lnd-lender-row'))"><svg class="lnd-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></td>
+            <td>3</td>
+            <td>Ally Financial</td>
+            <td><span class="lnd-rules-count"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>1 rule</span></td>
+            <td><span class="lnd-status lnd-status-active">Active</span></td>
+          </tr>
+          <tr class="lnd-rules-row" data-lender-idx="2">
+            <td colspan="5">
+              <div class="lnd-rules-wrap">
+                <div class="lnd-rules-header">
+                  <span class="lnd-rules-title">Rules</span>
+                  <button class="lnd-rule-add" onclick="event.stopPropagation();lndOpenRuleModal(2)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Rule</button>
+                </div>
+                <div class="lnd-rule-list">
+                  <div class="lnd-rule">
+                    <span class="lnd-rule-field">Vehicle Year</span>
+                    <span class="lnd-rule-op">&ge;</span>
+                    <span class="lnd-rule-val">2015</span>
+                    <div class="lnd-rule-actions">
+                      <button class="lnd-rule-btn" title="Edit" onclick="event.stopPropagation();lndEditRule(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                      <button class="lnd-rule-btn" title="Delete" onclick="event.stopPropagation();lndDeleteRule(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Lender 4 -->
+          <tr class="lnd-lender-row" onclick="lndOpenEditModal(this)" data-name="Wells Fargo Dealer Services" data-code="WF01" data-email="dealer@wellsfargo.com" data-phone="(800) 289-8004" data-type="Bank" data-status="Inactive" data-minscore="" data-maxloan="" data-notes="Currently inactive - pending contract renewal">
+            <td><button class="lnd-arrow-btn" onclick="event.stopPropagation();lndToggleRules(this.closest('.lnd-lender-row'))"><svg class="lnd-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></td>
+            <td>4</td>
+            <td>Wells Fargo Dealer Services</td>
+            <td><span class="lnd-rules-count"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>0 rules</span></td>
+            <td><span class="lnd-status lnd-status-inactive">Inactive</span></td>
+          </tr>
+          <tr class="lnd-rules-row" data-lender-idx="3">
+            <td colspan="5">
+              <div class="lnd-rules-wrap">
+                <div class="lnd-rules-header">
+                  <span class="lnd-rules-title">Rules</span>
+                  <button class="lnd-rule-add" onclick="event.stopPropagation();lndOpenRuleModal(3)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Rule</button>
+                </div>
+                <div class="lnd-rule-list">
+                  <p class="lnd-empty-rules">No rules configured yet. Click "Add Rule" to create one.</p>
+                </div>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Lender 5 -->
+          <tr class="lnd-lender-row" onclick="lndOpenEditModal(this)" data-name="TD Auto Finance" data-code="TD01" data-email="dealer@td.com" data-phone="(800) 556-8172" data-type="Bank" data-status="Active" data-minscore="640" data-maxloan="75000" data-notes="">
+            <td><button class="lnd-arrow-btn" onclick="event.stopPropagation();lndToggleRules(this.closest('.lnd-lender-row'))"><svg class="lnd-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></button></td>
+            <td>5</td>
+            <td>TD Auto Finance</td>
+            <td><span class="lnd-rules-count"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>2 rules</span></td>
+            <td><span class="lnd-status lnd-status-active">Active</span></td>
+          </tr>
+          <tr class="lnd-rules-row" data-lender-idx="4">
+            <td colspan="5">
+              <div class="lnd-rules-wrap">
+                <div class="lnd-rules-header">
+                  <span class="lnd-rules-title">Rules</span>
+                  <button class="lnd-rule-add" onclick="event.stopPropagation();lndOpenRuleModal(4)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Rule</button>
+                </div>
+                <div class="lnd-rule-list">
+                  <div class="lnd-rule">
+                    <span class="lnd-rule-field">Credit Score</span>
+                    <span class="lnd-rule-op">&ge;</span>
+                    <span class="lnd-rule-val">640</span>
+                    <div class="lnd-rule-actions">
+                      <button class="lnd-rule-btn" title="Edit" onclick="event.stopPropagation();lndEditRule(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                      <button class="lnd-rule-btn" title="Delete" onclick="event.stopPropagation();lndDeleteRule(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                    </div>
+                  </div>
+                  <div class="lnd-rule">
+                    <span class="lnd-rule-field">Loan Amount</span>
+                    <span class="lnd-rule-op">&le;</span>
+                    <span class="lnd-rule-val">$75,000</span>
+                    <div class="lnd-rule-actions">
+                      <button class="lnd-rule-btn" title="Edit" onclick="event.stopPropagation();lndEditRule(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                      <button class="lnd-rule-btn" title="Delete" onclick="event.stopPropagation();lndDeleteRule(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </div>
+</div>
+
+<script>
+function navClick(label){
+  if(label === 'Settings') return;
+  var routes = {
+    'Home':'../../coreconnect_dashboard_v41/coreconnect_dashboard_v41.html',
+    'CRM':'../../coreconnect_leads_v83/coreconnect_leads_v83.html',
+    'Call':'../../call_history/coreconnect_call_history_v31.html',
+    'Message':'../../coreconnect_message_history_v41/coreconnect_message_history_v41.html',
+    'Voice mail':'../../coreconnect_voicemail_history_v9/coreconnect_voicemail_history_v9.html',
+    'Appointments':'../../coreconnect_appointments/coreconnect_appointments.html'
+  };
+  if(routes[label]){ window.location.href = routes[label]; return; }
+  showNavToast(label + ' is coming soon', 'This feature is under construction.');
+}
+function toggleMobileDrawer(){
+  var d = document.getElementById('mobile-drawer'), b = document.getElementById('mobile-drawer-backdrop');
+  if(!d || !b) return;
+  if(d.classList.contains('open')) closeMobileDrawer();
+  else { d.classList.add('open'); b.classList.add('open'); }
+}
+function closeMobileDrawer(){
+  var d = document.getElementById('mobile-drawer'), b = document.getElementById('mobile-drawer-backdrop');
+  if(d) d.classList.remove('open'); if(b) b.classList.remove('open');
+}
+var navToastTimer = null;
+function showNavToast(title, body){
+  var t = document.getElementById('nav-toast'); if(!t) return;
+  if(title) document.getElementById('nav-toast-title').textContent = title;
+  if(body)  document.getElementById('nav-toast-body').textContent  = body;
+  t.classList.add('show');
+  if(navToastTimer) clearTimeout(navToastTimer);
+  navToastTimer = setTimeout(hideNavToast, 4000);
+}
+function hideNavToast(){
+  var t = document.getElementById('nav-toast'); if(t) t.classList.remove('show');
+  if(navToastTimer){ clearTimeout(navToastTimer); navToastTimer = null; }
+}
+
+function lndToggleRules(row){
+  var rulesRow = row.nextElementSibling;
+  if(!rulesRow || !rulesRow.classList.contains('lnd-rules-row')) return;
+  var isOpen = rulesRow.classList.contains('open');
+  document.querySelectorAll('.lnd-rules-row.open').forEach(function(r){ r.classList.remove('open'); });
+  document.querySelectorAll('.lnd-row-expanded').forEach(function(r){ r.classList.remove('lnd-row-expanded'); });
+  if(!isOpen){
+    rulesRow.classList.add('open');
+    row.classList.add('lnd-row-expanded');
+  }
+}
+
+var lndEditingRow = null;
+function lndOpenEditModal(row){
+  lndEditingRow = row;
+  document.getElementById('lnd-edit-name').value = row.dataset.name || '';
+  document.getElementById('lnd-edit-code').value = row.dataset.code || '';
+  document.getElementById('lnd-edit-email').value = row.dataset.email || '';
+  document.getElementById('lnd-edit-phone').value = row.dataset.phone || '';
+  lndSetDropValue('lnd-edit-type', row.dataset.type || 'Bank');
+  lndSetDropValue('lnd-edit-status', row.dataset.status || 'Active');
+  document.getElementById('lnd-edit-minscore').value = row.dataset.minscore || '';
+  document.getElementById('lnd-edit-maxloan').value = row.dataset.maxloan || '';
+  document.getElementById('lnd-edit-notes').value = row.dataset.notes || '';
+  document.getElementById('lnd-edit-modal').classList.add('open');
+  setTimeout(function(){ document.getElementById('lnd-edit-name').focus(); }, 0);
+}
+function lndCloseEditModal(){
+  document.getElementById('lnd-edit-modal').classList.remove('open');
+  lndEditingRow = null;
+}
+function lndSaveEdit(){
+  var name = document.getElementById('lnd-edit-name').value.trim();
+  if(!name){ alert('Please enter a lender name.'); return; }
+  if(!lndEditingRow) return;
+  lndEditingRow.dataset.name = name;
+  lndEditingRow.dataset.code = document.getElementById('lnd-edit-code').value.trim();
+  lndEditingRow.dataset.email = document.getElementById('lnd-edit-email').value.trim();
+  lndEditingRow.dataset.phone = document.getElementById('lnd-edit-phone').value.trim();
+  lndEditingRow.dataset.type = document.getElementById('lnd-edit-type').dataset.value;
+  var newStatus = document.getElementById('lnd-edit-status').dataset.value;
+  lndEditingRow.dataset.status = newStatus;
+  lndEditingRow.dataset.minscore = document.getElementById('lnd-edit-minscore').value;
+  lndEditingRow.dataset.maxloan = document.getElementById('lnd-edit-maxloan').value;
+  lndEditingRow.dataset.notes = document.getElementById('lnd-edit-notes').value;
+  lndEditingRow.cells[2].textContent = name;
+  var statusSpan = lndEditingRow.querySelector('.lnd-status');
+  statusSpan.textContent = newStatus;
+  statusSpan.className = 'lnd-status lnd-status-' + newStatus.toLowerCase();
+  lndCloseEditModal();
+  showNavToast('Lender Updated', name + ' has been updated successfully.');
+}
+
+function lndOpenAddModal(){
+  document.getElementById('lnd-add-name').value = '';
+  document.getElementById('lnd-add-code').value = '';
+  document.getElementById('lnd-add-email').value = '';
+  document.getElementById('lnd-add-phone').value = '';
+  lndSetDropValue('lnd-add-type', 'Bank');
+  lndSetDropValue('lnd-add-status', 'Active');
+  document.getElementById('lnd-add-minscore').value = '';
+  document.getElementById('lnd-add-maxloan').value = '';
+  document.getElementById('lnd-add-notes').value = '';
+  document.getElementById('lnd-add-modal').classList.add('open');
+  setTimeout(function(){ document.getElementById('lnd-add-name').focus(); }, 0);
+}
+function lndCloseAddModal(){
+  document.getElementById('lnd-add-modal').classList.remove('open');
+}
+function lndSaveAdd(){
+  var name = document.getElementById('lnd-add-name').value.trim();
+  if(!name){ alert('Please enter a lender name.'); return; }
+  lndCloseAddModal();
+  showNavToast('Lender Added', name + ' has been added successfully.');
+}
+
+var lndCurrentRuleLender = null;
+var lndEditingRule = null;
+function lndOpenRuleModal(lenderIdx){
+  lndCurrentRuleLender = lenderIdx;
+  lndEditingRule = null;
+  document.getElementById('lnd-rule-modal-title').textContent = 'Add Rule';
+  document.getElementById('lnd-rule-save-btn').textContent = 'Add Rule';
+  lndSetDropValue('lnd-rule-field', 'Down Payment');
+  lndSetDropValue('lnd-rule-operator', '>');
+  document.getElementById('lnd-rule-value').value = '';
+  document.getElementById('lnd-rule-modal').classList.add('open');
+  setTimeout(function(){ document.getElementById('lnd-rule-value').focus(); }, 0);
+}
+function lndEditRule(btn){
+  var ruleEl = btn.closest('.lnd-rule');
+  var rulesRow = btn.closest('.lnd-rules-row');
+  lndCurrentRuleLender = parseInt(rulesRow.getAttribute('data-lender-idx'));
+  lndEditingRule = ruleEl;
+  var field = ruleEl.querySelector('.lnd-rule-field').textContent;
+  var op = ruleEl.querySelector('.lnd-rule-op').textContent;
+  var val = ruleEl.querySelector('.lnd-rule-val').textContent.replace(/^\$/, '').replace(/,/g, '');
+  document.getElementById('lnd-rule-modal-title').textContent = 'Edit Rule';
+  document.getElementById('lnd-rule-save-btn').textContent = 'Save Rule';
+  lndSetDropValue('lnd-rule-field', field);
+  var opValMap = {'>':'>', '<':'<', '≥':'>=', '≤':'<=', '=':'=', '≠':'!='};
+  lndSetDropValue('lnd-rule-operator', opValMap[op] || op);
+  document.getElementById('lnd-rule-value').value = val;
+  document.getElementById('lnd-rule-modal').classList.add('open');
+}
+function lndCloseRuleModal(){
+  document.getElementById('lnd-rule-modal').classList.remove('open');
+  lndEditingRule = null;
+}
+function lndSaveRule(){
+  var field = document.getElementById('lnd-rule-field').dataset.value;
+  var op = document.getElementById('lnd-rule-operator').dataset.value;
+  var val = document.getElementById('lnd-rule-value').value.trim();
+  if(!val){ alert('Please enter a value.'); return; }
+  var opDisplay = {'>' : '>', '<' : '<', '>=' : '≥', '<=' : '≤', '=' : '=', '!=' : '≠'};
+  var displayOp = opDisplay[op] || op;
+  var moneyFields = ['Down Payment', 'Loan Amount'];
+  var displayVal = val;
+  if(moneyFields.indexOf(field) > -1){
+    var num = parseFloat(val);
+    if(!isNaN(num)) displayVal = '$' + num.toLocaleString();
+  }
+  if(lndEditingRule){
+    lndEditingRule.querySelector('.lnd-rule-field').textContent = field;
+    lndEditingRule.querySelector('.lnd-rule-op').textContent = displayOp;
+    lndEditingRule.querySelector('.lnd-rule-val').textContent = displayVal;
+    showNavToast('Rule Updated', 'Rule has been updated successfully.');
+  } else {
+    var rulesRow = document.querySelector('.lnd-rules-row[data-lender-idx="'+lndCurrentRuleLender+'"]');
+    var ruleList = rulesRow.querySelector('.lnd-rule-list');
+    var empty = ruleList.querySelector('.lnd-empty-rules');
+    if(empty) empty.remove();
+    var newRule = document.createElement('div');
+    newRule.className = 'lnd-rule';
+    newRule.innerHTML = '<span class="lnd-rule-field">'+field+'</span>'
+      +'<span class="lnd-rule-op">'+displayOp+'</span>'
+      +'<span class="lnd-rule-val">'+displayVal+'</span>'
+      +'<div class="lnd-rule-actions">'
+      +'<button class="lnd-rule-btn" title="Edit" onclick="event.stopPropagation();lndEditRule(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>'
+      +'<button class="lnd-rule-btn" title="Delete" onclick="event.stopPropagation();lndDeleteRule(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>'
+      +'</div>';
+    ruleList.appendChild(newRule);
+    lndUpdateRuleCount(lndCurrentRuleLender);
+    showNavToast('Rule Added', field + ' ' + displayOp + ' ' + displayVal + ' added.');
+  }
+  lndCloseRuleModal();
+}
+function lndUpdateRuleCount(lenderIdx){
+  var rulesRow = document.querySelector('.lnd-rules-row[data-lender-idx="'+lenderIdx+'"]');
+  var count = rulesRow.querySelectorAll('.lnd-rule').length;
+  var lenderRow = rulesRow.previousElementSibling;
+  var countSpan = lenderRow.querySelector('.lnd-rules-count');
+  var label = count === 1 ? '1 rule' : count + ' rules';
+  countSpan.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>' + label;
+}
+function lndDeleteRule(btn){
+  var ruleEl = btn.closest('.lnd-rule');
+  var rulesRow = btn.closest('.lnd-rules-row');
+  var lenderIdx = parseInt(rulesRow.getAttribute('data-lender-idx'));
+  ruleEl.remove();
+  lndUpdateRuleCount(lenderIdx);
+  showNavToast('Rule Deleted', 'Rule has been removed.');
+}
+
+function lndToggleDrop(btn){
+  var menu = btn.nextElementSibling;
+  var isOpen = menu.classList.contains('open');
+  document.querySelectorAll('.lnd-dropdown-menu.open').forEach(function(m){ m.classList.remove('open'); m.previousElementSibling.classList.remove('open'); });
+  if(!isOpen){ menu.classList.add('open'); btn.classList.add('open'); }
+}
+function lndSelectDrop(item, value){
+  var dropdown = item.closest('.lnd-dropdown');
+  dropdown.dataset.value = value;
+  dropdown.querySelector('.lnd-dropdown-trigger span').textContent = item.dataset.short || item.textContent.trim();
+  dropdown.querySelectorAll('.lnd-dropdown-item').forEach(function(el){ el.classList.remove('selected'); });
+  item.classList.add('selected');
+  dropdown.querySelector('.lnd-dropdown-menu').classList.remove('open');
+  dropdown.querySelector('.lnd-dropdown-trigger').classList.remove('open');
+}
+function lndSetDropValue(id, value){
+  var dropdown = document.getElementById(id);
+  if(!dropdown) return;
+  dropdown.dataset.value = value;
+  var items = dropdown.querySelectorAll('.lnd-dropdown-item');
+  items.forEach(function(item){
+    var itemVal = item.getAttribute('onclick').match(/lndSelectDrop\(this,'(.+?)'\)/);
+    if(itemVal && itemVal[1] === value){
+      item.classList.add('selected');
+      dropdown.querySelector('.lnd-dropdown-trigger span').textContent = item.dataset.short || item.textContent.trim();
+    } else {
+      item.classList.remove('selected');
+    }
+  });
+}
+document.addEventListener('click', function(e){
+  if(!e.target.closest('.lnd-dropdown')){
+    document.querySelectorAll('.lnd-dropdown-menu.open').forEach(function(m){ m.classList.remove('open'); m.previousElementSibling.classList.remove('open'); });
+  }
+});
+
+function toggleProductSwitcher(e){ e.stopPropagation(); document.getElementById('product-switcher').classList.toggle('open'); }
+document.addEventListener('click', function(){ var ps = document.getElementById('product-switcher'); if(ps) ps.classList.remove('open'); });
+function toggleNotifications(e){ e.stopPropagation(); document.getElementById('notif-panel').classList.toggle('open'); }
+function closeNotifications(){ document.getElementById('notif-panel').classList.remove('open'); }
+</script>
+<script src="../../shared/notifications.js?v=6"></script>
