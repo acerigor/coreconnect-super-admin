@@ -2446,7 +2446,7 @@
   .cp-loan-sum-banner svg{flex:none;}
   /* Bank Approval block */
   .cp-loan-bank{background:var(--sur2);border:0.5px solid var(--brd2);border-radius:10px;overflow:hidden;}
-  .cp-loan-bank-banner{display:flex;align-items:center;gap:8px;padding:10px 14px;background:rgba(110,157,255,.12);border-bottom:0.5px solid var(--brd2);font-size:13px;font-weight:600;color:var(--ac2);cursor:pointer;border:none;width:100%;text-align:left;font-family:inherit;}
+  .cp-loan-bank-banner{display:flex;align-items:center;gap:8px;padding:10px 14px;background:rgba(110,157,255,.12);border-bottom:0.5px solid var(--brd2);font-size:13px;font-weight:600;color:var(--ac2);}
   .cp-loan-bank-banner:hover{background:rgba(110,157,255,.18);}
   .cp-loan-bank-banner svg{flex:none;}
   .cp-loan-bank-chev{width:14px;height:14px;color:currentColor;margin-left:auto;transition:transform .18s ease;flex:none;}
@@ -2465,6 +2465,15 @@
   .cp-loan-bank-row-wrap:last-child{border-bottom:none;}
   .cp-loan-bank-row-wrap .cp-loan-bank-row{display:flex;align-items:center;gap:10px;padding:10px 14px;background:transparent;border:none;width:100%;text-align:left;font-family:inherit;cursor:pointer;color:var(--tx);}
   .cp-loan-bank-row-wrap .cp-loan-bank-row:hover{background:rgba(110,157,255,.08);}
+  .cp-loan-bank-toggle{display:flex;align-items:center;gap:8px;flex:1;min-width:0;padding:0;background:none;border:none;color:inherit;font:inherit;font-weight:600;text-align:left;cursor:pointer;}
+  .cp-loan-bank-chevbtn{display:flex;align-items:center;justify-content:center;flex:none;padding:0;background:none;border:none;color:inherit;cursor:pointer;}
+  .cp-loan-bank-chevbtn .cp-loan-bank-chev{margin-left:0;}
+  .cp-loan-r1-btn{display:inline-flex;align-items:center;gap:5px;flex:none;padding:5px 10px;border-radius:7px;border:0.5px solid rgba(110,157,255,.4);background:rgba(110,157,255,.18);color:var(--ac2);font-size:11.5px;font-weight:600;font-family:inherit;cursor:pointer;white-space:nowrap;transition:background .15s,border-color .15s,color .15s;}
+  .cp-loan-r1-btn:hover{background:rgba(110,157,255,.3);border-color:rgba(110,157,255,.65);}
+  .cp-loan-r1-btn svg{width:12px;height:12px;flex:none;}
+  .cp-loan-bank.is-unsent .cp-loan-bank-body{display:none;}
+  .cp-loan-bank.is-unsent .cp-loan-bank-banner{border-bottom:none;}
+  .cp-loan-bank.is-unsent .cp-loan-bank-chevbtn{display:none;}
   .cp-loan-bank-row-chev{width:12px;height:12px;color:var(--mu);margin-left:8px;transition:transform .18s ease;flex:none;}
   .cp-loan-bank-row-wrap.is-open .cp-loan-bank-row-chev{transform:rotate(-90deg);}
   .cp-loan-bank-details{display:none;padding:12px 14px 16px;background:rgba(0,0,0,.15);}
@@ -10875,17 +10884,33 @@ function cpLoanBankApprovalHtml(sum, seed){
       + '<div class="cp-loan-bank-details">' + cpLoanBankDetailsHtml(d) + '</div>'
     + '</div>';
   }).join('');
-  return '<div class="cp-loan-bank">'
-    + '<button type="button" class="cp-loan-bank-banner" onclick="cpLoanBankToggle(event)" aria-expanded="true">' + DOC + '<span>Bank Approval</span>' + CHEV + '</button>'
+  return '<div class="cp-loan-bank is-unsent">'
+    + '<div class="cp-loan-bank-banner">'
+      + '<button type="button" class="cp-loan-bank-toggle" onclick="cpLoanBankToggle(event)" aria-expanded="true">' + DOC + '<span>Bank Approval</span></button>'
+      + '<button type="button" class="cp-loan-r1-btn" onclick="cpLoanSendRouteOne(event)">'
+        + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>'
+        + '<span>Send to RouteOne</span>'
+      + '</button>'
+      + '<button type="button" class="cp-loan-bank-chevbtn" onclick="cpLoanBankToggle(event)" aria-label="Toggle Bank Approval">' + CHEV + '</button>'
+    + '</div>'
     + '<div class="cp-loan-bank-body">' + rows + '</div>'
   + '</div>';
 }
+window.cpLoanSendRouteOne = function(e){
+  if(e) e.stopPropagation();
+  var btn = e.currentTarget; if(!btn) return;
+  var card = btn.closest && btn.closest('.cp-loan-bank'); if(!card) return;
+  card.classList.remove('is-unsent');
+  btn.remove();
+  if(typeof showNavToast === 'function') showNavToast('Sent to RouteOne', 'Application has been submitted to RouteOne.');
+};
 function cpLoanBankToggle(e){
   if(e) e.stopPropagation();
   var btn = e.currentTarget;
   var card = btn.closest && btn.closest('.cp-loan-bank'); if(!card) return;
   var collapsed = card.classList.toggle('is-collapsed');
-  btn.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+  var toggle = card.querySelector('.cp-loan-bank-toggle');
+  if(toggle) toggle.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
 }
 function cpLoanBankRowToggle(e){
   if(e) e.stopPropagation();
