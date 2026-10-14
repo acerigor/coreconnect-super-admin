@@ -604,11 +604,26 @@ function cpLoanBankApprovalHtml(sum, seed){
       + '<div class="cp-loan-bank-details">' + cpLoanBankDetailsHtml(d) + '</div>'
     + '</div>';
   }).join('');
-  return '<div class="cp-loan-bank">'
-    + '<button type="button" class="cp-loan-bank-banner" onclick="cpLoanBankToggle(event)" aria-expanded="true">' + DOC + '<span>Bank Approval</span>' + CHEV + '</button>'
+  return '<div class="cp-loan-bank is-unsent">'
+    + '<div class="cp-loan-bank-banner">'
+      + '<button type="button" class="cp-loan-bank-toggle" onclick="cpLoanBankToggle(event)" aria-expanded="true">' + DOC + '<span>Bank Approval</span></button>'
+      + '<button type="button" class="cp-loan-r1-btn" onclick="cpLoanSendRouteOne(event)">'
+        + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>'
+        + '<span>Send to RouteOne</span>'
+      + '</button>'
+      + '<button type="button" class="cp-loan-bank-chevbtn" onclick="cpLoanBankToggle(event)" aria-label="Toggle Bank Approval">' + CHEV + '</button>'
+    + '</div>'
     + '<div class="cp-loan-bank-body">' + rows + '</div>'
   + '</div>';
 }
+window.cpLoanSendRouteOne = function(e){
+  if(e) e.stopPropagation();
+  var btn = e.currentTarget; if(!btn) return;
+  var card = btn.closest && btn.closest('.cp-loan-bank'); if(!card) return;
+  card.classList.remove('is-unsent');
+  btn.remove();
+  if(typeof showNavToast === 'function') showNavToast('Sent to RouteOne', 'Application has been submitted to RouteOne.');
+};
 window.cpLoanBankRowToggle = function(e){
   if(e) e.stopPropagation();
   var btn = e.currentTarget;
@@ -632,7 +647,8 @@ window.cpLoanBankToggle = function(e){
   var btn = e.currentTarget;
   var card = btn.closest && btn.closest('.cp-loan-bank'); if(!card) return;
   var collapsed = card.classList.toggle('is-collapsed');
-  btn.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+  var toggle = card.querySelector('.cp-loan-bank-toggle');
+  if(toggle) toggle.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
 };
 function cpLoanFormHtml(form){
   const DOC = CP_DOC_ICON;
