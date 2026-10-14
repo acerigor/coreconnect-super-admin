@@ -1,5 +1,5 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CoreConnect — Loan Application Alerts</title>
+<title>CoreConnect — Custom Alerts</title>
 <script>try{document.documentElement.setAttribute('data-theme',localStorage.getItem('cc_theme')==='light'?'light':'dark')}catch(e){}</script>
 <link rel="stylesheet" href="../../shared/app.css?v=2">
 <link rel="stylesheet" href="../../shared/settings.css">
@@ -15,13 +15,6 @@ html,body{background:var(--bg);margin:0;padding:0;font-family:'DM Sans',sans-ser
 .alt-add-btn:hover{background:var(--ac2);}
 .alt-add-btn svg{width:15px;height:15px;}
 
-/* Tabs */
-.alt-tabs{display:flex;gap:0;border-bottom:0.5px solid var(--brd);margin-bottom:16px;}
-.alt-tab{padding:10px 20px;font-size:13px;font-weight:500;font-family:var(--font);color:var(--mu);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:all .15s;}
-.alt-tab:hover{color:var(--tx);}
-.alt-tab.active{color:var(--ac);border-bottom-color:var(--ac);}
-.alt-tab-panel{display:none;}
-.alt-tab-panel.active{display:block;}
 
 /* Table */
 .alt-table{width:100%;border-collapse:separate;border-spacing:0;border:0.5px solid var(--brd);border-radius:10px;overflow:hidden;}
@@ -132,31 +125,6 @@ html,body{background:var(--bg);margin:0;padding:0;font-family:'DM Sans',sans-ser
 .alt-dropdown-item:hover{background:var(--sur2);}
 .alt-dropdown-item.selected{color:var(--ac);font-weight:600;}
 
-/* Template preview */
-.alt-tpl-row{cursor:pointer;}
-.alt-tpl-preview{display:none;}
-.alt-tpl-preview.open{display:table-row;}
-.alt-tpl-preview td{padding:0 !important;border-bottom:0.5px solid var(--brd);}
-.alt-tpl-preview-wrap{background:var(--bg);padding:14px 18px 14px 60px;}
-.alt-tpl-subject-line{font-size:12.5px;color:var(--tx);margin-bottom:8px;}
-.alt-tpl-subject-line strong{color:var(--mu);font-weight:500;}
-.alt-tpl-body-preview{font-size:12.5px;font-family:var(--font);color:var(--tx);background:var(--sur);border:0.5px solid var(--brd2);border-radius:8px;padding:12px 14px;white-space:pre-wrap;word-wrap:break-word;line-height:1.5;margin:0;}
-.alt-tpl-token{color:var(--ac);font-weight:500;}
-#alt-tpl-modal .modal{width:560px;overflow:visible;}
-#alt-tpl-modal .modal-body{overflow:visible;}
-.alt-tpl-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 12px;}
-.alt-tpl-grid .modal-input{width:100%;background:var(--sur);border:0.5px solid var(--brd);border-radius:8px;padding:10px 12px;font-size:13px;font-family:var(--font);color:var(--tx);outline:none;transition:border-color .15s;box-sizing:border-box;}
-.alt-tpl-grid .modal-input:focus{border-color:var(--ac);}
-.alt-tpl-grid .modal-input::placeholder{color:var(--mu);}
-.alt-tpl-full{grid-column:1 / -1;}
-.alt-tpl-full textarea{width:100%;min-height:120px;resize:vertical;background:var(--sur);border:0.5px solid var(--brd);border-radius:8px;padding:10px 12px;font-size:13px;font-family:var(--font);color:var(--tx);outline:none;transition:border-color .15s;line-height:1.5;box-sizing:border-box;}
-.alt-tpl-full textarea:focus{border-color:var(--ac);}
-.alt-tpl-full textarea::placeholder{color:var(--mu);}
-.alt-token-ref{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;}
-.alt-token-chip{display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-family:var(--mono,monospace);background:var(--sur2);color:var(--ac);cursor:pointer;border:0.5px solid var(--brd);transition:background .1s;}
-.alt-token-chip:hover{background:var(--sur);}
-@media(max-width:480px){.alt-tpl-grid{grid-template-columns:1fr;}.alt-tpl-preview-wrap{padding:14px;}}
-
 /* Global Settings */
 .alt-global{background:var(--sur);border:0.5px solid var(--brd);border-radius:10px;overflow:hidden;}
 .alt-global-toggle{display:flex;align-items:center;gap:8px;width:100%;background:none;border:none;padding:14px 18px;cursor:pointer;font-family:var(--font);}
@@ -200,45 +168,30 @@ html,body{background:var(--bg);margin:0;padding:0;font-family:'DM Sans',sans-ser
 @media(max-width:640px){
   .alt-cond-wrap{padding:14px 14px 14px 14px;}
   .alt-cond-field{min-width:80px;}
-  .alt-tabs{overflow-x:auto;}
 
   /* Table to cards */
   .alt-table{border:none;border-radius:0;overflow:visible;}
   .alt-table thead{display:none;}
   .alt-table, .alt-table tbody{display:block;width:100%;}
-  .alt-table tbody tr.alt-tpl-row,
   .alt-table tbody tr[onclick]{display:grid;grid-template-columns:auto 1fr;gap:0 10px;background:var(--sur);border:0.5px solid var(--brd2);border-radius:12px;padding:14px 16px;margin-bottom:10px;position:relative;}
-  .alt-table tbody tr.alt-tpl-row:hover td,
   .alt-table tbody tr[onclick]:hover td{background:transparent;}
   .alt-table td{border:none;padding:0;font-size:13px;}
 
   /* Internal alerts card layout */
-  .alt-table tbody tr[onclick]:not(.alt-tpl-row) td:nth-child(1){grid-row:1;grid-column:1;align-self:start;padding-top:2px;}
-  .alt-table tbody tr[onclick]:not(.alt-tpl-row) td:nth-child(2){display:none;}
-  .alt-table tbody tr[onclick]:not(.alt-tpl-row) td:nth-child(3){grid-row:1;grid-column:2;font-weight:600;font-size:13.5px;color:var(--tx);}
-  .alt-table tbody tr[onclick]:not(.alt-tpl-row) td:nth-child(4){grid-row:2;grid-column:2;display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;}
-  .alt-table tbody tr[onclick]:not(.alt-tpl-row) td:nth-child(5){grid-row:3;grid-column:2;font-size:12px;color:var(--mu);margin-top:4px;}
-  .alt-table tbody tr[onclick]:not(.alt-tpl-row) td:nth-child(6){position:absolute;top:14px;right:16px;}
-
-  /* Template card layout */
-  .alt-table tbody tr.alt-tpl-row td:nth-child(1){grid-row:1/3;grid-column:1;align-self:center;}
-  .alt-table tbody tr.alt-tpl-row td:nth-child(2){display:none;}
-  .alt-table tbody tr.alt-tpl-row td:nth-child(3){grid-row:1;grid-column:2;font-weight:600;font-size:13.5px;color:var(--tx);}
-  .alt-table tbody tr.alt-tpl-row td:nth-child(4){grid-row:2;grid-column:2;margin-top:4px;}
-  .alt-table tbody tr.alt-tpl-row td:nth-child(5){grid-row:3;grid-column:2;font-size:12px;color:var(--mu);margin-top:2px;}
-  .alt-table tbody tr.alt-tpl-row td:nth-child(6){position:absolute;top:14px;right:16px;}
+  .alt-table tbody tr[onclick] td:nth-child(1){grid-row:1;grid-column:1;align-self:start;padding-top:2px;}
+  .alt-table tbody tr[onclick] td:nth-child(2){display:none;}
+  .alt-table tbody tr[onclick] td:nth-child(3){grid-row:1;grid-column:2;font-weight:600;font-size:13.5px;color:var(--tx);}
+  .alt-table tbody tr[onclick] td:nth-child(4){grid-row:2;grid-column:2;display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;}
+  .alt-table tbody tr[onclick] td:nth-child(5){grid-row:3;grid-column:2;font-size:12px;color:var(--mu);margin-top:4px;}
+  .alt-table tbody tr[onclick] td:nth-child(6){position:absolute;top:14px;right:16px;}
 
   /* Parent card loses bottom radius when expanded */
   .alt-table tbody tr.alt-row-expanded{border-radius:12px 12px 0 0;margin-bottom:0;border-bottom-color:var(--brd);}
 
-  /* Condition / preview expanded rows */
+  /* Condition expanded rows */
   .alt-cond-row{display:none !important;}
   .alt-cond-row.open{display:block !important;margin:0 0 10px;border:0.5px solid var(--brd2);border-top:0.5px solid var(--brd);border-radius:0 0 12px 12px;background:var(--sur);overflow:hidden;}
   .alt-cond-row.open td{display:block;}
-  .alt-tpl-preview{display:none !important;}
-  .alt-tpl-preview.open{display:block !important;margin:0 0 10px;border:0.5px solid var(--brd2);border-top:0.5px solid var(--brd);border-radius:0 0 12px 12px;background:var(--sur);}
-  .alt-tpl-preview td{display:block;}
-  .alt-tpl-preview-wrap{padding:14px 16px;}
 
   /* Header layout */
   .set-page-head{flex-wrap:wrap;gap:8px;}
@@ -302,261 +255,193 @@ html,body{background:var(--bg);margin:0;padding:0;font-family:'DM Sans',sans-ser
 }
 
 /* ════════════════════════════════════════════════════════════════
-   NODE EDITOR — Phase 1: Canvas & Node Foundation
+   RULE BUILDER
    ════════════════════════════════════════════════════════════════ */
-.ne-overlay{display:none;position:fixed;inset:0;z-index:8000;background:var(--bg);flex-direction:column;}
-.ne-overlay.open{display:flex;}
-.ne-topbar{display:flex;align-items:center;gap:12px;padding:10px 16px;background:var(--sur);border-bottom:0.5px solid var(--brd);flex-shrink:0;z-index:2;}
-.ne-topbar-title{font-size:14px;font-weight:600;color:var(--tx);font-family:var(--font);flex:1;}
-.ne-topbar-subtitle{font-size:12px;color:var(--mu);font-family:var(--font);}
-.ne-topbar-btn{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;border:0.5px solid var(--brd);background:var(--sur);color:var(--tx);font-size:12.5px;font-weight:500;font-family:var(--font);cursor:pointer;transition:all .12s;}
-.ne-topbar-btn:hover{background:var(--sur2);}
-.ne-topbar-btn.ne-primary{background:var(--ac);border-color:var(--ac);color:#fff;}
-.ne-topbar-btn.ne-primary:hover{background:var(--ac2);}
-.ne-topbar-btn svg{width:16px;height:16px;}
-.ne-topbar-close{width:36px;height:36px;border-radius:8px;border:none;background:transparent;color:var(--mu);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;}
-.ne-topbar-close:hover{background:var(--sur2);color:var(--tx);}
-.ne-topbar-close svg{width:20px;height:20px;}
+.rb-overlay{display:none;position:fixed;inset:0;z-index:8000;background:var(--bg);flex-direction:column;}
+.rb-overlay.open{display:flex;}
+.rb-topbar{display:flex;align-items:center;gap:12px;padding:10px 16px;background:var(--sur);border-bottom:0.5px solid var(--brd);flex-shrink:0;}
+.rb-back{width:36px;height:36px;border-radius:8px;border:none;background:transparent;color:var(--mu);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;flex-shrink:0;}
+.rb-back:hover{background:var(--sur2);color:var(--tx);}
+.rb-back svg{width:20px;height:20px;}
+.rb-title{font-size:14px;font-weight:600;color:var(--tx);font-family:var(--font);}
+.rb-subtitle{font-size:12px;color:var(--mu);font-family:var(--font);}
+.rb-status-pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600;background:rgba(34,200,138,.16);color:var(--gr);}
+.rb-status-pill.is-inactive{background:rgba(232,85,85,.16);color:var(--rd);}
+.rb-btn{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;border:0.5px solid var(--brd);background:var(--sur);color:var(--tx);font-size:12.5px;font-weight:500;font-family:var(--font);cursor:pointer;transition:all .12s;white-space:nowrap;}
+.rb-btn:hover{background:var(--sur2);}
+.rb-btn.rb-primary{background:var(--ac);border-color:var(--ac);color:#fff;}
+.rb-btn.rb-primary:hover{background:var(--ac2);}
+.rb-btn svg{width:16px;height:16px;}
 
-.ne-canvas-wrap{flex:1;position:relative;overflow:hidden;cursor:grab;
-  background-image:radial-gradient(circle, var(--brd) 1px, transparent 1px);
-  background-size:24px 24px;}
-.ne-canvas-wrap:active{cursor:grabbing;}
-.ne-canvas-wrap.ne-dragging-node{cursor:default;}
-.ne-canvas{position:absolute;top:0;left:0;width:6000px;height:6000px;
-  transform-origin:0 0;}
-.ne-svg{position:absolute;top:0;left:0;width:6000px;height:6000px;pointer-events:none;z-index:1;overflow:visible;}
-.ne-conn-group{pointer-events:all;}
+/* Summary band */
+.rb-reads{padding:16px 20px;border-bottom:0.5px solid var(--brd);background:var(--sur);flex-shrink:0;}
+.rb-reads-lbl{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--mu);font-family:var(--font);margin-bottom:7px;}
+.rb-reads-txt{font-size:14px;line-height:1.65;color:var(--tx);font-family:var(--font);max-width:980px;}
+.rb-reads-txt b{font-weight:600;color:var(--tx);}
+.rb-reads-txt .rb-and{color:#fbbf24;font-weight:700;}
+.rb-reads-txt .rb-or{color:var(--ac2);font-weight:700;}
+.rb-reads-txt .rb-num{font-family:var(--mono,monospace);color:var(--tx);}
 
-/* Nodes */
-.ne-node{position:absolute;min-width:200px;background:var(--sur);border:1px solid var(--brd2);border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,.25);cursor:grab;user-select:none;z-index:10;transition:box-shadow .12s;}
-.ne-node:active{cursor:grabbing;}
-.ne-node.ne-selected{border-color:var(--ac);box-shadow:0 0 0 2px rgba(79,124,255,.3),0 4px 16px rgba(0,0,0,.25);}
-.ne-node-header{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:0.5px solid var(--brd);border-radius:12px 12px 0 0;}
-.ne-node-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.ne-node-icon svg{width:16px;height:16px;}
-.ne-node-label{font-size:12.5px;font-weight:600;color:var(--tx);font-family:var(--font);}
-.ne-node-type{font-size:10px;text-transform:uppercase;letter-spacing:.5px;font-weight:600;font-family:var(--font);opacity:.7;}
-.ne-node-body{padding:12px 14px;min-height:32px;font-size:12px;color:var(--mu);font-family:var(--font);}
+.rb-scroll{flex:1;overflow-y:auto;padding:20px;}
+.rb-layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:20px;max-width:1240px;margin:0 auto;align-items:start;}
 
-/* Node type colors */
-.ne-node-event .ne-node-header{background:rgba(79,124,255,.08);}
-.ne-node-event .ne-node-icon{background:rgba(79,124,255,.15);color:#4f7cff;}
-.ne-node-event .ne-node-type{color:#4f7cff;}
+/* Timeline rail */
+.rb-stage{position:relative;padding-left:46px;padding-bottom:22px;}
+.rb-stage:last-child{padding-bottom:0;}
+.rb-stage::before{content:'';position:absolute;left:15px;top:30px;bottom:-6px;width:1px;background:var(--brd2);}
+.rb-stage:last-child::before{display:none;}
+.rb-ic{position:absolute;left:0;top:0;width:31px;height:31px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:1px solid var(--brd2);background:var(--sur);}
+.rb-ic svg{width:15px;height:15px;}
+.rb-ic-when{color:var(--ac2);border-color:rgba(110,157,255,.45);background:rgba(110,157,255,.12);}
+.rb-ic-if{color:#fbbf24;border-color:rgba(251,191,36,.45);background:rgba(251,191,36,.12);}
+.rb-ic-then{color:var(--gr);border-color:rgba(34,200,138,.45);background:rgba(34,200,138,.12);}
+.rb-stage-head{display:flex;align-items:center;gap:10px;min-height:31px;margin-bottom:10px;}
+.rb-stage-lbl{font-size:11px;font-weight:700;letter-spacing:1px;color:var(--mu);font-family:var(--font);}
+.rb-hint{margin-left:auto;font-size:11.5px;color:var(--mu);font-family:var(--font);}
+.rb-hint b{color:#fbbf24;}
+.rb-hint i{color:var(--ac2);font-style:normal;font-weight:700;}
 
-.ne-node-condition .ne-node-header{background:rgba(167,139,250,.08);}
-.ne-node-condition .ne-node-icon{background:rgba(167,139,250,.15);color:#a78bfa;}
-.ne-node-condition .ne-node-type{color:#a78bfa;}
+.rb-card{background:var(--sur);border:0.5px solid var(--brd2);border-radius:10px;padding:14px 16px;}
+.rb-when-card{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.rb-when-name{font-size:13.5px;font-weight:600;color:var(--tx);font-family:var(--font);}
+.rb-when-meta{font-size:12px;color:var(--mu);font-family:var(--font);}
 
-.ne-node-field .ne-node-header{background:rgba(129,140,248,.08);}
-.ne-node-field .ne-node-icon{background:rgba(129,140,248,.15);color:#818cf8;}
-.ne-node-field .ne-node-type{color:#818cf8;}
-
-.ne-node-operator{min-width:100px;}
-.ne-node-operator .ne-node-header{background:rgba(251,191,36,.08);}
-.ne-node-operator .ne-node-icon{background:rgba(251,191,36,.15);color:#fbbf24;}
-.ne-node-operator .ne-node-type{color:#fbbf24;}
-.ne-node-operator .ne-node-body{text-align:center;}
-
-.ne-node-value .ne-node-header{background:rgba(56,189,248,.08);}
-.ne-node-value .ne-node-icon{background:rgba(56,189,248,.15);color:#38bdf8;}
-.ne-node-value .ne-node-type{color:#38bdf8;}
-
-.ne-node-action .ne-node-header{background:rgba(52,211,153,.08);}
-.ne-node-action .ne-node-icon{background:rgba(52,211,153,.15);color:#34d399;}
-.ne-node-action .ne-node-type{color:#34d399;}
-
-.ne-node-text{min-width:260px;max-width:320px;}
-.ne-node-text .ne-node-header{background:rgba(244,114,182,.08);}
-.ne-node-text .ne-node-icon{background:rgba(244,114,182,.15);color:#f472b6;}
-.ne-node-text .ne-node-type{color:#f472b6;}
-.ne-text-subject{width:100%;padding:6px 8px;border:0.5px solid var(--brd);border-radius:6px;background:var(--bg);color:var(--tx);font-size:12px;font-family:var(--font);margin-bottom:6px;outline:none;}
-.ne-text-subject:focus{border-color:var(--ac);}
-.ne-text-subject.ne-hidden{display:none;}
-.ne-text-body{width:100%;min-height:56px;max-height:120px;padding:6px 8px;border:0.5px solid var(--brd);border-radius:6px;background:var(--bg);color:var(--tx);font-size:12px;font-family:var(--font);resize:vertical;outline:none;line-height:1.4;}
-.ne-text-body:focus{border-color:var(--ac);}
-.ne-node-body{position:relative;}
-.ne-token-select{width:100%;margin-top:6px;color:var(--mu);}
-.ne-token-select:hover,.ne-token-select:focus{border-color:#f472b6;color:#f472b6;}
-
-/* Ports */
-.ne-port{position:absolute;width:14px;height:14px;border-radius:50%;border:2px solid var(--brd2);background:var(--sur);cursor:crosshair;z-index:20;transition:all .12s;}
-.ne-port::after{content:'';position:absolute;inset:-10px;border-radius:50%;}
-.ne-port:hover{transform:scale(1.3);border-color:var(--ac);background:var(--ac);box-shadow:0 0 8px rgba(79,124,255,.5);}
-.ne-port-out{right:-7px;top:50%;margin-top:-7px;}
-.ne-port-in{left:-7px;top:50%;margin-top:-7px;}
-.ne-port-event{border-color:rgba(79,124,255,.5);}
-.ne-port-event:hover{border-color:#4f7cff;background:#4f7cff;box-shadow:0 0 8px rgba(79,124,255,.5);}
-.ne-port-condition{border-color:rgba(167,139,250,.5);}
-.ne-port-condition:hover{border-color:#a78bfa;background:#a78bfa;box-shadow:0 0 8px rgba(167,139,250,.5);}
-.ne-port-field{border-color:rgba(129,140,248,.5);}
-.ne-port-field:hover{border-color:#818cf8;background:#818cf8;box-shadow:0 0 8px rgba(129,140,248,.5);}
-.ne-port-operator{border-color:rgba(251,191,36,.5);}
-.ne-port-operator:hover{border-color:#fbbf24;background:#fbbf24;box-shadow:0 0 8px rgba(251,191,36,.5);}
-.ne-port-value{border-color:rgba(56,189,248,.5);}
-.ne-port-value:hover{border-color:#38bdf8;background:#38bdf8;box-shadow:0 0 8px rgba(56,189,248,.5);}
-.ne-port-action{border-color:rgba(52,211,153,.5);}
-.ne-port-action:hover{border-color:#34d399;background:#34d399;box-shadow:0 0 8px rgba(52,211,153,.5);}
-.ne-port-text{border-color:rgba(244,114,182,.5);}
-.ne-port-text:hover{border-color:#f472b6;background:#f472b6;box-shadow:0 0 8px rgba(244,114,182,.5);}
-
-/* Toolbar floating at bottom */
-.ne-toolbar{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);display:flex;gap:6px;padding:6px;background:var(--sur);border:0.5px solid var(--brd2);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.35);z-index:100;}
-.ne-tool-btn{display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;border:none;background:transparent;color:var(--tx);font-size:12px;font-weight:500;font-family:var(--font);cursor:pointer;transition:all .12s;white-space:nowrap;}
-.ne-tool-btn:hover{background:var(--sur2);}
-.ne-tool-btn svg{width:16px;height:16px;}
-.ne-tool-btn.ne-tool-field svg{color:#818cf8;}
-.ne-tool-btn.ne-tool-operator svg{color:#fbbf24;}
-.ne-tool-btn.ne-tool-value svg{color:#38bdf8;}
-.ne-tool-btn.ne-tool-action svg{color:#34d399;}
-.ne-tool-btn.ne-tool-text svg{color:#f472b6;}
-.ne-tool-sep{width:1px;background:var(--brd);margin:4px 0;}
-
-/* Node selection & validation */
-.ne-node-selected{box-shadow:0 0 0 2px var(--ac),0 4px 16px rgba(0,0,0,.15);}
-.ne-node-invalid{box-shadow:0 0 0 2px #ef4444,0 4px 16px rgba(239,68,68,.2);animation:ne-pulse-red 1.5s ease-in-out infinite;}
-@keyframes ne-pulse-red{0%,100%{box-shadow:0 0 0 2px #ef4444,0 4px 16px rgba(239,68,68,.2);}50%{box-shadow:0 0 0 2px #ef4444,0 0 12px rgba(239,68,68,.35);}}
-
-/* Multi-select */
-.ne-multiselected{box-shadow:0 0 0 2px var(--ac),0 4px 16px rgba(0,0,0,.15);}
-.ne-select-box{position:fixed;border:1.5px dashed var(--ac);background:rgba(79,124,255,.08);pointer-events:none;z-index:300;}
-.ne-node.ne-layout-anim{transition:left .4s ease, top .4s ease;}
-
-/* Zoom controls */
-.ne-zoom-info{position:absolute;bottom:20px;right:20px;display:flex;align-items:center;gap:2px;padding:2px;background:var(--sur);border:0.5px solid var(--brd2);border-radius:8px;font-size:11px;color:var(--mu);font-family:var(--font);z-index:100;}
-.ne-zoom-btn{width:26px;height:26px;display:flex;align-items:center;justify-content:center;border:none;background:transparent;color:var(--tx2);font-size:14px;font-family:var(--font);cursor:pointer;border-radius:6px;transition:all .12s;}
-.ne-zoom-btn:hover{background:var(--sur2);color:var(--tx);}
-.ne-zoom-pct{min-width:36px;text-align:center;padding:0 2px;}
-
-/* Connection lines */
-.ne-conn{fill:none;stroke:var(--brd2);stroke-width:2.5;cursor:pointer;pointer-events:stroke;transition:stroke .12s;}
-.ne-conn:hover{stroke:var(--ac);stroke-width:3;}
-.ne-conn.ne-conn-selected{stroke:var(--ac);stroke-width:3;stroke-dasharray:8 4;animation:ne-dash .6s linear infinite;}
-@keyframes ne-dash{to{stroke-dashoffset:-12;}}
-.ne-conn-preview{fill:none;stroke:var(--ac);stroke-width:2;stroke-dasharray:6 4;opacity:.7;pointer-events:none;}
-.ne-conn-delete{cursor:pointer;pointer-events:all;opacity:0;transition:opacity .12s;}
-.ne-conn-group:hover .ne-conn-delete{opacity:1;}
-.ne-port.ne-port-active{transform:scale(1.3);border-color:var(--ac);background:var(--ac);box-shadow:0 0 8px rgba(79,124,255,.5);}
-.ne-port.ne-port-valid-target{border-color:#34d399;background:#34d399;box-shadow:0 0 10px rgba(52,211,153,.6);transform:scale(1.4);}
-.ne-canvas-wrap.ne-wiring{cursor:crosshair;}
-.ne-canvas-wrap.ne-wiring .ne-node{cursor:default;}
-
-/* Phase 3 — Node interiors */
-.ne-node-body{position:relative;}
-.ne-field-row{display:flex;gap:6px;align-items:center;margin-bottom:6px;}
-.ne-field-row:last-child{margin-bottom:0;}
-.ne-select{appearance:none;-webkit-appearance:none;background:var(--bg);border:0.5px solid var(--brd);border-radius:6px;padding:6px 26px 6px 8px;font-size:11.5px;font-family:var(--font);color:var(--tx);cursor:pointer;outline:none;min-width:0;transition:border-color .12s;
+/* Condition groups */
+.rb-group{background:var(--sur);border:0.5px solid var(--brd2);border-radius:10px;padding:13px 15px;}
+.rb-group-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.rb-group-title{font-size:12px;color:var(--mu);font-family:var(--font);}
+.rb-group-remove{margin-left:auto;background:none;border:none;color:var(--mu);font-size:12px;font-family:var(--font);cursor:pointer;padding:0;}
+.rb-group-remove:hover{color:var(--rd);text-decoration:underline;}
+.rb-cond{display:grid;grid-template-columns:76px minmax(120px,1.1fr) minmax(120px,1fr) minmax(90px,.8fr) 14px 22px;gap:8px;align-items:center;margin-bottom:8px;}
+.rb-where{font-size:12px;color:var(--mu);font-family:var(--font);padding-left:4px;}
+.rb-join{justify-self:start;padding:5px 14px;border-radius:999px;border:0.5px solid rgba(251,191,36,.45);background:rgba(251,191,36,.14);color:#fbbf24;font-size:11px;font-weight:700;letter-spacing:.5px;font-family:var(--font);cursor:pointer;transition:all .12s;}
+.rb-join:hover{background:rgba(251,191,36,.26);}
+.rb-join.is-or{border-color:rgba(110,157,255,.5);background:rgba(110,157,255,.18);color:var(--ac2);}
+.rb-join.is-or:hover{background:rgba(110,157,255,.3);}
+.rb-input{width:100%;background:var(--bg);border:0.5px solid var(--brd);border-radius:8px;padding:9px 11px;font-size:12.5px;font-family:var(--font);color:var(--tx);outline:none;transition:border-color .12s;box-sizing:border-box;}
+.rb-input:hover,.rb-input:focus{border-color:var(--ac);}
+.rb-input::placeholder{color:var(--mu);opacity:.6;}
+select.rb-input{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:28px;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237a7a8a' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-  background-repeat:no-repeat;background-position:right 6px center;}
-.ne-select:hover,.ne-select:focus{border-color:var(--ac);}
-.ne-select option{background:var(--sur);color:var(--tx);}
-.ne-input{background:var(--bg);border:0.5px solid var(--brd);border-radius:6px;padding:6px 8px;font-size:11.5px;font-family:var(--font);color:var(--tx);outline:none;min-width:0;width:100%;transition:border-color .12s;}
-.ne-input:hover,.ne-input:focus{border-color:var(--ac);}
-.ne-input::placeholder{color:var(--mu);opacity:.6;}
-.ne-op-select{flex:0 0 auto;width:52px;text-align:center;padding-right:20px;font-weight:600;color:var(--ac);}
-.ne-field-select{flex:1;min-width:80px;}
-.ne-val-input{flex:1;min-width:60px;}
+  background-repeat:no-repeat;background-position:right 9px center;}
+select.rb-input option,select.rb-input optgroup{background:var(--sur);color:var(--tx);}
+.rb-dot{width:9px;height:9px;border-radius:50%;border:1.5px solid var(--mu);justify-self:center;transition:all .15s;}
+.rb-dot.is-pass{background:var(--gr);border-color:var(--gr);box-shadow:0 0 7px rgba(34,200,138,.5);}
+.rb-x{width:22px;height:22px;display:flex;align-items:center;justify-content:center;border:none;background:none;color:var(--mu);font-size:15px;line-height:1;cursor:pointer;border-radius:5px;transition:all .12s;}
+.rb-x:hover{background:rgba(232,85,85,.14);color:var(--rd);}
+.rb-add{display:inline-flex;align-items:center;gap:6px;background:none;border:none;color:var(--ac);font-size:12.5px;font-family:var(--font);cursor:pointer;padding:4px 2px;}
+.rb-add:hover{text-decoration:underline;}
+.rb-act-foot{padding-top:10px;margin-top:2px;border-top:0.5px solid var(--brd);}
+.rb-add:disabled{color:var(--mu);opacity:.5;cursor:not-allowed;}
+.rb-add:disabled:hover{text-decoration:none;}
+.rb-add svg{width:13px;height:13px;}
 
-/* Action node interiors */
-.ne-channel-pick{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px;}
-.ne-ch-opt{display:flex;align-items:center;gap:4px;padding:4px 10px;border-radius:16px;border:0.5px solid var(--brd);background:var(--bg);font-size:11px;font-weight:500;font-family:var(--font);color:var(--mu);cursor:pointer;transition:all .12s;}
-.ne-ch-opt:hover{border-color:var(--ac);color:var(--tx);}
-.ne-ch-opt.ne-ch-active{background:rgba(52,211,153,.12);border-color:#34d399;color:#34d399;font-weight:600;}
-.ne-ch-opt svg{width:12px;height:12px;}
-.ne-recip-wrap{display:flex;flex-wrap:wrap;gap:4px;align-items:center;}
-.ne-recip-tag{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:10px;font-size:10.5px;font-weight:500;background:var(--sur2);color:var(--tx);border:0.5px solid var(--brd);font-family:var(--font);}
-.ne-recip-tag .ne-recip-x{background:none;border:none;color:var(--mu);cursor:pointer;font-size:12px;line-height:1;padding:0 1px;opacity:.6;}
-.ne-recip-tag .ne-recip-x:hover{opacity:1;color:#ff453a;}
-.ne-recip-add{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;border:1px dashed var(--brd);background:none;color:var(--mu);font-size:14px;cursor:pointer;transition:all .12s;}
-.ne-recip-add:hover{border-color:var(--ac);color:var(--ac);}
-.ne-recip-input{background:var(--bg);border:0.5px solid var(--brd);border-radius:6px;padding:4px 6px;font-size:11px;font-family:var(--font);color:var(--tx);outline:none;width:100px;transition:border-color .12s;}
-.ne-recip-input:focus{border-color:var(--ac);}
+/* OR divider between groups */
+.rb-sep{display:flex;align-items:center;gap:0;margin:14px 0;}
+.rb-sep-line{flex:1;height:1px;background:var(--brd2);}
+.rb-sep .rb-join{margin:0 12px;}
+.rb-addgroup{width:100%;margin-top:14px;padding:14px;border:1px dashed var(--brd2);border-radius:10px;background:none;color:var(--ac);font-size:12.5px;font-family:var(--font);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .12s;}
+.rb-addgroup:hover{border-color:var(--ac);background:rgba(79,124,255,.06);}
+.rb-addgroup svg{width:14px;height:14px;}
 
-/* Node delete button */
-.ne-node-delete{position:absolute;top:-8px;right:-8px;width:20px;height:20px;border-radius:50%;background:#ff453a;border:2px solid var(--sur);color:#fff;font-size:12px;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transition:opacity .12s;z-index:30;}
-.ne-node:hover .ne-node-delete,.ne-node.ne-selected .ne-node-delete{opacity:1;}
-.ne-node-event .ne-node-delete{display:none;}
+/* THEN actions */
+.rb-act{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 0;border-bottom:0.5px solid var(--brd);}
+.rb-act:last-of-type{border-bottom:none;}
+.rb-act-name{font-size:13px;font-weight:600;color:var(--tx);font-family:var(--font);min-width:132px;}
+.rb-act-to{font-size:12px;color:var(--mu);font-family:var(--font);}
+.rb-chip{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:999px;background:var(--sur2);border:0.5px solid var(--brd);color:var(--tx);font-size:12px;font-family:var(--font);}
+.rb-chip button{background:none;border:none;color:var(--mu);cursor:pointer;padding:0;font-size:13px;line-height:1;}
+.rb-chip button:hover{color:var(--rd);}
+.rb-chip-add{padding:5px 11px;border-radius:999px;border:1px dashed var(--brd2);background:none;color:var(--ac);font-size:12px;font-family:var(--font);cursor:pointer;transition:all .12s;}
+.rb-chip-add:hover{border-color:var(--ac);background:rgba(79,124,255,.08);}
+.rb-act-x{margin-left:auto;}
+.rb-menu{position:absolute;z-index:9000;background:var(--sur);border:0.5px solid var(--brd2);border-radius:9px;box-shadow:0 10px 28px rgba(0,0,0,.5);padding:4px;min-width:170px;}
+.rb-menu button{display:block;width:100%;text-align:left;padding:8px 11px;border:none;border-radius:6px;background:none;color:var(--tx);font-size:12.5px;font-family:var(--font);cursor:pointer;}
+.rb-menu button:hover{background:var(--sur2);}
+.rb-menu .rb-menu-empty{color:var(--mu);padding:8px 11px;font-size:12px;font-family:var(--font);}
 
-/* Node copy button */
-.ne-node-copy{position:absolute;top:-8px;right:18px;width:20px;height:20px;padding:0;border-radius:50%;background:var(--ac);border:2px solid var(--sur);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transition:opacity .12s;z-index:30;}
-.ne-node-copy svg{width:11px;height:11px;}
-.ne-node:hover .ne-node-copy,.ne-node.ne-selected .ne-node-copy{opacity:1;}
-.ne-node-event .ne-node-copy{display:none;}
+/* Test panel */
+.rb-test{background:var(--sur);border:0.5px solid var(--brd2);border-radius:10px;padding:15px 16px;position:sticky;top:0;}
+.rb-test-lbl{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--mu);font-family:var(--font);margin-bottom:6px;}
+.rb-test-hint{font-size:11.5px;color:var(--mu);font-family:var(--font);line-height:1.5;margin-bottom:12px;}
+.rb-test-fld{display:flex;flex-direction:column;gap:5px;margin-bottom:10px;}
+.rb-test-fld label{font-size:12px;color:var(--tx);font-family:var(--font);}
+.rb-verdict{margin-top:14px;padding-top:13px;border-top:0.5px solid var(--brd);}
+.rb-verdict-row{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;font-family:var(--font);margin-bottom:7px;}
+.rb-verdict-dot{width:10px;height:10px;border-radius:50%;border:1.5px solid var(--mu);flex:none;}
+.rb-verdict.is-fire .rb-verdict-dot{background:var(--gr);border-color:var(--gr);box-shadow:0 0 8px rgba(34,200,138,.55);}
+.rb-verdict.is-fire .rb-verdict-row{color:var(--gr);}
+.rb-verdict-txt{font-size:12px;color:var(--mu);font-family:var(--font);line-height:1.55;}
+.rb-test-empty{font-size:12px;color:var(--mu);font-family:var(--font);}
 
-/* Minimap */
-.ne-minimap{position:absolute;bottom:56px;right:16px;width:180px;height:110px;background:rgba(0,0,0,.55);border:1px solid var(--brd);border-radius:8px;overflow:hidden;z-index:120;cursor:crosshair;backdrop-filter:blur(6px);}
-.ne-minimap canvas{width:100%;height:100%;display:block;}
-
-/* Connection labels */
-.ne-conn-label{font-size:9px;fill:var(--tx2);pointer-events:none;font-family:var(--font);opacity:.7;}
-.ne-conn-label-bg{fill:var(--sur);opacity:.85;rx:3;ry:3;}
-
-/* Touch: larger port hit areas */
-@media (pointer:coarse){
-.ne-port{width:22px;height:22px;margin-top:-11px;}
-.ne-port-out{right:-11px;}
-.ne-port-in{left:-11px;}
-.ne-port::after{inset:-14px;}
+@media(max-width:980px){
+  .rb-layout{grid-template-columns:minmax(0,1fr);}
+  .rb-test{position:static;}
 }
-
-/* Search/filter */
-.ne-search-wrap{display:flex;align-items:center;gap:6px;margin-left:12px;}
-.ne-search-input{width:180px;padding:5px 10px 5px 28px;border:1px solid var(--brd);border-radius:6px;background:var(--sur2);color:var(--tx);font-size:12px;font-family:var(--font);outline:none;transition:border-color .12s;}
-.ne-search-input:focus{border-color:var(--ac);}
-.ne-search-input::placeholder{color:var(--tx2);opacity:.6;}
-.ne-search-icon{position:absolute;left:8px;top:50%;transform:translateY(-50%);width:14px;height:14px;color:var(--tx2);pointer-events:none;}
-.ne-search-wrap .ne-search-inner{position:relative;}
-.ne-search-clear{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:16px;height:16px;border:none;background:transparent;color:var(--tx2);cursor:pointer;padding:0;display:none;font-size:14px;line-height:1;}
-.ne-search-clear.visible{display:block;}
-.ne-node.ne-dimmed{opacity:.2;pointer-events:none;transition:opacity .2s;}
-.ne-node.ne-highlighted{box-shadow:0 0 0 2px var(--ac),0 0 12px rgba(79,124,255,.3);transition:box-shadow .2s;}
-.ne-conn-group.ne-conn-dimmed{opacity:.1;transition:opacity .2s;}
-
-/* Mobile dock + node picker sheet */
-.ne-dock{display:none;position:absolute;bottom:20px;left:50%;transform:translateX(-50%);gap:10px;z-index:100;}
-.ne-dock-btn{width:52px;height:52px;border-radius:50%;border:0.5px solid var(--brd2);background:var(--sur);color:var(--tx);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.35);transition:transform .12s;}
-.ne-dock-btn:active{transform:scale(.94);}
-.ne-dock-btn svg{width:22px;height:22px;}
-.ne-dock-btn.ne-dock-add{background:var(--ac);border-color:var(--ac);color:#fff;}
-
-.ne-sheet-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:8100;}
-.ne-sheet-backdrop.open{display:block;}
-.ne-sheet{position:fixed;left:0;right:0;bottom:0;z-index:8101;background:var(--sur);border-top:0.5px solid var(--brd2);border-radius:16px 16px 0 0;padding:8px 12px 16px;transform:translateY(110%);transition:transform .25s cubic-bezier(.32,.72,0,1);max-height:80vh;overflow-y:auto;}
-.ne-sheet.open{transform:translateY(0);}
-.ne-sheet-handle{width:36px;height:4px;border-radius:2px;background:var(--brd2);margin:4px auto 10px;}
-.ne-sheet-title{font-size:13px;font-weight:600;color:var(--tx);font-family:var(--font);padding:0 8px 6px;}
-.ne-sheet-row{display:flex;align-items:center;gap:12px;width:100%;padding:10px 8px;border:none;background:transparent;border-radius:10px;cursor:pointer;text-align:left;transition:background .12s;}
-.ne-sheet-row:active{background:var(--sur2);}
-.ne-sheet-ic{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.ne-sheet-ic svg{width:18px;height:18px;}
-.ne-sheet-name{display:block;font-size:13.5px;font-weight:600;color:var(--tx);font-family:var(--font);}
-.ne-sheet-desc{display:block;font-size:11.5px;color:var(--mu);font-family:var(--font);margin-top:1px;}
-.ne-ic-field{background:rgba(129,140,248,.15);color:#818cf8;}
-.ne-ic-operator{background:rgba(251,191,36,.15);color:#fbbf24;}
-.ne-ic-value{background:rgba(56,189,248,.15);color:#38bdf8;}
-.ne-ic-action{background:rgba(52,211,153,.15);color:#34d399;}
-.ne-ic-text{background:rgba(244,114,182,.15);color:#f472b6;}
-
-/* Mobile topbar: icon-only buttons, search collapses to its icon */
 @media(max-width:640px){
-  .ne-toolbar{display:none;}
-  .ne-dock{display:flex;}
-  .ne-minimap{display:none;}
-  .ne-zoom-info{display:none;}
-  .ne-topbar{gap:8px;padding:10px 12px;}
-  .ne-topbar>div:has(.ne-topbar-title){min-width:0;flex-shrink:1;}
-  .ne-topbar-title{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .ne-topbar-subtitle{display:none;}
-  .ne-topbar-close{flex-shrink:0;}
-  .ne-topbar-btn{width:40px;height:40px;padding:0;gap:0;justify-content:center;flex-shrink:0;}
-  .ne-topbar-btn span{display:none;}
-  .ne-search-wrap{margin-left:0;flex-shrink:0;}
-  .ne-search-input{width:40px;height:40px;padding:0 6px 0 31px;cursor:pointer;transition:width .18s ease,border-color .12s;}
-  .ne-search-input:focus,.ne-search-input:not(:placeholder-shown){width:150px;cursor:text;}
-  .ne-search-icon{left:13px;}
-  .ne-search-input::placeholder{color:transparent;}
-  .ne-search-input:focus::placeholder{color:var(--tx2);opacity:.6;}
+  .rb-scroll{padding:14px;}
+  .rb-reads{padding:13px 14px;}
+  .rb-reads-txt{font-size:13px;}
+  .rb-topbar{gap:8px;padding:10px 12px;}
+  .rb-subtitle{display:none;}
+  .rb-btn{width:40px;height:40px;padding:0;gap:0;justify-content:center;flex-shrink:0;}
+  .rb-btn span{display:none;}
+  .rb-stage{padding-left:0;}
+  .rb-stage::before{display:none;}
+  .rb-ic{position:static;margin-right:2px;}
+  .rb-stage-head{margin-bottom:8px;}
+  .rb-hint{display:none;}
+  .rb-cond{grid-template-columns:1fr 14px 22px;gap:7px;padding:11px;border:0.5px solid var(--brd);border-radius:9px;margin-bottom:10px;}
+  .rb-cond > .rb-where,.rb-cond > .rb-join{grid-column:1/-1;justify-self:start;margin-bottom:2px;}
+  .rb-cond > select.rb-input:nth-of-type(1),.rb-cond > select.rb-input:nth-of-type(2){grid-column:1/-1;}
+  .rb-dot{grid-row:4;grid-column:2;}
+  .rb-x{grid-row:4;grid-column:3;}
+  .rb-act-name{min-width:0;width:100%;}
 }
+/* Message composer modal — must clear the rule-builder overlay (z-index 8000) */
+#rb-msg-modal{z-index:8600;}
+#rb-msg-modal .modal{width:560px;max-width:100%;}
+.rb-msg-fld{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
+.rb-msg-fld label{font-size:11.5px;font-weight:600;color:var(--mu);font-family:var(--font);}
+.rb-msg-fld textarea.rb-input{min-height:130px;resize:vertical;line-height:1.55;}
+.rb-msg-tools{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.rb-msg-count{font-size:11.5px;color:var(--mu);font-family:var(--font);margin-left:auto;}
+.rb-msg-count.is-over{color:var(--rd);}
+.rb-act-compose{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:7px;border:0.5px solid var(--brd);background:var(--sur2);color:var(--mu);font-size:12px;font-family:var(--font);cursor:pointer;transition:all .12s;}
+.rb-act-compose:hover{border-color:var(--ac);color:var(--ac);}
+.rb-act-compose svg{width:12px;height:12px;}
+.rb-act-compose.is-set{border-color:rgba(34,200,138,.45);background:rgba(34,200,138,.12);color:var(--gr);}
+/* Searchable recipient picker */
+.rb-pick{position:absolute;z-index:9000;width:290px;background:var(--sur);border:0.5px solid var(--brd2);border-radius:10px;box-shadow:0 12px 34px rgba(0,0,0,.55);overflow:hidden;}
+.rb-pick-search{position:relative;padding:8px;border-bottom:0.5px solid var(--brd);}
+.rb-pick-search input{width:100%;background:var(--bg);border:0.5px solid var(--brd);border-radius:7px;padding:8px 10px 8px 30px;font-size:12.5px;font-family:var(--font);color:var(--tx);outline:none;box-sizing:border-box;}
+.rb-pick-search input:focus{border-color:var(--ac);}
+.rb-pick-search svg{position:absolute;left:19px;top:50%;transform:translateY(-50%);width:13px;height:13px;color:var(--mu);pointer-events:none;}
+.rb-pick-list{max-height:260px;overflow-y:auto;padding:4px;}
+.rb-pick-head{padding:7px 10px 4px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--mu);font-family:var(--font);}
+.rb-pick-item{display:flex;align-items:center;gap:8px;width:100%;padding:7px 10px;border:none;border-radius:6px;background:none;color:var(--tx);font-size:12.5px;font-family:var(--font);cursor:pointer;text-align:left;}
+.rb-pick-item:hover,.rb-pick-item.is-active{background:var(--sur2);}
+.rb-pick-av{width:22px;height:22px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-size:9.5px;font-weight:700;letter-spacing:.3px;}
+.rb-pick-av.is-user{background:var(--ac);color:#fff;}
+.rb-pick-av.is-lead{background:var(--gr);color:#06251a;}
+.rb-pick-nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.rb-pick-sub{font-size:11px;color:var(--mu);flex:none;}
+.rb-pick-empty{padding:16px 10px;text-align:center;color:var(--mu);font-size:12px;font-family:var(--font);}
+.rb-menu-head{padding:7px 11px 4px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--mu);font-family:var(--font);}
+.rb-menu-head + button{margin-top:0;}
+.rb-menu-sub{font-size:11px;color:var(--mu);margin-left:6px;}
+.rb-msg-recips{display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+.rb-act .rb-chip{cursor:default;}
+/* Recipients on the action row collapse to overlapping avatars; name shows on hover */
+.rb-avs{display:flex;align-items:center;}
+.rb-av{position:relative;width:27px;height:27px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;letter-spacing:.3px;font-family:var(--font);border:1.5px solid var(--sur);margin-left:-7px;cursor:default;transition:transform .12s;}
+.rb-av:first-child{margin-left:0;}
+.rb-av:hover{transform:translateY(-2px);z-index:5;}
+.rb-av::after{content:attr(data-name);position:absolute;bottom:calc(100% + 7px);left:50%;transform:translateX(-50%);padding:4px 9px;border-radius:6px;background:var(--sur2);border:0.5px solid var(--brd2);color:var(--tx);font-size:11.5px;font-weight:500;letter-spacing:0;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .12s;box-shadow:0 6px 18px rgba(0,0,0,.5);}
+.rb-av:hover::after{opacity:1;}
+.rb-av.is-user{background:var(--ac);color:#fff;}
+.rb-av.is-lead{background:var(--gr);color:#06251a;}
+.rb-act-none{font-size:11.5px;color:var(--mu);font-family:var(--font);font-style:italic;max-width:230px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 </style>
 
 <div class="top-header">
@@ -882,20 +767,11 @@ html,body{background:var(--bg);margin:0;padding:0;font-family:'DM Sans',sans-ser
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
       <span>Settings</span>
     </a>
-    <span class="set-page-title">Loan Application Alerts</span>
+    <span class="set-page-title">Custom Alerts</span>
     <span class="ur-head-spacer"></span>
     <button class="alt-add-btn" onclick="altOpenAddModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><span>Add Alert</span></button>
   </div>
   <div class="set-scroll">
-
-    <!-- TABS -->
-    <div class="alt-tabs">
-      <button class="alt-tab active" onclick="altSwitchTab('internal')">Internal Alerts</button>
-      <button class="alt-tab" onclick="altSwitchTab('customer')">Customer Notifications</button>
-    </div>
-
-    <!-- INTERNAL ALERTS TAB -->
-    <div class="alt-tab-panel active" id="alt-panel-internal">
 
       <!-- GLOBAL SETTINGS -->
       <section class="set-section" style="margin-bottom:20px;">
@@ -969,8 +845,8 @@ html,body{background:var(--bg);margin:0;padding:0;font-family:'DM Sans',sans-ser
           <thead><tr><th style="width:40px"></th><th>No</th><th>Event</th><th>Channels</th><th>Recipients</th><th>Status</th></tr></thead>
           <tbody id="alt-tbody">
             <!-- Alert 1 -->
-            <tr class="alt-alert-row" onclick="altOpenEditModal(this)" data-event="New Application Submitted" data-channels="Email,In-App" data-recipients="Sales Manager,F&amp;I Manager" data-status="Active">
-              <td><button class="alt-arrow-btn" onclick="event.stopPropagation();neOpenFromAlert(this)" title="Open flow editor"><svg class="alt-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></button></td>
+            <tr class="alt-alert-row" onclick="rbOpenFromRow(this)" data-event="New Application Submitted" data-channels="Email,In-App" data-recipients="Sales Manager,F&amp;I Manager" data-status="Active">
+              <td><button class="alt-arrow-btn" onclick="event.stopPropagation();rbOpenFromRow(this.closest('.alt-alert-row'))" title="Open rule"><svg class="alt-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button></td>
               <td>1</td>
               <td>New Application Submitted</td>
               <td>
@@ -1005,8 +881,8 @@ html,body{background:var(--bg);margin:0;padding:0;font-family:'DM Sans',sans-ser
             </tr>
 
             <!-- Alert 2 -->
-            <tr class="alt-alert-row" onclick="altOpenEditModal(this)" data-event="Application Approved" data-channels="Email,SMS,In-App" data-recipients="Sales Manager,F&amp;I Manager,BDC" data-status="Active">
-              <td><button class="alt-arrow-btn" onclick="event.stopPropagation();neOpenFromAlert(this)" title="Open flow editor"><svg class="alt-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></button></td>
+            <tr class="alt-alert-row" onclick="rbOpenFromRow(this)" data-event="Application Approved" data-channels="Email,SMS,In-App" data-recipients="Sales Manager,F&amp;I Manager,BDC" data-status="Active">
+              <td><button class="alt-arrow-btn" onclick="event.stopPropagation();rbOpenFromRow(this.closest('.alt-alert-row'))" title="Open rule"><svg class="alt-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button></td>
               <td>2</td>
               <td>Application Approved</td>
               <td>
@@ -1034,8 +910,8 @@ html,body{background:var(--bg);margin:0;padding:0;font-family:'DM Sans',sans-ser
             </tr>
 
             <!-- Alert 3 -->
-            <tr class="alt-alert-row" onclick="altOpenEditModal(this)" data-event="Application Denied" data-channels="Email" data-recipients="F&amp;I Manager" data-status="Active">
-              <td><button class="alt-arrow-btn" onclick="event.stopPropagation();neOpenFromAlert(this)" title="Open flow editor"><svg class="alt-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></button></td>
+            <tr class="alt-alert-row" onclick="rbOpenFromRow(this)" data-event="Application Denied" data-channels="Email" data-recipients="F&amp;I Manager" data-status="Active">
+              <td><button class="alt-arrow-btn" onclick="event.stopPropagation();rbOpenFromRow(this.closest('.alt-alert-row'))" title="Open rule"><svg class="alt-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button></td>
               <td>3</td>
               <td>Application Denied</td>
               <td>
@@ -1069,8 +945,8 @@ html,body{background:var(--bg);margin:0;padding:0;font-family:'DM Sans',sans-ser
             </tr>
 
             <!-- Alert 4 -->
-            <tr class="alt-alert-row" onclick="altOpenEditModal(this)" data-event="Stipulation Required" data-channels="Email,SMS" data-recipients="Sales Manager" data-status="Inactive">
-              <td><button class="alt-arrow-btn" onclick="event.stopPropagation();neOpenFromAlert(this)" title="Open flow editor"><svg class="alt-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></button></td>
+            <tr class="alt-alert-row" onclick="rbOpenFromRow(this)" data-event="Stipulation Required" data-channels="Email,SMS" data-recipients="Sales Manager" data-status="Inactive">
+              <td><button class="alt-arrow-btn" onclick="event.stopPropagation();rbOpenFromRow(this.closest('.alt-alert-row'))" title="Open rule"><svg class="alt-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button></td>
               <td>4</td>
               <td>Stipulation Required</td>
               <td>
@@ -1097,8 +973,8 @@ html,body{background:var(--bg);margin:0;padding:0;font-family:'DM Sans',sans-ser
             </tr>
 
             <!-- Alert 5 -->
-            <tr class="alt-alert-row" onclick="altOpenEditModal(this)" data-event="Funding Complete" data-channels="Email,In-App" data-recipients="F&amp;I Manager,Dealer Principal" data-status="Active">
-              <td><button class="alt-arrow-btn" onclick="event.stopPropagation();neOpenFromAlert(this)" title="Open flow editor"><svg class="alt-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></button></td>
+            <tr class="alt-alert-row" onclick="rbOpenFromRow(this)" data-event="Funding Complete" data-channels="Email,In-App" data-recipients="F&amp;I Manager,Dealer Principal" data-status="Active">
+              <td><button class="alt-arrow-btn" onclick="event.stopPropagation();rbOpenFromRow(this.closest('.alt-alert-row'))" title="Open rule"><svg class="alt-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button></td>
               <td>5</td>
               <td>Funding Complete</td>
               <td>
@@ -1126,349 +1002,85 @@ html,body{background:var(--bg);margin:0;padding:0;font-family:'DM Sans',sans-ser
           </tbody>
         </table>
       </section>
-    </div>
-
-    <!-- CUSTOMER NOTIFICATIONS TAB (Phase 3) -->
-    <div class="alt-tab-panel" id="alt-panel-customer">
-      <section class="set-section">
-        <div style="display:flex;justify-content:flex-end;margin-bottom:12px;">
-          <button class="modal-save" onclick="altOpenAddTpl()" style="font-size:13px;padding:7px 18px;">+ Add Template</button>
-        </div>
-        <table class="alt-table" id="alt-tpl-table">
-          <thead><tr><th style="width:40px"></th><th>No</th><th>Event</th><th>Channel</th><th>Template Name</th><th>Status</th></tr></thead>
-          <tbody id="alt-tpl-tbody">
-            <!-- Template 1 -->
-            <tr class="alt-tpl-row" onclick="altOpenEditTpl(this)" data-event="New Application Submitted" data-channel="Email" data-name="Application Received" data-subject="Your Loan Application Has Been Received" data-body="Hi {{customer_name}},&#10;&#10;Thank you for submitting your loan application for {{loan_amount}}. Your application is currently being reviewed and we will notify you once a decision has been made.&#10;&#10;Reference #: {{application_id}}&#10;&#10;Best regards,&#10;{{dealer_name}}" data-status="Active">
-              <td><button class="alt-arrow-btn" onclick="event.stopPropagation();altToggleTplPreview(this.closest('.alt-tpl-row'))"><svg class="alt-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></button></td>
-              <td>1</td>
-              <td>New Application Submitted</td>
-              <td><span class="alt-channel-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Email</span></td>
-              <td>Application Received</td>
-              <td><span class="alt-status alt-status-active">Active</span></td>
-            </tr>
-            <tr class="alt-tpl-preview" data-tpl-idx="0">
-              <td colspan="6">
-                <div class="alt-tpl-preview-wrap">
-                  <div class="alt-tpl-subject-line"><strong>Subject:</strong> Your Loan Application Has Been Received</div>
-                  <pre class="alt-tpl-body-preview">Hi {{customer_name}},
-
-Thank you for submitting your loan application for {{loan_amount}}. Your application is currently being reviewed and we will notify you once a decision has been made.
-
-Reference #: {{application_id}}
-
-Best regards,
-{{dealer_name}}</pre>
-                </div>
-              </td>
-            </tr>
-
-            <!-- Template 2 -->
-            <tr class="alt-tpl-row" onclick="altOpenEditTpl(this)" data-event="Application Approved" data-channel="Email" data-name="Approval Notice" data-subject="Great News — Your Loan Has Been Approved!" data-body="Hi {{customer_name}},&#10;&#10;Congratulations! Your loan application for {{loan_amount}} has been approved.&#10;&#10;Approved Amount: {{approved_amount}}&#10;Interest Rate: {{interest_rate}}%&#10;Term: {{term_months}} months&#10;&#10;Please contact us at {{dealer_phone}} to finalize the paperwork.&#10;&#10;Best regards,&#10;{{dealer_name}}" data-status="Active">
-              <td><button class="alt-arrow-btn" onclick="event.stopPropagation();altToggleTplPreview(this.closest('.alt-tpl-row'))"><svg class="alt-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></button></td>
-              <td>2</td>
-              <td>Application Approved</td>
-              <td><span class="alt-channel-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Email</span></td>
-              <td>Approval Notice</td>
-              <td><span class="alt-status alt-status-active">Active</span></td>
-            </tr>
-            <tr class="alt-tpl-preview" data-tpl-idx="1">
-              <td colspan="6">
-                <div class="alt-tpl-preview-wrap">
-                  <div class="alt-tpl-subject-line"><strong>Subject:</strong> Great News — Your Loan Has Been Approved!</div>
-                  <pre class="alt-tpl-body-preview">Hi {{customer_name}},
-
-Congratulations! Your loan application for {{loan_amount}} has been approved.
-
-Approved Amount: {{approved_amount}}
-Interest Rate: {{interest_rate}}%
-Term: {{term_months}} months
-
-Please contact us at {{dealer_phone}} to finalize the paperwork.
-
-Best regards,
-{{dealer_name}}</pre>
-                </div>
-              </td>
-            </tr>
-
-            <!-- Template 3 -->
-            <tr class="alt-tpl-row" onclick="altOpenEditTpl(this)" data-event="Application Denied" data-channel="Email" data-name="Denial Notice" data-subject="Update on Your Loan Application" data-body="Hi {{customer_name}},&#10;&#10;We regret to inform you that your loan application for {{loan_amount}} was not approved at this time.&#10;&#10;If you have any questions, please don't hesitate to contact us at {{dealer_phone}}.&#10;&#10;Best regards,&#10;{{dealer_name}}" data-status="Active">
-              <td><button class="alt-arrow-btn" onclick="event.stopPropagation();altToggleTplPreview(this.closest('.alt-tpl-row'))"><svg class="alt-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></button></td>
-              <td>3</td>
-              <td>Application Denied</td>
-              <td><span class="alt-channel-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Email</span></td>
-              <td>Denial Notice</td>
-              <td><span class="alt-status alt-status-active">Active</span></td>
-            </tr>
-            <tr class="alt-tpl-preview" data-tpl-idx="2">
-              <td colspan="6">
-                <div class="alt-tpl-preview-wrap">
-                  <div class="alt-tpl-subject-line"><strong>Subject:</strong> Update on Your Loan Application</div>
-                  <pre class="alt-tpl-body-preview">Hi {{customer_name}},
-
-We regret to inform you that your loan application for {{loan_amount}} was not approved at this time.
-
-If you have any questions, please don't hesitate to contact us at {{dealer_phone}}.
-
-Best regards,
-{{dealer_name}}</pre>
-                </div>
-              </td>
-            </tr>
-
-            <!-- Template 4 -->
-            <tr class="alt-tpl-row" onclick="altOpenEditTpl(this)" data-event="Stipulation Required" data-channel="SMS" data-name="Documents Needed" data-subject="" data-body="Hi {{customer_name}}, we need additional documents for your loan application (Ref: {{application_id}}). Please call us at {{dealer_phone}} or visit the dealership. - {{dealer_name}}" data-status="Active">
-              <td><button class="alt-arrow-btn" onclick="event.stopPropagation();altToggleTplPreview(this.closest('.alt-tpl-row'))"><svg class="alt-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></button></td>
-              <td>4</td>
-              <td>Stipulation Required</td>
-              <td><span class="alt-channel-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>SMS</span></td>
-              <td>Documents Needed</td>
-              <td><span class="alt-status alt-status-active">Active</span></td>
-            </tr>
-            <tr class="alt-tpl-preview" data-tpl-idx="3">
-              <td colspan="6">
-                <div class="alt-tpl-preview-wrap">
-                  <pre class="alt-tpl-body-preview">Hi {{customer_name}}, we need additional documents for your loan application (Ref: {{application_id}}). Please call us at {{dealer_phone}} or visit the dealership. - {{dealer_name}}</pre>
-                </div>
-              </td>
-            </tr>
-
-            <!-- Template 5 -->
-            <tr class="alt-tpl-row" onclick="altOpenEditTpl(this)" data-event="Funding Complete" data-channel="Email" data-name="Funding Confirmation" data-subject="Your Vehicle Financing is Complete!" data-body="Hi {{customer_name}},&#10;&#10;Great news! The financing for your vehicle has been completed and funded.&#10;&#10;Funded Amount: {{approved_amount}}&#10;Monthly Payment: {{monthly_payment}}&#10;First Payment Due: {{first_payment_date}}&#10;&#10;Thank you for choosing {{dealer_name}}!" data-status="Inactive">
-              <td><button class="alt-arrow-btn" onclick="event.stopPropagation();altToggleTplPreview(this.closest('.alt-tpl-row'))"><svg class="alt-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></button></td>
-              <td>5</td>
-              <td>Funding Complete</td>
-              <td><span class="alt-channel-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Email</span></td>
-              <td>Funding Confirmation</td>
-              <td><span class="alt-status alt-status-inactive">Inactive</span></td>
-            </tr>
-            <tr class="alt-tpl-preview" data-tpl-idx="4">
-              <td colspan="6">
-                <div class="alt-tpl-preview-wrap">
-                  <div class="alt-tpl-subject-line"><strong>Subject:</strong> Your Vehicle Financing is Complete!</div>
-                  <pre class="alt-tpl-body-preview">Hi {{customer_name}},
-
-Great news! The financing for your vehicle has been completed and funded.
-
-Funded Amount: {{approved_amount}}
-Monthly Payment: {{monthly_payment}}
-First Payment Due: {{first_payment_date}}
-
-Thank you for choosing {{dealer_name}}!</pre>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </section>
-    </div>
-
   </div>
 </div>
-
-<!-- ADD TEMPLATE MODAL -->
-<div class="modal-backdrop modal-fullscreen-mobile" id="alt-add-tpl-modal" onclick="if(event.target===this)altCloseAddTpl()">
-  <div class="modal" style="width:560px;overflow:visible;">
-    <div class="modal-header">
-      <span class="modal-title">Add Template</span>
-      <button class="modal-close" onclick="altCloseAddTpl()" aria-label="Close">&#x2715;</button>
-    </div>
-    <div class="modal-body" style="overflow:visible;">
-      <div class="alt-tpl-grid">
-        <div>
-          <label class="alt-field-label">Event</label>
-          <div class="alt-dropdown" id="alt-addtpl-event" data-value="New Application Submitted">
-            <button type="button" class="alt-dropdown-trigger" onclick="altToggleDrop(this)"><span>New Application Submitted</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
-            <div class="alt-dropdown-menu">
-              <div class="alt-dropdown-item selected" onclick="altSelectDrop(this,'New Application Submitted')">New Application Submitted</div>
-              <div class="alt-dropdown-item" onclick="altSelectDrop(this,'Application Approved')">Application Approved</div>
-              <div class="alt-dropdown-item" onclick="altSelectDrop(this,'Application Denied')">Application Denied</div>
-              <div class="alt-dropdown-item" onclick="altSelectDrop(this,'Funding Complete')">Funding Complete</div>
-              <div class="alt-dropdown-item" onclick="altSelectDrop(this,'Stipulation Required')">Stipulation Required</div>
-            </div>
-          </div>
-        </div>
-        <div>
-          <label class="alt-field-label">Channel</label>
-          <div class="alt-dropdown" id="alt-addtpl-channel" data-value="Email">
-            <button type="button" class="alt-dropdown-trigger" onclick="altToggleDrop(this)"><span>Email</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
-            <div class="alt-dropdown-menu">
-              <div class="alt-dropdown-item selected" onclick="altSelectDrop(this,'Email');altTplChannelChange('add')">Email</div>
-              <div class="alt-dropdown-item" onclick="altSelectDrop(this,'SMS');altTplChannelChange('add')">SMS</div>
-            </div>
-          </div>
-        </div>
-        <div>
-          <label class="alt-field-label">Template Name</label>
-          <input type="text" class="modal-input" id="alt-addtpl-name" placeholder="e.g. Application Received">
-        </div>
-        <div>
-          <label class="alt-field-label">Status</label>
-          <div class="alt-dropdown" id="alt-addtpl-status" data-value="Active">
-            <button type="button" class="alt-dropdown-trigger" onclick="altToggleDrop(this)"><span>Active</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
-            <div class="alt-dropdown-menu">
-              <div class="alt-dropdown-item selected" onclick="altSelectDrop(this,'Active')">Active</div>
-              <div class="alt-dropdown-item" onclick="altSelectDrop(this,'Inactive')">Inactive</div>
-            </div>
-          </div>
-        </div>
-        <div class="alt-tpl-full" id="alt-addtpl-subject-wrap">
-          <label class="alt-field-label">Subject Line</label>
-          <input type="text" class="modal-input" id="alt-addtpl-subject" placeholder="e.g. Your Loan Application Has Been Received">
-        </div>
-        <div class="alt-tpl-full">
-          <label class="alt-field-label">Message Body</label>
-          <textarea id="alt-addtpl-body" placeholder="Type your template message here..."></textarea>
-          <div class="alt-token-ref">
-            <span class="alt-token-chip" onclick="altInsertToken('alt-addtpl-body','customer_name')">{{customer_name}}</span>
-            <span class="alt-token-chip" onclick="altInsertToken('alt-addtpl-body','loan_amount')">{{loan_amount}}</span>
-            <span class="alt-token-chip" onclick="altInsertToken('alt-addtpl-body','application_id')">{{application_id}}</span>
-            <span class="alt-token-chip" onclick="altInsertToken('alt-addtpl-body','dealer_name')">{{dealer_name}}</span>
-            <span class="alt-token-chip" onclick="altInsertToken('alt-addtpl-body','dealer_phone')">{{dealer_phone}}</span>
-            <span class="alt-token-chip" onclick="altInsertToken('alt-addtpl-body','approved_amount')">{{approved_amount}}</span>
-            <span class="alt-token-chip" onclick="altInsertToken('alt-addtpl-body','interest_rate')">{{interest_rate}}</span>
-            <span class="alt-token-chip" onclick="altInsertToken('alt-addtpl-body','term_months')">{{term_months}}</span>
-            <span class="alt-token-chip" onclick="altInsertToken('alt-addtpl-body','monthly_payment')">{{monthly_payment}}</span>
-            <span class="alt-token-chip" onclick="altInsertToken('alt-addtpl-body','first_payment_date')">{{first_payment_date}}</span>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="modal-cancel" onclick="altCloseAddTpl()">Cancel</button>
-      <button class="modal-save" onclick="altSaveAddTpl()">Add Template</button>
-    </div>
-  </div>
-</div>
-
-<!-- EDIT TEMPLATE MODAL -->
-<div class="modal-backdrop modal-fullscreen-mobile" id="alt-edit-tpl-modal" onclick="if(event.target===this)altCloseEditTpl()">
-  <div class="modal" style="width:560px;overflow:visible;">
-    <div class="modal-header">
-      <span class="modal-title">Edit Template</span>
-      <button class="modal-close" onclick="altCloseEditTpl()" aria-label="Close">&#x2715;</button>
-    </div>
-    <div class="modal-body" style="overflow:visible;">
-      <div class="alt-tpl-grid">
-        <div>
-          <label class="alt-field-label">Event</label>
-          <div class="alt-dropdown" id="alt-edittpl-event" data-value="">
-            <button type="button" class="alt-dropdown-trigger" onclick="altToggleDrop(this)"><span>Select event</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
-            <div class="alt-dropdown-menu">
-              <div class="alt-dropdown-item" onclick="altSelectDrop(this,'New Application Submitted')">New Application Submitted</div>
-              <div class="alt-dropdown-item" onclick="altSelectDrop(this,'Application Approved')">Application Approved</div>
-              <div class="alt-dropdown-item" onclick="altSelectDrop(this,'Application Denied')">Application Denied</div>
-              <div class="alt-dropdown-item" onclick="altSelectDrop(this,'Funding Complete')">Funding Complete</div>
-              <div class="alt-dropdown-item" onclick="altSelectDrop(this,'Stipulation Required')">Stipulation Required</div>
-            </div>
-          </div>
-        </div>
-        <div>
-          <label class="alt-field-label">Channel</label>
-          <div class="alt-dropdown" id="alt-edittpl-channel" data-value="">
-            <button type="button" class="alt-dropdown-trigger" onclick="altToggleDrop(this)"><span>Select channel</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
-            <div class="alt-dropdown-menu">
-              <div class="alt-dropdown-item" onclick="altSelectDrop(this,'Email');altTplChannelChange('edit')">Email</div>
-              <div class="alt-dropdown-item" onclick="altSelectDrop(this,'SMS');altTplChannelChange('edit')">SMS</div>
-            </div>
-          </div>
-        </div>
-        <div>
-          <label class="alt-field-label">Template Name</label>
-          <input type="text" class="modal-input" id="alt-edittpl-name" placeholder="Template name">
-        </div>
-        <div>
-          <label class="alt-field-label">Status</label>
-          <div class="alt-dropdown" id="alt-edittpl-status" data-value="">
-            <button type="button" class="alt-dropdown-trigger" onclick="altToggleDrop(this)"><span>Status</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
-            <div class="alt-dropdown-menu">
-              <div class="alt-dropdown-item" onclick="altSelectDrop(this,'Active')">Active</div>
-              <div class="alt-dropdown-item" onclick="altSelectDrop(this,'Inactive')">Inactive</div>
-            </div>
-          </div>
-        </div>
-        <div class="alt-tpl-full" id="alt-edittpl-subject-wrap">
-          <label class="alt-field-label">Subject Line</label>
-          <input type="text" class="modal-input" id="alt-edittpl-subject" placeholder="Subject line">
-        </div>
-        <div class="alt-tpl-full">
-          <label class="alt-field-label">Message Body</label>
-          <textarea id="alt-edittpl-body" placeholder="Type your template message here..."></textarea>
-          <div class="alt-token-ref">
-            <span class="alt-token-chip" onclick="altInsertToken('alt-edittpl-body','customer_name')">{{customer_name}}</span>
-            <span class="alt-token-chip" onclick="altInsertToken('alt-edittpl-body','loan_amount')">{{loan_amount}}</span>
-            <span class="alt-token-chip" onclick="altInsertToken('alt-edittpl-body','application_id')">{{application_id}}</span>
-            <span class="alt-token-chip" onclick="altInsertToken('alt-edittpl-body','dealer_name')">{{dealer_name}}</span>
-            <span class="alt-token-chip" onclick="altInsertToken('alt-edittpl-body','dealer_phone')">{{dealer_phone}}</span>
-            <span class="alt-token-chip" onclick="altInsertToken('alt-edittpl-body','approved_amount')">{{approved_amount}}</span>
-            <span class="alt-token-chip" onclick="altInsertToken('alt-edittpl-body','interest_rate')">{{interest_rate}}</span>
-            <span class="alt-token-chip" onclick="altInsertToken('alt-edittpl-body','term_months')">{{term_months}}</span>
-            <span class="alt-token-chip" onclick="altInsertToken('alt-edittpl-body','monthly_payment')">{{monthly_payment}}</span>
-            <span class="alt-token-chip" onclick="altInsertToken('alt-edittpl-body','first_payment_date')">{{first_payment_date}}</span>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="modal-cancel" style="background:var(--er,#e74c3c);color:#fff;border-color:var(--er,#e74c3c);" onclick="altDeleteTpl()">Delete</button>
-      <div style="display:flex;gap:8px;">
-        <button class="modal-cancel" onclick="altCloseEditTpl()">Cancel</button>
-        <button class="modal-save" onclick="altSaveEditTpl()">Save Changes</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- NODE EDITOR OVERLAY -->
-<div class="ne-overlay" id="ne-overlay">
-  <div class="ne-topbar">
-    <button class="ne-topbar-close" onclick="neClose()" title="Close editor"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+<!-- RULE BUILDER -->
+<div class="rb-overlay" id="rb-overlay">
+  <div class="rb-topbar">
+    <button class="rb-back" onclick="rbClose()" title="Back to alerts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
     <div>
-      <div class="ne-topbar-title" id="ne-title">Alert Flow Editor</div>
-      <div class="ne-topbar-subtitle" id="ne-subtitle">New Application Submitted</div>
+      <div class="rb-title" id="rb-title">Rule</div>
+      <div class="rb-subtitle" id="rb-subtitle">Notification rule</div>
     </div>
-    <div class="ne-search-wrap">
-      <div class="ne-search-inner">
-        <svg class="ne-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="text" class="ne-search-input" id="ne-search" placeholder="Search nodes..." oninput="neSearchNodes(this.value)" onkeydown="if(event.key==='Escape'){this.value='';neSearchNodes('');this.blur();}">
-        <button class="ne-search-clear" id="ne-search-clear" onclick="document.getElementById('ne-search').value='';neSearchNodes('');">&times;</button>
+    <span class="rb-status-pill" id="rb-status">Active</span>
+    <div style="flex:1;"></div>
+    <button class="rb-btn" onclick="rbEditDetails()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"/></svg><span>Details</span></button>
+    <button class="rb-btn rb-primary" onclick="rbSave()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg><span>Save rule</span></button>
+  </div>
+
+  <div class="rb-reads">
+    <div class="rb-reads-lbl">This rule reads as</div>
+    <div class="rb-reads-txt" id="rb-reads"></div>
+  </div>
+
+  <div class="rb-scroll">
+    <div class="rb-layout">
+      <div>
+        <!-- WHEN -->
+        <div class="rb-stage">
+          <div class="rb-ic rb-ic-when"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+          <div class="rb-stage-head"><span class="rb-stage-lbl">WHEN</span></div>
+          <div class="rb-card rb-when-card">
+            <span class="rb-when-name" id="rb-when-name">&mdash;</span>
+            <span class="rb-when-meta">Credit app &middot; any source</span>
+          </div>
+        </div>
+
+        <!-- IF -->
+        <div class="rb-stage">
+          <div class="rb-ic rb-ic-if"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg></div>
+          <div class="rb-stage-head">
+            <span class="rb-stage-lbl">IF</span>
+            <span class="rb-hint">Click any <b>AND</b> / <i>OR</i> to switch it</span>
+          </div>
+          <div id="rb-groups"></div>
+          <button class="rb-addgroup" onclick="rbAddGroup()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add condition group</button>
+        </div>
+
+        <!-- THEN -->
+        <div class="rb-stage">
+          <div class="rb-ic rb-ic-then"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></div>
+          <div class="rb-stage-head"><span class="rb-stage-lbl">THEN</span></div>
+          <div class="rb-card" id="rb-actions"></div>
+        </div>
+      </div>
+
+      <!-- TEST PANEL -->
+      <div class="rb-test">
+        <div class="rb-test-lbl">Test this rule</div>
+        <div class="rb-test-hint">Enter sample application values. The dots beside each condition show which ones pass.</div>
+        <div id="rb-test-fields"></div>
+        <div class="rb-verdict" id="rb-verdict">
+          <div class="rb-verdict-row"><span class="rb-verdict-dot"></span><span id="rb-verdict-ttl">Rule does not fire</span></div>
+          <div class="rb-verdict-txt" id="rb-verdict-txt"></div>
+        </div>
       </div>
     </div>
-    <div style="flex:1;"></div>
-    <button class="ne-topbar-btn" onclick="neResetView()" title="Reset view"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg><span>Reset View</span></button>
-    <button class="ne-topbar-btn ne-primary" id="ne-save-btn" onclick="neSave()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg><span>Save Flow</span></button>
   </div>
-  <div class="ne-canvas-wrap" id="ne-canvas-wrap">
-    <div class="ne-canvas" id="ne-canvas">
-      <svg class="ne-svg" id="ne-svg" xmlns="http://www.w3.org/2000/svg"></svg>
+</div>
+
+<!-- MESSAGE COMPOSER -->
+<div class="modal-backdrop modal-fullscreen-mobile" id="rb-msg-modal" onclick="if(event.target===this)rbMsgCancel()">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="rb-msg-title">Compose message</span>
+      <button class="modal-close" onclick="rbMsgCancel()" aria-label="Close">&#x2715;</button>
     </div>
-    <!-- Floating toolbar -->
-    <div class="ne-toolbar">
-      <button class="ne-tool-btn ne-tool-field" onclick="neAddSingleNode('field')" style=""><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>Field</button>
-      <button class="ne-tool-btn ne-tool-operator" onclick="neAddSingleNode('operator')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10H6M18 14H6"/></svg>Operator</button>
-      <button class="ne-tool-btn ne-tool-value" onclick="neAddSingleNode('value')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Value</button>
-      <div class="ne-tool-sep"></div>
-      <button class="ne-tool-btn ne-tool-action" onclick="neAddActionNode()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>Action</button>
-      <button class="ne-tool-btn ne-tool-text" onclick="neAddSingleNode('text')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>Text</button>
-      <div class="ne-tool-sep"></div>
-      <button class="ne-tool-btn" onclick="neAutoLayout()" title="Auto-arrange nodes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Layout</button>
+    <div class="modal-body" id="rb-msg-body"></div>
+    <div class="modal-footer">
+      <button class="modal-cancel" onclick="rbMsgCancel()">Cancel</button>
+      <button class="modal-save" onclick="rbMsgSave()">Save message</button>
     </div>
-    <div class="ne-zoom-info" id="ne-zoom-info"><button class="ne-zoom-btn" onclick="neZoomStep(-0.1)" title="Zoom out">&minus;</button><span class="ne-zoom-pct" id="ne-zoom-pct">100%</span><button class="ne-zoom-btn" onclick="neZoomStep(0.1)" title="Zoom in">+</button></div>
-    <div class="ne-minimap" id="ne-minimap" onmousedown="neMinimapClick(event)"><canvas id="ne-minimap-canvas" width="360" height="220"></canvas></div>
-    <div class="ne-dock">
-      <button class="ne-dock-btn ne-dock-add" onclick="neOpenNodeSheet()" title="Add node"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
-      <button class="ne-dock-btn" onclick="neAutoLayout()" title="Auto-arrange nodes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></button>
-    </div>
-  </div>
-  <div class="ne-sheet-backdrop" id="ne-sheet-backdrop" onclick="neCloseNodeSheet()"></div>
-  <div class="ne-sheet" id="ne-sheet">
-    <div class="ne-sheet-handle"></div>
-    <div class="ne-sheet-title">Add a node</div>
-    <button class="ne-sheet-row" onclick="neSheetAdd('field')"><span class="ne-sheet-ic ne-ic-field"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg></span><span><span class="ne-sheet-name">Field</span><span class="ne-sheet-desc">Pick a CRM field to check</span></span></button>
-    <button class="ne-sheet-row" onclick="neSheetAdd('operator')"><span class="ne-sheet-ic ne-ic-operator"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10H6M18 14H6"/></svg></span><span><span class="ne-sheet-name">Operator</span><span class="ne-sheet-desc">Compare with &gt; &lt; = &ge; &le;</span></span></button>
-    <button class="ne-sheet-row" onclick="neSheetAdd('value')"><span class="ne-sheet-ic ne-ic-value"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span><span><span class="ne-sheet-name">Value</span><span class="ne-sheet-desc">The value to compare against</span></span></button>
-    <button class="ne-sheet-row" onclick="neSheetAdd('action')"><span class="ne-sheet-ic ne-ic-action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></span><span><span class="ne-sheet-name">Action</span><span class="ne-sheet-desc">Send Email, SMS or In-App</span></span></button>
-    <button class="ne-sheet-row" onclick="neSheetAdd('text')"><span class="ne-sheet-ic ne-ic-text"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span><span><span class="ne-sheet-name">Text</span><span class="ne-sheet-desc">Write the message content</span></span></button>
   </div>
 </div>
 
@@ -1500,15 +1112,6 @@ function hideNavToast(){
   var t = document.getElementById('nav-toast'); if(t) t.classList.remove('show');
   if(navToastTimer){ clearTimeout(navToastTimer); navToastTimer = null; }
 }
-
-// Tabs
-function altSwitchTab(tab){
-  document.querySelectorAll('.alt-tab').forEach(function(t){ t.classList.remove('active'); });
-  document.querySelectorAll('.alt-tab-panel').forEach(function(p){ p.classList.remove('active'); });
-  event.target.classList.add('active');
-  document.getElementById('alt-panel-' + tab).classList.add('active');
-}
-
 // Expandable conditions
 function altToggleConds(row){
   var condRow = row.nextElementSibling;
@@ -1754,1666 +1357,697 @@ document.addEventListener('click', function(e){
     document.querySelectorAll('.alt-dropdown-menu.open').forEach(function(m){ m.classList.remove('open'); m.previousElementSibling.classList.remove('open'); });
   }
 });
-
-// Template preview expand/collapse
-function altToggleTplPreview(row){
-  var preview = row.nextElementSibling;
-  if(!preview || !preview.classList.contains('alt-tpl-preview')) return;
-  var isOpen = preview.classList.contains('open');
-  document.querySelectorAll('.alt-tpl-preview.open').forEach(function(r){ r.classList.remove('open'); r.previousElementSibling.querySelector('.alt-arrow').style.transform=''; });
-  if(!isOpen){
-    preview.classList.add('open');
-    row.querySelector('.alt-arrow').style.transform='rotate(90deg)';
-  }
-}
-
-// Channel SVGs
-var altEmailSvg='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>';
-var altSmsSvg='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>';
-
-function altTplChannelTag(ch){
-  var svg = ch === 'SMS' ? altSmsSvg : altEmailSvg;
-  return '<span class="alt-channel-tag">' + svg + ch + '</span>';
-}
-
-// Show/hide subject line based on channel
-function altTplChannelChange(mode){
-  var prefix = mode === 'add' ? 'alt-addtpl' : 'alt-edittpl';
-  var ch = document.getElementById(prefix + '-channel').dataset.value;
-  document.getElementById(prefix + '-subject-wrap').style.display = ch === 'Email' ? '' : 'none';
-}
-
-// Insert placeholder token into textarea
-function altInsertToken(textareaId, token){
-  var ta = document.getElementById(textareaId);
-  var val = '{{' + token + '}}';
-  var start = ta.selectionStart, end = ta.selectionEnd;
-  ta.value = ta.value.substring(0, start) + val + ta.value.substring(end);
-  ta.focus();
-  ta.selectionStart = ta.selectionEnd = start + val.length;
-}
-
-// Edit template row reference
-var altEditTplRow = null;
-
-function altOpenEditTpl(row){
-  altEditTplRow = row;
-  altSetDropValue('alt-edittpl-event', row.dataset.event);
-  altSetDropValue('alt-edittpl-channel', row.dataset.channel);
-  document.getElementById('alt-edittpl-name').value = row.dataset.name;
-  document.getElementById('alt-edittpl-subject').value = row.dataset.subject || '';
-  document.getElementById('alt-edittpl-body').value = row.dataset.body.replace(/\n/g, '\n');
-  altSetDropValue('alt-edittpl-status', row.dataset.status);
-  altTplChannelChange('edit');
-  document.getElementById('alt-edit-tpl-modal').classList.add('open');
-}
-function altCloseEditTpl(){
-  document.getElementById('alt-edit-tpl-modal').classList.remove('open');
-  altEditTplRow = null;
-}
-function altSaveEditTpl(){
-  if(!altEditTplRow) return;
-  var ev = document.getElementById('alt-edittpl-event').dataset.value;
-  var ch = document.getElementById('alt-edittpl-channel').dataset.value;
-  var nm = document.getElementById('alt-edittpl-name').value.trim();
-  var subj = document.getElementById('alt-edittpl-subject').value.trim();
-  var body = document.getElementById('alt-edittpl-body').value;
-  var st = document.getElementById('alt-edittpl-status').dataset.value;
-  if(!nm){ showNavToast('Error','Template name is required.'); return; }
-  if(ch==='Email' && !subj){ showNavToast('Error','Subject line is required for email.'); return; }
-  if(!body.trim()){ showNavToast('Error','Message body is required.'); return; }
-  altEditTplRow.dataset.event = ev;
-  altEditTplRow.dataset.channel = ch;
-  altEditTplRow.dataset.name = nm;
-  altEditTplRow.dataset.subject = subj;
-  altEditTplRow.dataset.body = body;
-  altEditTplRow.dataset.status = st;
-  var cells = altEditTplRow.querySelectorAll('td');
-  cells[2].textContent = ev;
-  cells[3].innerHTML = altTplChannelTag(ch);
-  cells[4].textContent = nm;
-  cells[5].innerHTML = '<span class="alt-status alt-status-' + st.toLowerCase() + '">' + st + '</span>';
-  var preview = altEditTplRow.nextElementSibling;
-  if(preview && preview.classList.contains('alt-tpl-preview')){
-    var wrap = preview.querySelector('.alt-tpl-preview-wrap');
-    var html = '';
-    if(ch === 'Email') html += '<div class="alt-tpl-subject-line"><strong>Subject:</strong> ' + subj + '</div>';
-    html += '<pre class="alt-tpl-body-preview">' + body.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</pre>';
-    wrap.innerHTML = html;
-  }
-  altCloseEditTpl();
-  showNavToast('Template Updated', nm + ' has been updated.');
-}
-function altDeleteTpl(){
-  if(!altEditTplRow) return;
-  var nm = altEditTplRow.dataset.name;
-  var preview = altEditTplRow.nextElementSibling;
-  if(preview && preview.classList.contains('alt-tpl-preview')) preview.remove();
-  altEditTplRow.remove();
-  altCloseEditTpl();
-  altRenumberTpl();
-  showNavToast('Template Deleted', nm + ' has been removed.');
-}
-
-// Add template
-function altOpenAddTpl(){
-  altSetDropValue('alt-addtpl-event','New Application Submitted');
-  altSetDropValue('alt-addtpl-channel','Email');
-  altSetDropValue('alt-addtpl-status','Active');
-  document.getElementById('alt-addtpl-name').value='';
-  document.getElementById('alt-addtpl-subject').value='';
-  document.getElementById('alt-addtpl-body').value='';
-  document.getElementById('alt-addtpl-subject-wrap').style.display='';
-  document.getElementById('alt-add-tpl-modal').classList.add('open');
-}
-function altCloseAddTpl(){
-  document.getElementById('alt-add-tpl-modal').classList.remove('open');
-}
-function altSaveAddTpl(){
-  var ev = document.getElementById('alt-addtpl-event').dataset.value;
-  var ch = document.getElementById('alt-addtpl-channel').dataset.value;
-  var nm = document.getElementById('alt-addtpl-name').value.trim();
-  var subj = document.getElementById('alt-addtpl-subject').value.trim();
-  var body = document.getElementById('alt-addtpl-body').value;
-  var st = document.getElementById('alt-addtpl-status').dataset.value;
-  if(!nm){ showNavToast('Error','Template name is required.'); return; }
-  if(ch==='Email' && !subj){ showNavToast('Error','Subject line is required for email.'); return; }
-  if(!body.trim()){ showNavToast('Error','Message body is required.'); return; }
-  var tbody = document.getElementById('alt-tpl-tbody');
-  var num = tbody.querySelectorAll('.alt-tpl-row').length + 1;
-  var tr = document.createElement('tr');
-  tr.className = 'alt-tpl-row';
-  tr.setAttribute('onclick','altOpenEditTpl(this)');
-  tr.dataset.event = ev;
-  tr.dataset.channel = ch;
-  tr.dataset.name = nm;
-  tr.dataset.subject = subj;
-  tr.dataset.body = body;
-  tr.dataset.status = st;
-  tr.innerHTML = '<td><button class="alt-arrow-btn" onclick="event.stopPropagation();altToggleTplPreview(this.closest(\'.alt-tpl-row\'))"><svg class="alt-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></button></td>'
-    + '<td>' + num + '</td>'
-    + '<td>' + ev + '</td>'
-    + '<td>' + altTplChannelTag(ch) + '</td>'
-    + '<td>' + nm + '</td>'
-    + '<td><span class="alt-status alt-status-' + st.toLowerCase() + '">' + st + '</span></td>';
-  tbody.appendChild(tr);
-  var prev = document.createElement('tr');
-  prev.className = 'alt-tpl-preview';
-  var previewHtml = '<td colspan="6"><div class="alt-tpl-preview-wrap">';
-  if(ch === 'Email') previewHtml += '<div class="alt-tpl-subject-line"><strong>Subject:</strong> ' + subj + '</div>';
-  previewHtml += '<pre class="alt-tpl-body-preview">' + body.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</pre>';
-  previewHtml += '</div></td>';
-  prev.innerHTML = previewHtml;
-  tbody.appendChild(prev);
-  altCloseAddTpl();
-  showNavToast('Template Added', nm + ' has been created.');
-}
-function altRenumberTpl(){
-  var rows = document.querySelectorAll('#alt-tpl-tbody .alt-tpl-row');
-  rows.forEach(function(r, i){ r.querySelectorAll('td')[1].textContent = i + 1; });
-}
-
 function toggleProductSwitcher(e){ e.stopPropagation(); document.getElementById('product-switcher').classList.toggle('open'); }
 document.addEventListener('click', function(){ var ps = document.getElementById('product-switcher'); if(ps) ps.classList.remove('open'); });
 function closeNotifications(){ document.getElementById('notif-panel') && document.getElementById('notif-panel').classList.remove('open'); }
 
+
 // ════════════════════════════════════════════════════════════════
-// NODE EDITOR — Phase 1
+// RULE BUILDER
 // ════════════════════════════════════════════════════════════════
-var ne = {
-  alertIdx: null,
-  nodes: [],
-  connections: [],
-  nextId: 1,
-  connId: 1,
-  pan: { x: 0, y: 0 },
-  zoom: 1,
-  isPanning: false,
-  panStart: { x: 0, y: 0 },
-  dragNode: null,
-  dragOffset: { x: 0, y: 0 },
-  wiring: null,
-  selectedConn: null,
-  selectedNode: null,
-  multiSelected: [],
-  history: [],
-  historyIdx: -1,
-  selectBox: null
-};
+var rb = { row: null, event: '', status: 'Active', groups: [], actions: [], sample: {}, nextId: 1 };
 
-function neOpen(alertIdx) {
-  ne.alertIdx = alertIdx;
-  ne.nodes = [];
-  ne.connections = [];
-  ne.nextId = 1;
-  ne.connId = 1;
-  ne.pan = { x: 0, y: 0 };
-  ne.zoom = 1;
-  ne.wiring = null;
-  ne.selectedConn = null;
-  ne.selectedNode = null;
-  ne.multiSelected = [];
-  ne.history = [];
-  ne.historyIdx = -1;
+var rbFieldGroups = [
+  { label: 'Loan Details', fields: ['Loan Amount','Down Payment','Interest Rate','Term (months)','Monthly Payment','LTV Ratio','APR','Finance Charge','Amount Financed','Balloon Payment'] },
+  { label: 'Applicant Info', fields: ['Credit Score','Applicant Name','Co-Applicant Name','Phone Number','Email','SSN (last 4)','Date of Birth','Employment Status','Monthly Income','Years Employed','Housing Status','Monthly Housing Payment'] },
+  { label: 'Vehicle Details', fields: ['Vehicle Year','Vehicle Make','Vehicle Model','Vehicle Trim','VIN','Mileage','Vehicle Type (New/Used/CPO)','MSRP','Invoice Price','Book Value','Stock Number'] },
+  { label: 'Deal Info', fields: ['Deal Type (Retail/Lease)','Deal Status','Trade-In Value','Trade-In Payoff','Negative Equity','Back-End Products Total','GAP Insurance','Extended Warranty','F&I Gross Profit','Front-End Gross Profit'] },
+  { label: 'Lender / Funding', fields: ['Lender Name','Lender Decision','Stipulation Count','Days in Funding','Approval Amount','Buy Rate','Reserve Amount','Funding Status'] },
+  { label: 'Dealership', fields: ['Dealer Name','Sales Person','F&I Manager','BDC Agent','Desk Manager','Store Location'] }
+];
+var rbOperators = [
+  {v:'=',  label:'Has a value of',           phrase:'has a value of'},
+  {v:'<',  label:'Less than',                phrase:'is less than'},
+  {v:'>',  label:'Greater than',             phrase:'is greater than'},
+  {v:'<=', label:'Less than or equal to',    phrase:'is less than or equal to'},
+  {v:'>=', label:'Greater than or equal to', phrase:'is greater than or equal to'},
+  {v:'<>', label:'Not equal to',             phrase:'is not equal to'}
+];
+// Fields rendered with a currency prefix in the summary sentence
+var rbMoneyFields = ['Loan Amount','Down Payment','Monthly Payment','Finance Charge','Amount Financed','Balloon Payment','Monthly Income','Monthly Housing Payment','MSRP','Invoice Price','Book Value','Trade-In Value','Trade-In Payoff','Negative Equity','Back-End Products Total','GAP Insurance','Extended Warranty','F&I Gross Profit','Front-End Gross Profit','Approval Amount','Reserve Amount'];
+var rbActionTypes = [
+  {v:'Email',  name:'Send email',          verb:'email'},
+  {v:'SMS',    name:'Send SMS',            verb:'text'},
+  {v:'In-App', name:'In-app notification', verb:'notify'}
+];
 
-  var rows = document.querySelectorAll('.alt-alert-row');
-  var row = rows[alertIdx];
-  if (!row) return;
-
-  var evtName = row.getAttribute('data-event') || 'Alert';
-  var channels = (row.getAttribute('data-channels') || '').split(',').filter(Boolean);
-  var recipients = row.getAttribute('data-recipients') || '';
-
-  document.getElementById('ne-subtitle').textContent = evtName;
-  document.getElementById('ne-canvas').innerHTML = '<svg class="ne-svg" id="ne-svg" xmlns="http://www.w3.org/2000/svg"></svg>';
-
-  // Check for saved layout
-  var savedLayout = row.getAttribute('data-layout');
-  if (savedLayout) {
-    try {
-      var layout = JSON.parse(savedLayout);
-      var idMap = {};
-      layout.nodes.forEach(function(n) {
-        var newId = neCreateNode(n.type, n.x, n.y, n.data);
-        idMap[n.id] = newId;
-      });
-      layout.connections.forEach(function(c) {
-        var from = idMap[c.from] || c.from;
-        var to = idMap[c.to] || c.to;
-        neAddConnection(from, to);
-      });
-      if (layout.pan) ne.pan = layout.pan;
-      if (layout.zoom) ne.zoom = layout.zoom;
-      neApplyTransform();
-      document.getElementById('ne-zoom-pct').textContent = Math.round(ne.zoom * 100) + '%';
-      document.getElementById('ne-overlay').classList.add('open');
-      requestAnimationFrame(function(){ neRenderConnections(); neSnapshot(); });
-      return;
-    } catch(e) {}
-  }
-
-  // Default layout — build from alert row data
-  var eventId = neCreateNode('event', 120, 200, {
-    title: evtName,
-    subtitle: 'Trigger'
-  });
-
-  var condRow = document.querySelector('.alt-cond-row[data-alert-idx="' + alertIdx + '"]');
-  var condEls = condRow ? condRow.querySelectorAll('.alt-cond') : [];
-  var condChains = [];
-  var chainY = 160;
-  var conditions = [];
-  condEls.forEach(function(el) {
-    conditions.push({
-      field: el.querySelector('.alt-cond-field').textContent,
-      op: el.querySelector('.alt-cond-op').textContent,
-      val: el.querySelector('.alt-cond-val').textContent
-    });
-  });
-  if (conditions.length === 0) {
-    conditions.push({ field: 'Loan Amount', op: '>', val: '' });
-  }
-
-  conditions.forEach(function(c) {
-    var fId = neCreateNode('field', 380, chainY, { field: c.field });
-    var oId = neCreateNode('operator', 560, chainY + 10, { operator: c.op });
-    var vId = neCreateNode('value', 700, chainY, { value: c.val });
-    condChains.push({ fieldId: fId, opId: oId, valId: vId });
-    chainY += 180;
-  });
-
-  var actionIds = [];
-  var actionY = 160;
-  channels.forEach(function(ch) {
-    ch = ch.trim();
-    actionIds.push(neCreateNode('action', 900, actionY, {
-      channel: ch,
-      recipients: recipients
-    }));
-    actionY += 180;
-  });
-
-  var textIds = [];
-  var msgData = (row.getAttribute('data-messages') || '').split('|||').filter(Boolean);
-  actionIds.forEach(function(aid, i) {
-    var nd = ne.nodes.find(function(n){ return n.id === aid; });
-    var ch = nd ? nd.data.channel : '';
-    var msg = msgData[i] ? JSON.parse(msgData[i]) : {};
-    var tid = neCreateNode('text', 1100, 160 + i * 180, {
-      channel: ch, subject: msg.subject || '', body: msg.body || ''
-    });
-    textIds.push(tid);
-  });
-
-  condChains.forEach(function(chain) {
-    neAddConnection(eventId, chain.fieldId);
-    neAddConnection(chain.fieldId, chain.opId);
-    neAddConnection(chain.opId, chain.valId);
-    actionIds.forEach(function(aid) {
-      neAddConnection(chain.valId, aid);
-    });
-  });
-  actionIds.forEach(function(aid, i) {
-    neAddConnection(aid, textIds[i]);
-  });
-
-  document.getElementById('ne-overlay').classList.add('open');
-  requestAnimationFrame(function(){
-    neRenderConnections();
-    neFitView();
-    neSnapshot();
-  });
+function rbEsc(s){
+  if(s == null) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function rbIsMoney(field){ return rbMoneyFields.indexOf(field) > -1; }
+function rbFmtValue(field, value){
+  if(value === '' || value == null) return '…';
+  var n = parseFloat(String(value).replace(/[^0-9.\-]/g, ''));
+  if(isNaN(n)) return value;
+  var s = n.toLocaleString('en-US');
+  return rbIsMoney(field) ? '$' + s : s;
+}
+function rbOpLabel(v){
+  for(var i=0;i<rbOperators.length;i++){ if(rbOperators[i].v === v) return rbOperators[i].label; }
+  return v;
+}
+function rbOpPhrase(v){
+  for(var i=0;i<rbOperators.length;i++){ if(rbOperators[i].v === v) return rbOperators[i].phrase; }
+  return v;
 }
 
-function neClose() {
-  document.getElementById('ne-overlay').classList.remove('open');
-  ne.alertIdx = null;
+function rbOpenFromRow(row){
+  rb.row = row;
+  rb.event = row.dataset.event || 'Alert';
+  rb.status = row.dataset.status || 'Active';
+  rb.sample = {};
+  rb.nextId = 1;
+
+  // Seed a starter condition group and one action per configured channel
+  rb.groups = [{ id: rb.nextId++, conditions: [
+    { id: rb.nextId++, field: 'Loan Amount', operator: '>', value: '', joinPrev: 'AND' }
+  ], joinPrev: 'OR' }];
+
+  var recips = (row.dataset.recipients || '').split(',').map(function(r){ return r.trim(); }).filter(Boolean)
+    .map(function(r){ return rbRoleToPerson[r] || r; });
+  rb.actions = (row.dataset.channels || '').split(',').map(function(c){ return c.trim(); }).filter(Boolean)
+    .map(function(ch){ return { id: rb.nextId++, type: ch, recipients: recips.slice(), subject: '', title: '', body: '' }; });
+
+  document.getElementById('rb-title').textContent = rb.event;
+  document.getElementById('rb-when-name').textContent = 'A new application is submitted';
+  var pill = document.getElementById('rb-status');
+  pill.textContent = rb.status;
+  pill.classList.toggle('is-inactive', rb.status !== 'Active');
+
+  rbRenderAll();
+  document.getElementById('rb-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
 }
 
-function neSave() {
-  if (ne.alertIdx === null) return;
-  neValidateNodes();
-  var rows = document.querySelectorAll('.alt-alert-row');
-  var row = rows[ne.alertIdx];
-  if (!row) return;
+function rbClose(){
+  document.getElementById('rb-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+  rbCloseMenu();
+}
+function rbEditDetails(){ if(rb.row) altOpenEditModal(rb.row); }
 
-  // Build adjacency: for each node, find what it connects to
-  var outMap = {};
-  var inMap = {};
-  ne.connections.forEach(function(c) {
-    if (!outMap[c.from]) outMap[c.from] = [];
-    outMap[c.from].push(c.to);
-    if (!inMap[c.to]) inMap[c.to] = [];
-    inMap[c.to].push(c.from);
-  });
-
-  // Find the event node
-  var eventNode = ne.nodes.find(function(n) { return n.type === 'event'; });
-  if (!eventNode) { showNavToast('Error', 'No event trigger node found.'); return; }
-
-  // Walk chains: Event → Field → Operator → Value (each field reachable from event)
-  var fieldNodes = ne.nodes.filter(function(n) { return n.type === 'field'; });
-  var conditions = [];
-  var warnings = [];
-  fieldNodes.forEach(function(fn) {
-    var connectedFromEvent = (outMap[eventNode.id] || []).indexOf(fn.id) !== -1;
-    var field = fn.data.field || '';
-    // Find operator connected from this field
-    var opNodes = (outMap[fn.id] || []).map(function(tid) {
-      return ne.nodes.find(function(n) { return n.id === tid && n.type === 'operator'; });
-    }).filter(Boolean);
-    if (opNodes.length === 0) { warnings.push('Field "' + field + '" has no operator connected.'); return; }
-    opNodes.forEach(function(on) {
-      var op = on.data.operator || '>';
-      // Find value connected from this operator
-      var valNodes = (outMap[on.id] || []).map(function(tid) {
-        return ne.nodes.find(function(n) { return n.id === tid && n.type === 'value'; });
-      }).filter(Boolean);
-      if (valNodes.length === 0) { warnings.push('Operator "' + op + '" has no value connected.'); return; }
-      valNodes.forEach(function(vn) {
-        var val = vn.data.value || '';
-        if (!val) warnings.push('Value node for "' + field + ' ' + op + '" is empty.');
-        conditions.push({ field: field, op: op, val: val });
-      });
-    });
-  });
-
-  // Collect action nodes
-  var actionNodes = ne.nodes.filter(function(n) { return n.type === 'action'; });
-  var channels = [];
-  var allRecipients = [];
-  actionNodes.forEach(function(an) {
-    var ch = an.data.channel || '';
-    if (ch && channels.indexOf(ch) === -1) channels.push(ch);
-    (an.data.recipients || '').split(',').forEach(function(r) {
-      r = r.trim();
-      if (r && allRecipients.indexOf(r) === -1) allRecipients.push(r);
-    });
-  });
-
-  // Collect text node messages, keyed by connected action channel
-  var textNodes = ne.nodes.filter(function(n) { return n.type === 'text'; });
-  var messages = [];
-  actionNodes.forEach(function(an) {
-    var textConn = ne.connections.find(function(c) { return c.from === an.id; });
-    var tn = textConn ? ne.nodes.find(function(n) { return n.id === textConn.to && n.type === 'text'; }) : null;
-    if (tn) {
-      messages.push(JSON.stringify({ channel: an.data.channel, subject: tn.data.subject || '', body: tn.data.body || '' }));
-    } else {
-      messages.push(JSON.stringify({ channel: an.data.channel, subject: '', body: '' }));
-    }
-  });
-
-  if (warnings.length > 0) {
-    if (!confirm('Warnings:\n• ' + warnings.join('\n• ') + '\n\nSave anyway?')) return;
-  }
-
-  // Update the alert row data attributes
-  row.setAttribute('data-channels', channels.join(','));
-  row.setAttribute('data-recipients', allRecipients.join(','));
-  row.setAttribute('data-messages', messages.join('|||'));
-
-  // Update visible channel tags
-  var chIcons = {
-    Email: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>',
-    SMS: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
-    'In-App': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>'
-  };
-  var channelTd = row.querySelectorAll('td')[3];
-  if (channelTd) {
-    channelTd.innerHTML = '<div class="alt-channels">' + channels.map(function(ch) {
-      return '<span class="alt-channel-tag">' + (chIcons[ch] || '') + ch + '</span>';
-    }).join('') + '</div>';
-  }
-
-  // Update visible recipients
-  var recipTd = row.querySelectorAll('td')[4];
-  if (recipTd) {
-    recipTd.innerHTML = '<span class="alt-recipients">' + allRecipients.join(', ') + '</span>';
-  }
-
-  // Update condition row
-  var condRow = document.querySelector('.alt-cond-row[data-alert-idx="' + ne.alertIdx + '"]');
-  if (condRow) {
-    var condList = condRow.querySelector('.alt-cond-list');
-    if (condList) {
-      if (conditions.length === 0) {
-        condList.innerHTML = '<span class="alt-empty-conds">No conditions — this alert triggers for all events.</span>';
-      } else {
-        condList.innerHTML = conditions.map(function(c) {
-          return '<div class="alt-cond">'
-            + '<span class="alt-cond-field">' + c.field + '</span>'
-            + '<span class="alt-cond-op">' + c.op.replace(/>/g,'&gt;').replace(/</g,'&lt;') + '</span>'
-            + '<span class="alt-cond-val">' + (c.val || '—') + '</span>'
-            + '<div class="alt-cond-actions">'
-            + '<button class="alt-cond-btn" title="Edit" onclick="event.stopPropagation();altEditCond(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>'
-            + '<button class="alt-cond-btn" title="Delete" onclick="event.stopPropagation();altDeleteCond(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>'
-            + '</div></div>';
-        }).join('');
-      }
-    }
-  }
-
-  // Save layout (positions, connections, zoom, pan)
-  var layout = {
-    nodes: ne.nodes.map(function(n) {
-      return { id: n.id, type: n.type, x: parseFloat(n.el.style.left), y: parseFloat(n.el.style.top), data: n.data };
-    }),
-    connections: ne.connections.map(function(c) { return { from: c.from, to: c.to }; }),
-    pan: ne.pan,
-    zoom: ne.zoom
-  };
-  row.setAttribute('data-layout', JSON.stringify(layout));
-
-  showNavToast('Flow Saved', 'Alert flow updated — ' + conditions.length + ' condition(s), ' + channels.length + ' channel(s).');
+function rbRenderAll(){
+  rbRenderGroups();
+  rbRenderActions();
+  rbRenderTest();
+  rbRenderReads();
+  rbUpdateSubtitle();
 }
 
-function neCreateNode(type, x, y, data) {
-  var id = 'ne-node-' + ne.nextId++;
-  var node = document.createElement('div');
-  node.className = 'ne-node ne-node-' + type;
-  node.id = id;
-  node.dataset.type = type;
-  node.dataset.nodeId = id;
-  node.style.left = x + 'px';
-  node.style.top = y + 'px';
+function rbUpdateSubtitle(){
+  var chans = rb.actions.map(function(a){ return a.type; });
+  document.getElementById('rb-subtitle').textContent =
+    'Notification rule' + (chans.length ? ' · ' + chans.join(', ') : '');
+}
 
-  var icons = {
-    event: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
-    condition: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>',
-    field: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>',
-    operator: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10H6M18 14H6"/></svg>',
-    value: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>',
-    action: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>',
-    text: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>'
-  };
+function rbFindGroup(id){ for(var i=0;i<rb.groups.length;i++){ if(rb.groups[i].id===id) return rb.groups[i]; } return null; }
+function rbFindCond(id){
+  for(var i=0;i<rb.groups.length;i++){
+    var cs = rb.groups[i].conditions;
+    for(var j=0;j<cs.length;j++){ if(cs[j].id===id) return cs[j]; }
+  }
+  return null;
+}
 
-  var typeLabels = { event: 'EVENT', condition: 'CONDITION', field: 'FIELD', operator: 'OPERATOR', value: 'VALUE', action: 'ACTION', text: 'TEXT' };
-  var title = '';
-  var bodyHtml = '';
+function rbGroupSubtitle(g){
+  if(g.conditions.length < 2) return 'all of these must match';
+  var joins = g.conditions.slice(1).map(function(c){ return c.joinPrev; });
+  var allAnd = joins.every(function(j){ return j === 'AND'; });
+  var allOr  = joins.every(function(j){ return j === 'OR'; });
+  if(allAnd) return 'all of these must match';
+  if(allOr)  return 'any of these must match';
+  return 'custom match';
+}
 
-  var fieldGroups = [
-    { label: 'Loan Details', fields: ['Loan Amount','Down Payment','Interest Rate','Term (months)','Monthly Payment','LTV Ratio','APR','Finance Charge','Amount Financed','Balloon Payment'] },
-    { label: 'Applicant Info', fields: ['Credit Score','Applicant Name','Co-Applicant Name','Phone Number','Email','SSN (last 4)','Date of Birth','Employment Status','Monthly Income','Years Employed','Housing Status','Monthly Housing Payment'] },
-    { label: 'Vehicle Details', fields: ['Vehicle Year','Vehicle Make','Vehicle Model','Vehicle Trim','VIN','Mileage','Vehicle Type (New/Used/CPO)','MSRP','Invoice Price','Book Value','Stock Number'] },
-    { label: 'Deal Info', fields: ['Deal Type (Retail/Lease)','Deal Status','Trade-In Value','Trade-In Payoff','Negative Equity','Back-End Products Total','GAP Insurance','Extended Warranty','F&I Gross Profit','Front-End Gross Profit'] },
-    { label: 'Lender / Funding', fields: ['Lender Name','Lender Decision','Stipulation Count','Days in Funding','Approval Amount','Buy Rate','Reserve Amount','Funding Status'] },
-    { label: 'Dealership', fields: ['Dealer Name','Sales Person','F&I Manager','BDC Agent','Desk Manager','Store Location'] }
-  ];
-  var opOptions = [{v:'>',label:'>'},{v:'<',label:'<'},{v:'>=',label:'≥'},{v:'<=',label:'≤'},{v:'=',label:'='}];
-  var tokenGroups = [
-    { label: 'Customer', tokens: ['customer_name','credit_score','application_id'] },
-    { label: 'Loan', tokens: ['loan_amount','interest_rate','term_months','monthly_payment'] },
-    { label: 'Vehicle', tokens: ['vehicle_year','vehicle_make','vehicle_model'] },
-    { label: 'Deal', tokens: ['deal_status','lender_name'] },
-    { label: 'Dealership', tokens: ['dealer_name','sales_person'] }
-  ];
+function rbRenderGroups(){
+  var host = document.getElementById('rb-groups');
+  if(!host) return;
+  host.innerHTML = rb.groups.map(function(g, gi){
+    var sep = gi === 0 ? '' :
+      '<div class="rb-sep"><span class="rb-sep-line"></span>'
+      + '<button class="rb-join' + (g.joinPrev === 'OR' ? ' is-or' : '') + '" onclick="rbToggleGroupJoin(' + g.id + ')">' + g.joinPrev + '</button>'
+      + '<span class="rb-sep-line"></span></div>';
 
-  if (type === 'event') {
-    title = data.title || 'Event';
-    bodyHtml = '<div style="color:var(--tx);font-size:12.5px;">' + (data.subtitle || '') + '</div>';
-  } else if (type === 'field') {
-    title = data.field || 'Field';
-    var fOpts = fieldGroups.map(function(g){
-      return '<optgroup label="'+g.label+'">' + g.fields.map(function(f){
-        return '<option value="'+f+'"'+(f===data.field?' selected':'')+'>'+f+'</option>';
-      }).join('') + '</optgroup>';
-    }).join('');
-    bodyHtml = '<select class="ne-select ne-field-select" data-prop="field" onchange="neNodeDataChange(this);this.closest(\'.ne-node\').querySelector(\'.ne-node-label\').textContent=this.value" onmousedown="event.stopPropagation()">' + fOpts + '</select>';
-  } else if (type === 'operator') {
-    var curOp = data.operator || '>';
-    title = curOp;
-    var oOpts = opOptions.map(function(o){ return '<option value="'+o.v+'"'+(o.v===curOp?' selected':'')+'>'+o.label+' '+{'>':'Greater than','<':'Less than','>=':'Greater or equal','<=':'Less or equal','=':'Equal to'}[o.v]+'</option>'; }).join('');
-    bodyHtml = '<select class="ne-select" style="width:100%;font-weight:600;color:var(--tx);" data-prop="operator" onchange="neNodeDataChange(this);this.closest(\'.ne-node\').querySelector(\'.ne-node-label\').textContent=this.value" onmousedown="event.stopPropagation()">' + oOpts + '</select>';
-  } else if (type === 'value') {
-    title = data.value || 'Value';
-    bodyHtml = '<input class="ne-input" type="text" placeholder="Enter value…" value="' + (data.value || '').replace(/"/g,'&quot;') + '" data-prop="value" oninput="neNodeDataChange(this);this.closest(\'.ne-node\').querySelector(\'.ne-node-label\').textContent=this.value||\'Value\'" onmousedown="event.stopPropagation()" />';
-  } else if (type === 'condition') {
-    title = 'Condition';
-    bodyHtml = '<div style="font-size:11.5px;color:var(--mu);">Legacy</div>';
-  } else if (type === 'action') {
-    title = (data.channel || 'Notification');
-    var chIcons = {
-      Email:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>',
-      SMS:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
-      'In-App':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>'
-    };
-    var chPills = ['Email','SMS','In-App'].map(function(ch){
-      return '<button class="ne-ch-opt'+(ch===data.channel?' ne-ch-active':'')+'" data-ch="'+ch+'" onclick="neToggleChannel(this)" onmousedown="event.stopPropagation()">'+(chIcons[ch]||'')+' '+ch+'</button>';
-    }).join('');
-    var recipTags = (data.recipients||'').split(',').filter(Boolean).map(function(r){
-      return '<span class="ne-recip-tag">'+r.trim()+'<button class="ne-recip-x" onclick="neRemoveRecip(this)" onmousedown="event.stopPropagation()">&times;</button></span>';
-    }).join('');
-    bodyHtml = '<div class="ne-channel-pick">' + chPills + '</div>'
-      + '<div class="ne-recip-wrap" data-node-id="' + id + '">' + recipTags
-      + '<button class="ne-recip-add" onclick="neAddRecipPrompt(this)" onmousedown="event.stopPropagation()" title="Add recipient">+</button>'
-      + '</div>';
-  } else if (type === 'text') {
-    title = data.channel ? data.channel + ' Message' : 'Message';
-    var showSubject = (data.channel === 'Email');
-    bodyHtml = '<input class="ne-text-subject' + (showSubject ? '' : ' ne-hidden') + '" type="text" placeholder="Subject line…" value="' + (data.subject || '').replace(/"/g,'&quot;') + '" data-prop="subject" oninput="neNodeDataChange(this)" onfocus="ne.lastTextTarget=this" onmousedown="event.stopPropagation()" />'
-      + '<textarea class="ne-text-body" placeholder="Write your message…" data-prop="body" oninput="neNodeDataChange(this)" onfocus="ne.lastTextTarget=this" onmousedown="event.stopPropagation()">' + (data.body || '') + '</textarea>'
-      + '<select class="ne-select ne-token-select" onchange="neInsertToken(this)" onmousedown="event.stopPropagation()">'
-      + '<option value="">Insert Variable…</option>'
-      + tokenGroups.map(function(g){
-        return '<optgroup label="'+g.label+'">' + g.tokens.map(function(t){
-          return '<option value="{{'+t+'}}">{{'+t+'}}</option>';
+    var conds = g.conditions.map(function(c, ci){
+      var lead = ci === 0
+        ? '<span class="rb-where">Where</span>'
+        : '<button class="rb-join' + (c.joinPrev === 'OR' ? ' is-or' : '') + '" onclick="rbToggleCondJoin(' + c.id + ')">' + c.joinPrev + '</button>';
+      var fieldOpts = rbFieldGroups.map(function(fg){
+        return '<optgroup label="' + rbEsc(fg.label) + '">' + fg.fields.map(function(f){
+          return '<option value="' + rbEsc(f) + '"' + (c.field === f ? ' selected' : '') + '>' + rbEsc(f) + '</option>';
         }).join('') + '</optgroup>';
-      }).join('')
-      + '</select>';
+      }).join('');
+      var opOpts = rbOperators.map(function(o){
+        return '<option value="' + rbEsc(o.v) + '"' + (c.operator === o.v ? ' selected' : '') + '>' + rbEsc(o.v) + '  ' + rbEsc(o.label) + '</option>';
+      }).join('');
+      var pass = rbEvalCondition(c);
+      return '<div class="rb-cond">' + lead
+        + '<select class="rb-input" onchange="rbCondChange(' + c.id + ',\'field\',this.value)">' + fieldOpts + '</select>'
+        + '<select class="rb-input" onchange="rbCondChange(' + c.id + ',\'operator\',this.value)">' + opOpts + '</select>'
+        + '<input type="text" class="rb-input" placeholder="value" value="' + rbEsc(c.value) + '" oninput="rbCondChange(' + c.id + ',\'value\',this.value)">'
+        + '<span class="rb-dot' + (pass ? ' is-pass' : '') + '" title="' + (pass ? 'Passes with the sample values' : 'Does not pass') + '"></span>'
+        + '<button class="rb-x" onclick="rbRemoveCond(' + c.id + ')" title="Remove condition">&times;</button>'
+      + '</div>';
+    }).join('');
+
+    return sep + '<div class="rb-group">'
+      + '<div class="rb-group-head">'
+        + '<span class="rb-group-title">Group ' + (gi + 1) + ' &middot; ' + rbGroupSubtitle(g) + '</span>'
+        + (rb.groups.length > 1 ? '<button class="rb-group-remove" onclick="rbRemoveGroup(' + g.id + ')">Remove group</button>' : '')
+      + '</div>'
+      + conds
+      + '<button class="rb-add" onclick="rbAddCond(' + g.id + ')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add condition</button>'
+    + '</div>';
+  }).join('');
+}
+
+// ── Condition / group mutations ──
+function rbCondChange(id, prop, val){
+  var c = rbFindCond(id); if(!c) return;
+  c[prop] = val;
+  if(prop === 'field'){ rbRenderTest(); }
+  rbRenderGroups(); rbRenderReads(); rbRenderVerdict();
+  if(prop === 'field') rbRenderTest();
+}
+function rbToggleCondJoin(id){
+  var c = rbFindCond(id); if(!c) return;
+  c.joinPrev = c.joinPrev === 'AND' ? 'OR' : 'AND';
+  rbRenderGroups(); rbRenderReads(); rbRenderVerdict();
+}
+function rbToggleGroupJoin(id){
+  var g = rbFindGroup(id); if(!g) return;
+  g.joinPrev = g.joinPrev === 'AND' ? 'OR' : 'AND';
+  rbRenderGroups(); rbRenderReads(); rbRenderVerdict();
+}
+function rbAddCond(groupId){
+  var g = rbFindGroup(groupId); if(!g) return;
+  g.conditions.push({ id: rb.nextId++, field: 'Loan Amount', operator: '>', value: '', joinPrev: 'AND' });
+  rbRenderGroups(); rbRenderTest(); rbRenderReads();
+}
+function rbRemoveCond(id){
+  for(var i=0;i<rb.groups.length;i++){
+    var g = rb.groups[i];
+    var idx = g.conditions.map(function(c){ return c.id; }).indexOf(id);
+    if(idx > -1){
+      g.conditions.splice(idx, 1);
+      if(!g.conditions.length && rb.groups.length > 1) rb.groups.splice(i, 1);
+      break;
+    }
   }
-
-  node.innerHTML = '<button class="ne-node-delete" onclick="neDeleteNode(this)" onmousedown="event.stopPropagation()" title="Delete node">&times;</button>'
-    + '<button class="ne-node-copy" onclick="neCopyNode(this)" onmousedown="event.stopPropagation()" title="Copy node"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>'
-    + '<div class="ne-node-header">'
-    + '<div class="ne-node-icon">' + (icons[type] || '') + '</div>'
-    + '<div><div class="ne-node-label">' + title + '</div>'
-    + '<div class="ne-node-type">' + typeLabels[type] + '</div></div>'
-    + '</div>'
-    + '<div class="ne-node-body">' + bodyHtml + '</div>';
-
-  // Add ports — event: out only, text: in only, others: both
-  var hasOut = (type !== 'text');
-  var hasIn = (type !== 'event');
-  if (hasOut) {
-    var outPort = document.createElement('div');
-    outPort.className = 'ne-port ne-port-out ne-port-' + type;
-    outPort.dataset.portType = 'out';
-    outPort.dataset.nodeId = id;
-    outPort.addEventListener('mousedown', function(e) { neStartWiring(e, outPort); });
-    outPort.addEventListener('mouseup', function(e) { if (ne.wiring) neCompleteWiring(outPort); });
-    node.appendChild(outPort);
-  }
-  if (hasIn) {
-    var inPort = document.createElement('div');
-    inPort.className = 'ne-port ne-port-in ne-port-' + type;
-    inPort.dataset.portType = 'in';
-    inPort.dataset.nodeId = id;
-    inPort.addEventListener('mousedown', function(e) { neStartWiring(e, inPort); });
-    inPort.addEventListener('mouseup', function(e) { if (ne.wiring) neCompleteWiring(inPort); });
-    node.appendChild(inPort);
-  }
-
-  document.getElementById('ne-canvas').appendChild(node);
-  ne.nodes.push({ id: id, type: type, x: x, y: y, data: data, el: node });
-
-  // Drag events
-  node.addEventListener('mousedown', function(e) {
-    if (e.target.classList.contains('ne-port')) return;
-    if (e.target.closest('select,input,textarea,button,.ne-ch-opt,.ne-recip-tag')) return;
-    e.stopPropagation();
-    if (e.shiftKey) {
-      neToggleMultiSelect(node);
-      return;
-    }
-    ne.dragNode = node;
-    ne._dragStartPositions = null;
-    var wrapRect = document.getElementById('ne-canvas-wrap').getBoundingClientRect();
-    var mouseCanvasX = (e.clientX - wrapRect.left - ne.pan.x) / ne.zoom;
-    var mouseCanvasY = (e.clientY - wrapRect.top - ne.pan.y) / ne.zoom;
-    ne.dragOffset.x = mouseCanvasX - parseFloat(node.style.left);
-    ne.dragOffset.y = mouseCanvasY - parseFloat(node.style.top);
-    var wrap = document.getElementById('ne-canvas-wrap');
-    wrap.classList.add('ne-dragging-node');
-    if (ne.multiSelected.indexOf(id) > -1 && ne.multiSelected.length > 1) {
-      ne._dragStartPositions = {};
-      ne.multiSelected.forEach(function(mid){
-        var mn = ne.nodes.find(function(n){ return n.id === mid; });
-        if (mn) ne._dragStartPositions[mid] = { x: mn.x, y: mn.y };
-      });
-      ne._dragAnchor = { x: parseFloat(node.style.left), y: parseFloat(node.style.top) };
-    } else {
-      neClearMultiSelect();
-      neSelectNode(node);
-    }
-  });
-
-  // Touch drag for nodes
-  node.addEventListener('touchstart', function(e) {
-    if (e.target.classList.contains('ne-port')) return;
-    if (e.target.closest('select,input,textarea,button,.ne-ch-opt,.ne-recip-tag')) return;
-    if (e.touches.length !== 1) return;
-    e.stopPropagation();
-    var t = e.touches[0];
-    ne.dragNode = node;
-    ne._dragStartPositions = null;
-    var wrapRect = document.getElementById('ne-canvas-wrap').getBoundingClientRect();
-    ne.dragOffset.x = (t.clientX - wrapRect.left - ne.pan.x) / ne.zoom - parseFloat(node.style.left);
-    ne.dragOffset.y = (t.clientY - wrapRect.top - ne.pan.y) / ne.zoom - parseFloat(node.style.top);
-    neClearMultiSelect();
-    neSelectNode(node);
-  }, { passive: false });
-
-  node.addEventListener('touchmove', function(e) {
-    if (!ne.dragNode || ne.dragNode !== node) return;
-    if (e.touches.length !== 1) return;
-    e.preventDefault();
-    var t = e.touches[0];
-    var wrapRect = document.getElementById('ne-canvas-wrap').getBoundingClientRect();
-    var newX = (t.clientX - wrapRect.left - ne.pan.x) / ne.zoom - ne.dragOffset.x;
-    var newY = (t.clientY - wrapRect.top - ne.pan.y) / ne.zoom - ne.dragOffset.y;
-    var sx = Math.round(newX / 24) * 24;
-    var sy = Math.round(newY / 24) * 24;
-    node.style.left = sx + 'px';
-    node.style.top = sy + 'px';
-    var nd = ne.nodes.find(function(n) { return n.id === node.id; });
-    if (nd) { nd.x = sx; nd.y = sy; }
-    neRenderConnections();
-  }, { passive: false });
-
-  node.addEventListener('touchend', function() {
-    if (ne.dragNode === node) { neSnapshot(); ne.dragNode = null; }
-  });
-
-  return id;
+  rbRenderGroups(); rbRenderTest(); rbRenderReads();
+}
+function rbAddGroup(){
+  rb.groups.push({ id: rb.nextId++, joinPrev: 'OR', conditions: [
+    { id: rb.nextId++, field: 'Loan Amount', operator: '<', value: '', joinPrev: 'AND' }
+  ]});
+  rbRenderGroups(); rbRenderTest(); rbRenderReads();
+}
+function rbRemoveGroup(id){
+  if(rb.groups.length < 2) return;
+  rb.groups = rb.groups.filter(function(g){ return g.id !== id; });
+  rbRenderGroups(); rbRenderTest(); rbRenderReads();
 }
 
-function neAddActionNode() {
-  var centerX = (-ne.pan.x + window.innerWidth / 2) / ne.zoom - 100;
-  var centerY = (-ne.pan.y + window.innerHeight / 2) / ne.zoom - 60;
-  neCreateNode('action', Math.round(centerX), Math.round(centerY), {
-    channel: 'Email', recipients: ''
-  });
-  neSnapshot();
+// ── Actions ──
+function rbActionName(type){
+  for(var i=0;i<rbActionTypes.length;i++){ if(rbActionTypes[i].v === type) return rbActionTypes[i].name; }
+  return type;
+}
+// Lives inside the actions card, so it is rebuilt with every render.
+// Only one action per channel, so once all three exist there is nothing left to add.
+function rbAddActionBtn(){
+  var used = rb.actions.map(function(a){ return a.type; });
+  var left = rbActionTypes.filter(function(t){ return used.indexOf(t.v) < 0; }).length;
+  return '<div class="rb-act-foot"><button class="rb-add" id="rb-add-action" onclick="rbAddActionMenu(event)"'
+    + (left ? '' : ' disabled title="Email, SMS and in-app are all added"')
+    + '><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add action</button></div>';
 }
 
-function neAddSingleNode(type) {
-  var centerX = (-ne.pan.x + window.innerWidth / 2) / ne.zoom - 60;
-  var centerY = (-ne.pan.y + window.innerHeight / 2) / ne.zoom - 30;
-  var defaults = {
-    field: { field: 'Loan Amount' },
-    operator: { operator: '>' },
-    value: { value: '' },
-    text: { subject: '', body: '', channel: '' }
-  };
-  neCreateNode(type, Math.round(centerX), Math.round(centerY), defaults[type] || {});
-  neSnapshot();
-}
-
-// Token insertion for Text nodes
-function neInsertToken(sel) {
-  var token = sel.value;
-  sel.selectedIndex = 0;
-  if (!token) return;
-  var node = sel.closest('.ne-node');
-  var body = node.querySelector('.ne-text-body');
-  var last = ne.lastTextTarget;
-  var target = (last && node.contains(last) && !last.classList.contains('ne-hidden')) ? last : body;
-  if (!target) return;
-  var start = target.selectionStart || 0;
-  var end = target.selectionEnd || 0;
-  var val = target.value;
-  target.value = val.substring(0, start) + token + val.substring(end);
-  target.selectionStart = target.selectionEnd = start + token.length;
-  target.focus();
-  var nodeId = node.dataset.nodeId;
-  var nd = ne.nodes.find(function(n){ return n.id === nodeId; });
-  if (nd) nd.data[target.dataset.prop] = target.value;
-}
-
-// Adapt Text node UI based on connected Action node's channel
-function neTextAdapt() {
-  ne.nodes.forEach(function(n) {
-    if (n.type !== 'text') return;
-    var conn = ne.connections.find(function(c) { return c.to === n.id; });
-    var channel = '';
-    if (conn) {
-      var fromNode = ne.nodes.find(function(fn) { return fn.id === conn.from; });
-      if (fromNode && fromNode.type === 'action') channel = fromNode.data.channel || '';
-    }
-    n.data.channel = channel;
-    var label = n.el.querySelector('.ne-node-label');
-    if (label) label.textContent = channel ? channel + ' Message' : 'Message';
-    var subj = n.el.querySelector('.ne-text-subject');
-    if (subj) {
-      if (channel === 'Email') subj.classList.remove('ne-hidden');
-      else subj.classList.add('ne-hidden');
-    }
-  });
-}
-
-// Phase 3 — Node interior interactions
-function neNodeDataChange(el) {
-  var node = el.closest('.ne-node');
-  if (!node) return;
-  var nodeId = node.dataset.nodeId;
-  var prop = el.dataset.prop;
-  var val = el.value;
-  var nd = ne.nodes.find(function(n){ return n.id === nodeId; });
-  if (nd && prop) nd.data[prop] = val;
-}
-
-function neToggleChannel(btn) {
-  var node = btn.closest('.ne-node');
-  var nodeId = node.dataset.nodeId;
-  var ch = btn.dataset.ch;
-  var nd = ne.nodes.find(function(n){ return n.id === nodeId; });
-  if (!nd) return;
-  nd.data.channel = ch;
-  node.querySelector('.ne-node-label').textContent = ch;
-  node.querySelectorAll('.ne-ch-opt').forEach(function(b){ b.classList.toggle('ne-ch-active', b.dataset.ch === ch); });
-  neTextAdapt();
-}
-
-function neRemoveRecip(btn) {
-  var tag = btn.closest('.ne-recip-tag');
-  var node = btn.closest('.ne-node');
-  var nodeId = node.dataset.nodeId;
-  var name = tag.childNodes[0].textContent.trim();
-  tag.remove();
-  var nd = ne.nodes.find(function(n){ return n.id === nodeId; });
-  if (nd) {
-    var list = (nd.data.recipients||'').split(',').map(function(s){return s.trim();}).filter(function(s){return s && s !== name;});
-    nd.data.recipients = list.join(',');
-  }
-}
-
-function neAddRecipPrompt(btn) {
-  var wrap = btn.closest('.ne-recip-wrap');
-  if (wrap.querySelector('.ne-recip-input')) return;
-  var inp = document.createElement('input');
-  inp.className = 'ne-recip-input';
-  inp.placeholder = 'Name…';
-  inp.onmousedown = function(e){ e.stopPropagation(); };
-  inp.onkeydown = function(e){
-    if (e.key === 'Enter' && inp.value.trim()) {
-      neAddRecipTag(wrap, inp.value.trim());
-      if (inp.parentNode) inp.parentNode.removeChild(inp);
-    } else if (e.key === 'Escape') {
-      if (inp.parentNode) inp.parentNode.removeChild(inp);
-    }
-  };
-  inp.onblur = function(){
-    if (inp.value.trim()) neAddRecipTag(wrap, inp.value.trim());
-    if (inp.parentNode) inp.parentNode.removeChild(inp);
-  };
-  wrap.insertBefore(inp, btn);
-  inp.focus();
-}
-
-function neAddRecipTag(wrap, name) {
-  var nodeEl = wrap.closest('.ne-node');
-  var nodeId = nodeEl.dataset.nodeId;
-  var nd = ne.nodes.find(function(n){ return n.id === nodeId; });
-  if (!nd) return;
-  var list = (nd.data.recipients||'').split(',').map(function(s){return s.trim();}).filter(Boolean);
-  if (list.indexOf(name) !== -1) return;
-  list.push(name);
-  nd.data.recipients = list.join(',');
-  var tag = document.createElement('span');
-  tag.className = 'ne-recip-tag';
-  tag.innerHTML = name + '<button class="ne-recip-x" onclick="neRemoveRecip(this)" onmousedown="event.stopPropagation()">&times;</button>';
-  var addBtn = wrap.querySelector('.ne-recip-add');
-  wrap.insertBefore(tag, addBtn);
-}
-
-function neDeleteNode(btn) {
-  var node = btn.closest('.ne-node');
-  var nodeId = node.dataset.nodeId;
-  var nd = ne.nodes.find(function(n){ return n.id === nodeId; });
-  if (nd && nd.type === 'event') return;
-  ne.connections = ne.connections.filter(function(c){ return c.from !== nodeId && c.to !== nodeId; });
-  ne.nodes = ne.nodes.filter(function(n){ return n.id !== nodeId; });
-  node.remove();
-  neRenderConnections();
-}
-
-// Canvas panning
-(function() {
-  var wrap = document.getElementById('ne-canvas-wrap');
-  if (!wrap) return;
-
-  wrap.addEventListener('mousedown', function(e) {
-    if (ne.dragNode) return;
-    if (e.target.classList.contains('ne-port')) return;
-    if (e.target.closest('.ne-node')) return;
-    if (e.shiftKey) {
-      ne.selectBox = { startX: e.clientX, startY: e.clientY, el: document.createElement('div') };
-      ne.selectBox.el.className = 'ne-select-box';
-      ne.selectBox.el.style.cssText = 'left:'+e.clientX+'px;top:'+e.clientY+'px;width:0;height:0;';
-      document.body.appendChild(ne.selectBox.el);
-      return;
-    }
-    ne.isPanning = true;
-    ne.panStart.x = e.clientX - ne.pan.x;
-    ne.panStart.y = e.clientY - ne.pan.y;
-  });
-
-  document.addEventListener('mousemove', function(e) {
-    // Wiring preview
-    if (ne.wiring) {
-      var wrapRect = document.getElementById('ne-canvas-wrap').getBoundingClientRect();
-      ne.wiring.previewX = (e.clientX - wrapRect.left - ne.pan.x) / ne.zoom;
-      ne.wiring.previewY = (e.clientY - wrapRect.top - ne.pan.y) / ne.zoom;
-      neRenderConnections();
-      return;
-    }
-    if (ne.dragNode) {
-      var wrapRect = document.getElementById('ne-canvas-wrap').getBoundingClientRect();
-      var mouseCanvasX = (e.clientX - wrapRect.left - ne.pan.x) / ne.zoom;
-      var mouseCanvasY = (e.clientY - wrapRect.top - ne.pan.y) / ne.zoom;
-      var newX = mouseCanvasX - ne.dragOffset.x;
-      var newY = mouseCanvasY - ne.dragOffset.y;
-      var snappedX = Math.round(newX / 24) * 24;
-      var snappedY = Math.round(newY / 24) * 24;
-      if (ne._dragStartPositions) {
-        var dx = snappedX - ne._dragAnchor.x;
-        var dy = snappedY - ne._dragAnchor.y;
-        ne.multiSelected.forEach(function(mid){
-          var mn = ne.nodes.find(function(n){ return n.id === mid; });
-          if (!mn || !ne._dragStartPositions[mid]) return;
-          var sx = Math.round((ne._dragStartPositions[mid].x + dx) / 24) * 24;
-          var sy = Math.round((ne._dragStartPositions[mid].y + dy) / 24) * 24;
-          mn.x = sx; mn.y = sy;
-          mn.el.style.left = sx + 'px';
-          mn.el.style.top = sy + 'px';
-        });
-      } else {
-        ne.dragNode.style.left = snappedX + 'px';
-        ne.dragNode.style.top = snappedY + 'px';
-        var nodeData = ne.nodes.find(function(n) { return n.id === ne.dragNode.id; });
-        if (nodeData) { nodeData.x = snappedX; nodeData.y = snappedY; }
-      }
-      neRenderConnections();
-      return;
-    }
-    if (ne.selectBox) {
-      var sx = Math.min(ne.selectBox.startX, e.clientX);
-      var sy = Math.min(ne.selectBox.startY, e.clientY);
-      var sw = Math.abs(e.clientX - ne.selectBox.startX);
-      var sh = Math.abs(e.clientY - ne.selectBox.startY);
-      ne.selectBox.el.style.left = sx + 'px';
-      ne.selectBox.el.style.top = sy + 'px';
-      ne.selectBox.el.style.width = sw + 'px';
-      ne.selectBox.el.style.height = sh + 'px';
-      return;
-    }
-    if (!ne.isPanning) return;
-    ne.pan.x = e.clientX - ne.panStart.x;
-    ne.pan.y = e.clientY - ne.panStart.y;
-    neApplyTransform();
-  });
-
-  document.addEventListener('mouseup', function(e) {
-    if (ne.wiring) {
-      var targetPort = e.target.closest('.ne-port');
-      if (targetPort && targetPort.dataset.nodeId !== ne.wiring.fromNodeId) {
-        neCompleteWiring(targetPort);
-      } else {
-        neClearWiring();
-      }
-    }
-    if (ne.dragNode) {
-      neSnapshot();
-      ne.dragNode = null;
-      ne._dragStartPositions = null;
-      wrap.classList.remove('ne-dragging-node');
-    }
-    if (ne.selectBox) {
-      var box = ne.selectBox.el;
-      var bx = parseInt(box.style.left); var by = parseInt(box.style.top);
-      var bw = parseInt(box.style.width); var bh = parseInt(box.style.height);
-      neClearMultiSelect();
-      ne.nodes.forEach(function(n){
-        var wrapRect = wrap.getBoundingClientRect();
-        var nx = n.x * ne.zoom + ne.pan.x + wrapRect.left;
-        var ny = n.y * ne.zoom + ne.pan.y + wrapRect.top;
-        var nw = n.el.offsetWidth * ne.zoom;
-        var nh = n.el.offsetHeight * ne.zoom;
-        if (nx + nw > bx && nx < bx + bw && ny + nh > by && ny < by + bh) {
-          ne.multiSelected.push(n.id);
-          n.el.classList.add('ne-multiselected');
-        }
-      });
-      box.remove();
-      ne.selectBox = null;
-    }
-    ne.isPanning = false;
-  });
-
-  // Deselect on canvas click
-  wrap.addEventListener('click', function(e) {
-    if (!e.target.closest('.ne-conn-group') && ne.selectedConn) {
-      ne.selectedConn = null;
-      neRenderConnections();
-    }
-    if (!e.target.closest('.ne-node')) {
-      neSelectNode(null);
-      neClearMultiSelect();
-    }
-  });
-
-  // Keyboard shortcuts
-  document.addEventListener('keydown', function(e) {
-    if (!document.getElementById('ne-overlay').classList.contains('open')) return;
-    if (e.target.matches('input,textarea,select')) return;
-    if (e.key === 'Escape') {
-      if (ne.wiring) { e.preventDefault(); neClearWiring(); }
-    }
-    if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
-      e.preventDefault(); neUndo(); return;
-    }
-    if ((e.ctrlKey || e.metaKey) && e.key === 'y') {
-      e.preventDefault(); neRedo(); return;
-    }
-    if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
-      e.preventDefault(); neDuplicateNode(); return;
-    }
-    if (e.key === 'Backspace' || e.key === 'Delete') {
-      e.preventDefault();
-      if (ne.multiSelected.length > 0) {
-        neSnapshot();
-        ne.multiSelected.slice().forEach(function(id){
-          var nd = ne.nodes.find(function(n){ return n.id === id; });
-          if (nd && nd.type !== 'event') {
-            var btn = nd.el.querySelector('.ne-node-delete');
-            if (btn) neDeleteNode(btn);
-          }
-        });
-        ne.multiSelected = [];
-        neSnapshot();
-      } else if (ne.selectedConn) {
-        neSnapshot();
-        neRemoveConnection(ne.selectedConn);
-        neRenderConnections();
-        neSnapshot();
-      } else if (ne.selectedNode) {
-        var nd = ne.nodes.find(function(n){ return n.id === ne.selectedNode; });
-        if (nd && nd.type !== 'event') {
-          neSnapshot();
-          var btn = nd.el.querySelector('.ne-node-delete');
-          if (btn) neDeleteNode(btn);
-          neSelectNode(null);
-          neSnapshot();
-        }
-      }
-    }
-  });
-
-  // Zoom with scroll wheel
-  wrap.addEventListener('wheel', function(e) {
-    e.preventDefault();
-    var delta = e.deltaY > 0 ? -0.05 : 0.05;
-    var newZoom = Math.max(0.3, Math.min(2, ne.zoom + delta));
-    var rect = wrap.getBoundingClientRect();
-    var mx = e.clientX - rect.left;
-    var my = e.clientY - rect.top;
-    ne.pan.x = mx - (mx - ne.pan.x) * (newZoom / ne.zoom);
-    ne.pan.y = my - (my - ne.pan.y) * (newZoom / ne.zoom);
-    ne.zoom = newZoom;
-    neApplyTransform();
-    document.getElementById('ne-zoom-pct').textContent = Math.round(ne.zoom * 100) + '%';
-  }, { passive: false });
-
-  // Touch support
-  var touchState = { pan: null, pinch: null };
-
-  wrap.addEventListener('touchstart', function(e) {
-    if (e.touches.length === 2) {
-      e.preventDefault();
-      var t0 = e.touches[0], t1 = e.touches[1];
-      var cx = (t0.clientX + t1.clientX) / 2;
-      var cy = (t0.clientY + t1.clientY) / 2;
-      var dist = Math.hypot(t1.clientX - t0.clientX, t1.clientY - t0.clientY);
-      touchState.pinch = { dist: dist, cx: cx, cy: cy, startZoom: ne.zoom, startPanX: ne.pan.x, startPanY: ne.pan.y };
-      touchState.pan = null;
-      return;
-    }
-    if (e.touches.length === 1 && !ne.dragNode) {
-      if (e.target.closest('.ne-node') || e.target.classList.contains('ne-port')) return;
-      var t = e.touches[0];
-      touchState.pan = { startX: t.clientX - ne.pan.x, startY: t.clientY - ne.pan.y };
-    }
-  }, { passive: false });
-
-  wrap.addEventListener('touchmove', function(e) {
-    if (e.touches.length === 2 && touchState.pinch) {
-      e.preventDefault();
-      var t0 = e.touches[0], t1 = e.touches[1];
-      var dist = Math.hypot(t1.clientX - t0.clientX, t1.clientY - t0.clientY);
-      var scale = dist / touchState.pinch.dist;
-      var newZoom = Math.max(0.3, Math.min(2, touchState.pinch.startZoom * scale));
-      var rect = wrap.getBoundingClientRect();
-      var cx = (t0.clientX + t1.clientX) / 2 - rect.left;
-      var cy = (t0.clientY + t1.clientY) / 2 - rect.top;
-      ne.pan.x = cx - (cx - touchState.pinch.startPanX) * (newZoom / touchState.pinch.startZoom);
-      ne.pan.y = cy - (cy - touchState.pinch.startPanY) * (newZoom / touchState.pinch.startZoom);
-      ne.zoom = newZoom;
-      neApplyTransform();
-      document.getElementById('ne-zoom-pct').textContent = Math.round(ne.zoom * 100) + '%';
-      return;
-    }
-    if (e.touches.length === 1 && touchState.pan) {
-      e.preventDefault();
-      var t = e.touches[0];
-      ne.pan.x = t.clientX - touchState.pan.startX;
-      ne.pan.y = t.clientY - touchState.pan.startY;
-      neApplyTransform();
-    }
-  }, { passive: false });
-
-  wrap.addEventListener('touchend', function(e) {
-    if (e.touches.length < 2) touchState.pinch = null;
-    if (e.touches.length === 0) touchState.pan = null;
-  });
-})();
-
-// Search/filter nodes
-function neSearchNodes(query) {
-  var clearBtn = document.getElementById('ne-search-clear');
-  if (clearBtn) clearBtn.classList.toggle('visible', query.length > 0);
-  query = query.toLowerCase().trim();
-  if (!query) {
-    ne.nodes.forEach(function(n) { n.el.classList.remove('ne-dimmed', 'ne-highlighted'); });
-    document.querySelectorAll('.ne-conn-group').forEach(function(g) { g.classList.remove('ne-conn-dimmed'); });
+function rbRenderActions(){
+  var host = document.getElementById('rb-actions');
+  if(!host) return;
+  if(!rb.actions.length){
+    host.innerHTML = '<div class="rb-test-empty">No actions yet.</div>' + rbAddActionBtn();
     return;
   }
-  var matchIds = [];
-  ne.nodes.forEach(function(n) {
-    var text = (n.type || '');
-    if (n.data.field) text += ' ' + n.data.field;
-    if (n.data.operator) text += ' ' + n.data.operator;
-    if (n.data.value !== undefined) text += ' ' + n.data.value;
-    if (n.data.channel) text += ' ' + n.data.channel;
-    if (n.data.subject) text += ' ' + n.data.subject;
-    if (n.data.body) text += ' ' + n.data.body;
-    if (n.el.querySelector('.ne-node-name')) text += ' ' + n.el.querySelector('.ne-node-name').textContent;
-    var match = text.toLowerCase().indexOf(query) > -1;
-    if (match) {
-      n.el.classList.add('ne-highlighted');
-      n.el.classList.remove('ne-dimmed');
-      matchIds.push(n.id);
-    } else {
-      n.el.classList.add('ne-dimmed');
-      n.el.classList.remove('ne-highlighted');
-    }
-  });
-  ne.connections.forEach(function(c) {
-    var g = document.getElementById(c.id);
-    if (!g) return;
-    var fromMatch = matchIds.indexOf(c.from) > -1;
-    var toMatch = matchIds.indexOf(c.to) > -1;
-    g.classList.toggle('ne-conn-dimmed', !fromMatch && !toMatch);
-  });
+  host.innerHTML = rb.actions.map(function(a){
+    var chips = a.recipients.length
+      ? '<span class="rb-avs">' + a.recipients.map(function(r){
+          return '<span class="rb-av is-' + rbRecipKind(r) + '" data-name="' + rbEsc(r) + '" aria-label="' + rbEsc(r) + '">'
+            + rbEsc(rbInitials(r)) + '</span>';
+        }).join('') + '</span>'
+      : '<span class="rb-act-none">no recipients yet</span>';
+    var hasMsg = rbMsgHasContent(a);
+    return '<div class="rb-act">'
+      + '<span class="rb-act-name">' + rbEsc(rbActionName(a.type)) + '</span>'
+      + '<span class="rb-act-to">to</span>' + chips
+      + '<button class="rb-act-compose' + (hasMsg ? ' is-set' : '') + '" onclick="rbOpenMsg(' + a.id + ')">'
+        + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"/></svg>'
+        + (hasMsg ? 'Edit message' : 'Write message') + '</button>'
+      + '<button class="rb-x rb-act-x" onclick="rbRemoveAction(' + a.id + ')" title="Remove action">&times;</button>'
+    + '</div>';
+  }).join('') + rbAddActionBtn();
+}
+function rbRemoveAction(id){
+  rb.actions = rb.actions.filter(function(a){ return a.id !== id; });
+  rbRenderActions(); rbRenderReads(); rbUpdateSubtitle(); rbRenderVerdict();
+}
+function rbCloseMenu(){
+  var m = document.getElementById('rb-menu');
+  if(m) m.remove();
 }
 
-function neApplyTransform() {
-  var canvas = document.getElementById('ne-canvas');
-  if (canvas) canvas.style.transform = 'translate(' + ne.pan.x + 'px,' + ne.pan.y + 'px) scale(' + ne.zoom + ')';
-  neRenderMinimap();
+// Recipients are edited on a draft inside the compose dialog so Cancel can discard them.
+var rbMsgRecips = [];
+
+function rbMsgRenderRecips(){
+  var host = document.getElementById('rb-msg-recips');
+  if(!host) return;
+  var chips = rbMsgRecips.map(function(r){
+    return '<span class="rb-chip">' + rbEsc(r)
+      + '<button onclick="rbMsgRemoveRecip(\'' + rbEsc(r).replace(/'/g, '&#39;') + '\')" title="Remove">&times;</button></span>';
+  }).join('');
+  host.innerHTML = chips
+    + '<button class="rb-chip-add" onclick="rbMsgRecipMenu(event)">+ Add recipient</button>';
 }
 
-function neZoomStep(delta) {
-  ne.zoom = Math.min(2, Math.max(0.3, Math.round((ne.zoom + delta) * 10) / 10));
-  neApplyTransform();
-  document.getElementById('ne-zoom-pct').textContent = Math.round(ne.zoom * 100) + '%';
+// Searchable recipient directory: staff users and CRM leads.
+// Staff are real people; their job title is the subtitle, not the name.
+var rbUserList = [
+  { name: 'David P.',      sub: 'Sales Manager' },
+  { name: 'James D.',      sub: 'F&I Manager' },
+  { name: 'Maria R.',      sub: 'BDC' },
+  { name: 'Tom K.',        sub: 'Desk Manager' },
+  { name: 'Robert Hale',   sub: 'Dealer Principal' },
+  { name: 'Angel Garcia',  sub: 'Sales' },
+  { name: 'Will Fletcher', sub: 'Inventory' }
+];
+// Alert rows store job titles; map them onto the people who hold them.
+var rbRoleToPerson = {
+  'Sales Manager': 'David P.',
+  'F&I Manager': 'James D.',
+  'BDC': 'Maria R.',
+  'Desk Manager': 'Tom K.',
+  'Dealer Principal': 'Robert Hale'
+};
+var rbLeadList = ['Ac Thakur','Kristina Stuart','Taylor Dang','Gage Quarles','Jason Stark','Christian Webster','Saurabh Singh','Jasbir Chandok','Maria Trapp','Derek Huff','Priya Mehta','Carlos Rivera','Sandra Lee','James Okoye','Mei Huang','Luis Garza','Tina Brooks','Omar Shaikh','Rachel Kim','Daniel Park','Sophia Reyes','Ethan Wright','Isabella Costa','Noah Bennett','Mia Foster','Liam Becker','Ava Sullivan','Mason Reid','Charlotte Hale','Logan Wells','Amelia Brooks','Henry Cole','Evelyn Tan','Jack Morrison','Harper Reeves','Owen Pierce','Lily Chen','Wyatt Lane','Zoe Vargas','Caleb Knox','Grace Donovan','Ryan Tate','Eleanor Page','Sebastian Hart','Penelope Yu','Eli Sanders','Aurora Klein','Theo Mendoza','Naomi Frost','Hudson Pratt','Violet Park','Asher Bowen','Hazel Ortiz','Levi Quinn','Stella Reyes'].map(function(n){ return { name: n, sub: 'Lead' }; });
+
+function rbInitials(n){
+  var p = String(n).trim().split(/\s+/);
+  return ((p[0] || '').charAt(0) + (p.length > 1 ? p[p.length - 1].charAt(0) : '')).toUpperCase();
+}
+function rbRecipKind(name){
+  for(var i=0;i<rbUserList.length;i++){ if(rbUserList[i].name === name) return 'user'; }
+  return 'lead';
 }
 
-function neSelectNode(nodeEl) {
-  document.querySelectorAll('.ne-node-selected,.ne-selected').forEach(function(el){ el.classList.remove('ne-node-selected','ne-selected'); });
-  if (nodeEl) { nodeEl.classList.add('ne-node-selected','ne-selected'); }
-  ne.selectedNode = nodeEl ? nodeEl.dataset.nodeId : null;
+function rbPickClose(){
+  var p = document.getElementById('rb-pick');
+  if(p) p.remove();
 }
 
-function neValidateNodes() {
-  ne.nodes.forEach(function(n) {
-    n.el.classList.remove('ne-node-invalid');
-    if (n.type === 'event') return;
-    var hasIn = ne.connections.some(function(c){ return c.to === n.id; });
-    var hasOut = ne.connections.some(function(c){ return c.from === n.id; });
-    if (n.type === 'value' && (!n.data.value && n.data.value !== 0)) { n.el.classList.add('ne-node-invalid'); return; }
-    if (n.type === 'action' && !n.data.channel) { n.el.classList.add('ne-node-invalid'); return; }
-    if (n.type === 'text' && !n.data.body) { n.el.classList.add('ne-node-invalid'); return; }
-    if (n.type !== 'text' && !hasOut) { n.el.classList.add('ne-node-invalid'); return; }
-    if (!hasIn) { n.el.classList.add('ne-node-invalid'); }
-  });
+function rbPickResults(q){
+  q = (q || '').trim().toLowerCase();
+  function filt(list){
+    return list.filter(function(i){
+      if(rbMsgRecips.indexOf(i.name) > -1) return false;
+      return !q || i.name.toLowerCase().indexOf(q) > -1 || (i.sub || '').toLowerCase().indexOf(q) > -1;
+    });
+  }
+  return [
+    { label: 'Users',               kind: 'user', items: filt(rbUserList) },
+    { label: 'Leads',               kind: 'lead', items: filt(rbLeadList).slice(0, q ? 40 : 8) }
+  ].filter(function(g){ return g.items.length; });
 }
 
-// ── Undo/Redo ──
-function neSnapshot() {
-  var snap = {
-    nodes: ne.nodes.map(function(n){ return { id: n.id, type: n.type, x: n.x, y: n.y, data: JSON.parse(JSON.stringify(n.data)) }; }),
-    connections: ne.connections.map(function(c){ return { id: c.id, from: c.from, to: c.to }; })
-  };
-  ne.history = ne.history.slice(0, ne.historyIdx + 1);
-  ne.history.push(JSON.stringify(snap));
-  if (ne.history.length > 30) ne.history.shift();
-  ne.historyIdx = ne.history.length - 1;
+function rbPickRender(q){
+  var list = document.getElementById('rb-pick-list');
+  if(!list) return;
+  var groups = rbPickResults(q);
+  if(!groups.length){
+    list.innerHTML = '<div class="rb-pick-empty">No matches</div>';
+    return;
+  }
+  list.innerHTML = groups.map(function(g){
+    return '<div class="rb-pick-head">' + rbEsc(g.label) + '</div>'
+      + g.items.map(function(i){
+          return '<button class="rb-pick-item" onmousedown="event.preventDefault()" onclick="rbPickChoose(\'' + rbEsc(i.name).replace(/'/g, '&#39;') + '\')">'
+            + '<span class="rb-pick-av is-' + g.kind + '">' + rbEsc(rbInitials(i.name)) + '</span>'
+            + '<span class="rb-pick-nm">' + rbEsc(i.name) + '</span>'
+            + '<span class="rb-pick-sub">' + rbEsc(i.sub || '') + '</span></button>';
+        }).join('');
+  }).join('');
+  var first = list.querySelector('.rb-pick-item');
+  if(first) first.classList.add('is-active');
 }
 
-function neRestoreSnapshot(snapStr) {
-  var snap = JSON.parse(snapStr);
-  var canvas = document.getElementById('ne-canvas');
-  ne.nodes.forEach(function(n){ n.el.remove(); });
-  ne.nodes = [];
-  ne.connections = [];
-  ne.nextId = 1;
-  ne.connId = 1;
-  snap.nodes.forEach(function(n){
-    neCreateNode(n.type, n.x, n.y, n.data);
-  });
-  snap.connections.forEach(function(c){
-    neAddConnection(c.from, c.to);
-  });
-  neRenderConnections();
-  neSelectNode(null);
-  ne.multiSelected = [];
+function rbPickChoose(name){
+  if(rbMsgRecips.indexOf(name) < 0) rbMsgRecips.push(name);
+  var inp = document.getElementById('rb-pick-input');
+  rbMsgRenderRecips();
+  // keep the picker open so several recipients can be added in a row
+  var btn = document.querySelector('#rb-msg-recips .rb-chip-add');
+  if(btn) rbMsgRecipMenu({ stopPropagation: function(){}, currentTarget: btn });
 }
 
-function neUndo() {
-  if (ne.historyIdx <= 0) return;
-  ne.historyIdx--;
-  neRestoreSnapshot(ne.history[ne.historyIdx]);
+function rbPickKey(e){
+  var list = document.getElementById('rb-pick-list');
+  if(!list) return;
+  var items = Array.prototype.slice.call(list.querySelectorAll('.rb-pick-item'));
+  var idx = items.findIndex(function(el){ return el.classList.contains('is-active'); });
+  if(e.key === 'ArrowDown' || e.key === 'ArrowUp'){
+    e.preventDefault();
+    if(!items.length) return;
+    if(idx > -1) items[idx].classList.remove('is-active');
+    var next = e.key === 'ArrowDown' ? (idx + 1) % items.length : (idx - 1 + items.length) % items.length;
+    items[next].classList.add('is-active');
+    items[next].scrollIntoView({ block: 'nearest' });
+  } else if(e.key === 'Enter'){
+    e.preventDefault();
+    if(idx > -1) items[idx].click();
+  } else if(e.key === 'Escape'){
+    e.preventDefault();
+    rbPickClose();
+  }
 }
 
-function neRedo() {
-  if (ne.historyIdx >= ne.history.length - 1) return;
-  ne.historyIdx++;
-  neRestoreSnapshot(ne.history[ne.historyIdx]);
-}
-
-// ── Duplicate Node ──
-function neDuplicateNode() {
-  if (!ne.selectedNode) return;
-  var nd = ne.nodes.find(function(n){ return n.id === ne.selectedNode; });
-  if (!nd || nd.type === 'event') return;
-  var newData = JSON.parse(JSON.stringify(nd.data));
-  var newId = neCreateNode(nd.type, nd.x + 48, nd.y + 48, newData);
-  neSnapshot();
-  neSelectNode(document.getElementById(newId));
-}
-
-// ── Mobile node picker sheet ──
-function neOpenNodeSheet() {
-  document.getElementById('ne-sheet-backdrop').classList.add('open');
-  document.getElementById('ne-sheet').classList.add('open');
-}
-
-function neCloseNodeSheet() {
-  document.getElementById('ne-sheet-backdrop').classList.remove('open');
-  document.getElementById('ne-sheet').classList.remove('open');
-}
-
-function neSheetAdd(type) {
-  neCloseNodeSheet();
-  if (type === 'action') neAddActionNode();
-  else neAddSingleNode(type);
-}
-
-function neCopyNode(btn) {
-  var nodeEl = btn.closest('.ne-node');
-  var clickedId = nodeEl.dataset.nodeId;
-  var ids = (ne.multiSelected.length > 1 && ne.multiSelected.indexOf(clickedId) > -1)
-    ? ne.multiSelected.slice()
-    : [clickedId];
-  var sources = ids.map(function(id){
-    return ne.nodes.find(function(n){ return n.id === id; });
-  }).filter(function(n){ return n && n.type !== 'event'; });
-  if (!sources.length) return;
-
-  neClearMultiSelect();
-  var newIds = sources.map(function(nd){
-    var x = nd.x + 48, y = nd.y + 48;
-    // Cascade past any copy already sitting there
-    while (ne.nodes.some(function(n){ return n.x === x && n.y === y; })) { x += 48; y += 48; }
-    return neCreateNode(nd.type, x, y, JSON.parse(JSON.stringify(nd.data)));
-  });
-  neSnapshot();
-
-  if (newIds.length === 1) {
-    neSelectNode(document.getElementById(newIds[0]));
+function rbMsgRecipMenu(e){
+  if(e && e.stopPropagation) e.stopPropagation();
+  rbPickClose();
+  var btn = e.currentTarget;
+  var p = document.createElement('div');
+  p.className = 'rb-pick';
+  p.id = 'rb-pick';
+  p.innerHTML = '<div class="rb-pick-search">'
+      + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>'
+      + '<input type="text" id="rb-pick-input" placeholder="Search users and leads…" oninput="rbPickRender(this.value)" onkeydown="rbPickKey(event)">'
+    + '</div><div class="rb-pick-list" id="rb-pick-list"></div>';
+  p.addEventListener('click', function(ev){ ev.stopPropagation(); });
+  document.body.appendChild(p);
+  var box = btn.getBoundingClientRect();
+  p.style.left = Math.min(box.left, window.innerWidth - p.offsetWidth - 10) + 'px';
+  var below = window.innerHeight - box.bottom;
+  if(below < p.offsetHeight + 16 && box.top > p.offsetHeight){
+    p.style.top = (box.top - p.offsetHeight - 5) + 'px';
   } else {
-    neSelectNode(null);
-    newIds.forEach(function(id){
-      var el = document.getElementById(id);
-      if (el) { ne.multiSelected.push(id); el.classList.add('ne-multiselected'); }
-    });
+    p.style.top = (box.bottom + 5) + 'px';
   }
+  rbPickRender('');
+  var inp = document.getElementById('rb-pick-input');
+  if(inp) inp.focus();
+  setTimeout(function(){ document.addEventListener('click', rbPickClose, { once: true }); }, 0);
+}
+function rbMsgRemoveRecip(name){
+  rbMsgRecips = rbMsgRecips.filter(function(r){ return r !== name; });
+  rbMsgRenderRecips();
 }
 
-// ── Multi-select ──
-function neToggleMultiSelect(nodeEl) {
-  var nodeId = nodeEl.dataset.nodeId;
-  var idx = ne.multiSelected.indexOf(nodeId);
-  if (idx > -1) {
-    ne.multiSelected.splice(idx, 1);
-    nodeEl.classList.remove('ne-multiselected');
+// ── Evaluation ──
+// Joins fold left-to-right with no precedence; the groups supply the parentheses.
+function rbEvalCondition(c){
+  var raw = rb.sample[c.field];
+  if(raw === undefined || raw === '' || c.value === '') return false;
+  var a = parseFloat(String(raw).replace(/[^0-9.\-]/g, ''));
+  var b = parseFloat(String(c.value).replace(/[^0-9.\-]/g, ''));
+  if(isNaN(a) || isNaN(b)){
+    var sa = String(raw).trim().toLowerCase(), sb = String(c.value).trim().toLowerCase();
+    if(c.operator === '=')  return sa === sb;
+    if(c.operator === '<>') return sa !== sb;
+    return false;
+  }
+  switch(c.operator){
+    case '>':  return a >  b;
+    case '<':  return a <  b;
+    case '>=': return a >= b;
+    case '<=': return a <= b;
+    case '=':  return a === b;
+    case '<>': return a !== b;
+  }
+  return false;
+}
+function rbEvalGroup(g){
+  if(!g.conditions.length) return false;
+  var acc = rbEvalCondition(g.conditions[0]);
+  for(var i=1;i<g.conditions.length;i++){
+    var v = rbEvalCondition(g.conditions[i]);
+    acc = g.conditions[i].joinPrev === 'AND' ? (acc && v) : (acc || v);
+  }
+  return acc;
+}
+function rbEvalRule(){
+  if(!rb.groups.length) return false;
+  var acc = rbEvalGroup(rb.groups[0]);
+  for(var i=1;i<rb.groups.length;i++){
+    var v = rbEvalGroup(rb.groups[i]);
+    acc = rb.groups[i].joinPrev === 'AND' ? (acc && v) : (acc || v);
+  }
+  return acc;
+}
+function rbUsedFields(){
+  var out = [];
+  rb.groups.forEach(function(g){
+    g.conditions.forEach(function(c){ if(c.field && out.indexOf(c.field) < 0) out.push(c.field); });
+  });
+  return out;
+}
+
+// ── Test panel ──
+function rbRenderTest(){
+  var host = document.getElementById('rb-test-fields');
+  if(!host) return;
+  var fields = rbUsedFields();
+  if(!fields.length){
+    host.innerHTML = '<div class="rb-test-empty">Add a condition to test the rule.</div>';
   } else {
-    ne.multiSelected.push(nodeId);
-    nodeEl.classList.add('ne-multiselected');
+    host.innerHTML = fields.map(function(f){
+      return '<div class="rb-test-fld"><label>' + rbEsc(f) + '</label>'
+        + '<input type="text" class="rb-input" placeholder="e.g. 5000" value="' + rbEsc(rb.sample[f] || '') + '"'
+        + ' oninput="rbSampleChange(\'' + rbEsc(f).replace(/'/g, '&#39;') + '\',this.value)"></div>';
+    }).join('');
+  }
+  rbRenderVerdict();
+}
+function rbSampleChange(field, val){
+  rb.sample[field] = val;
+  rbRenderGroups();   // refresh the pass/fail dots
+  rbRenderVerdict();
+}
+function rbActionsSentence(){
+  if(!rb.actions.length) return 'No actions are configured.';
+  var names = rb.actions.map(function(a){ return rbActionName(a.type).toLowerCase(); });
+  var recips = [];
+  rb.actions.forEach(function(a){
+    a.recipients.forEach(function(r){ if(recips.indexOf(r) < 0) recips.push(r); });
+  });
+  var who = recips.length ? ' go to ' + rbJoinWords(recips) : ' have no recipients yet';
+  return rbCap(rbJoinWords(names)) + who + '.';
+}
+function rbRenderVerdict(){
+  var box = document.getElementById('rb-verdict');
+  if(!box) return;
+  var fires = rbEvalRule();
+  box.classList.toggle('is-fire', fires);
+  document.getElementById('rb-verdict-ttl').textContent = fires ? 'Rule fires' : 'Rule does not fire';
+  document.getElementById('rb-verdict-txt').textContent = fires
+    ? rbActionsSentence()
+    : 'With these sample values the conditions are not met, so no action runs.';
+}
+
+// ── Plain-English summary ──
+function rbJoinWords(arr){
+  if(arr.length === 0) return '';
+  if(arr.length === 1) return arr[0];
+  return arr.slice(0, -1).join(', ') + ' and ' + arr[arr.length - 1];
+}
+function rbCap(s){ return s.charAt(0).toUpperCase() + s.slice(1); }
+
+function rbConditionPhrase(c){
+  return '<b>' + rbEsc(c.field) + '</b> ' + rbOpPhrase(c.operator)
+    + ' <span class="rb-num">' + rbEsc(rbFmtValue(c.field, c.value)) + '</span>';
+}
+function rbGroupPhrase(g){
+  var parts = g.conditions.map(function(c, i){
+    return (i === 0 ? '' : ' <span class="rb-' + c.joinPrev.toLowerCase() + '">' + c.joinPrev.toLowerCase() + '</span> ') + rbConditionPhrase(c);
+  }).join('');
+  return g.conditions.length > 1 ? '(' + parts + ')' : parts;
+}
+function rbRenderReads(){
+  var el = document.getElementById('rb-reads');
+  if(!el) return;
+  if(!rb.groups.length || !rbUsedFields().length){
+    el.innerHTML = 'When <b>' + rbEsc(rb.event.toLowerCase()) + '</b> happens, no conditions are set yet.';
+    return;
+  }
+  var ifPart = rb.groups.map(function(g, i){
+    return (i === 0 ? '' : ' <span class="rb-' + g.joinPrev.toLowerCase() + '">' + g.joinPrev.toLowerCase() + '</span> ') + rbGroupPhrase(g);
+  }).join('');
+
+  var verbs = rb.actions.map(function(a){
+    for(var i=0;i<rbActionTypes.length;i++){ if(rbActionTypes[i].v === a.type) return rbActionTypes[i].verb; }
+    return a.type;
+  });
+  var recips = [];
+  rb.actions.forEach(function(a){ a.recipients.forEach(function(r){ if(recips.indexOf(r) < 0) recips.push(r); }); });
+  var thenPart = verbs.length
+    ? rbJoinWords(verbs) + (recips.length ? ' ' + rbJoinWords(recips.map(function(r){ return '<b>' + rbEsc(r) + '</b>'; })) : ' nobody yet')
+    : 'do nothing';
+
+  // Names like "David P." already end in a period — don't add a second one.
+  var lastRecip = recips.length ? recips[recips.length - 1] : '';
+  var stop = (verbs.length && recips.length && /\.$/.test(lastRecip)) ? '' : '.';
+  el.innerHTML = 'When a new application is submitted, if ' + ifPart + ', ' + thenPart + stop;
+}
+
+function rbSave(){
+  if(!rb.row){ rbClose(); return; }
+  var channels = rb.actions.map(function(a){ return a.type; });
+  var recips = [];
+  rb.actions.forEach(function(a){ a.recipients.forEach(function(r){ if(recips.indexOf(r) < 0) recips.push(r); }); });
+  if(channels.length){
+    rb.row.dataset.channels = channels.join(',');
+    var chCell = rb.row.querySelector('.alt-channels');
+    if(chCell) chCell.innerHTML = channels.map(function(c){ return altChannelTag(c); }).join('');
+  }
+  if(recips.length){
+    rb.row.dataset.recipients = recips.join(',');
+    var rcCell = rb.row.querySelector('.alt-recipients');
+    if(rcCell) rcCell.textContent = recips.join(', ');
+  }
+  rbClose();
+  if(typeof showNavToast === 'function'){
+    var n = rb.groups.reduce(function(t, g){ return t + g.conditions.length; }, 0);
+    showNavToast('Rule Saved', n + ' condition' + (n === 1 ? '' : 's') + ' and ' + rb.actions.length + ' action' + (rb.actions.length === 1 ? '' : 's') + ' saved.');
   }
 }
 
-function neClearMultiSelect() {
-  ne.multiSelected.forEach(function(id){
-    var el = document.getElementById(id);
-    if (el) el.classList.remove('ne-multiselected');
-  });
-  ne.multiSelected = [];
+document.addEventListener('keydown', function(e){
+  var ov = document.getElementById('rb-overlay');
+  if(!ov || !ov.classList.contains('open')) return;
+  if(e.key === 'Escape' && !e.target.matches('input,textarea,select')) rbClose();
+});
+
+// ── Message composer ──
+var rbTokenGroups = [
+  { label: 'Customer', tokens: ['customer_name','credit_score','application_id'] },
+  { label: 'Loan', tokens: ['loan_amount','interest_rate','term_months','monthly_payment'] },
+  { label: 'Vehicle', tokens: ['vehicle_year','vehicle_make','vehicle_model'] },
+  { label: 'Deal', tokens: ['deal_status','lender_name'] },
+  { label: 'Dealership', tokens: ['dealer_name','sales_person'] }
+];
+var rbMsgEditing = null;
+
+function rbMsgHasContent(a){
+  return !!((a.body && a.body.trim()) || (a.subject && a.subject.trim()) || (a.title && a.title.trim()));
 }
 
-// ── Auto-layout ──
-function neAutoLayout() {
-  if (ne.nodes.length === 0) return;
-  neSnapshot();
+function rbOpenMsg(actionId){
+  var a = rb.actions.filter(function(x){ return x.id === actionId; })[0];
+  if(!a) return;
+  rbMsgEditing = actionId;
+  rbMsgRecips = a.recipients.slice();
 
-  // Build adjacency and find text→action pairings
-  var adj = {};
-  var textParent = {};
-  ne.nodes.forEach(function(n){ adj[n.id] = []; });
-  ne.connections.forEach(function(c){
-    if (adj[c.from]) adj[c.from].push(c.to);
-    var toNode = ne.nodes.find(function(n){ return n.id === c.to; });
-    if (toNode && toNode.type === 'text') textParent[c.to] = c.from;
-  });
+  var tokenOpts = rbTokenGroups.map(function(g){
+    return '<optgroup label="' + rbEsc(g.label) + '">' + g.tokens.map(function(t){
+      return '<option value="{{' + t + '}}">{{' + t + '}}</option>';
+    }).join('') + '</optgroup>';
+  }).join('');
 
-  // Compute depth, skip text nodes (they'll be placed beside their action)
-  var depth = {};
-  ne.nodes.forEach(function(n){ depth[n.id] = 0; });
-  var visited = {};
-  function setDepth(id, d) {
-    var nd = ne.nodes.find(function(n){ return n.id === id; });
-    if (nd && nd.type === 'text') return;
-    if (visited[id] && depth[id] >= d) return;
-    visited[id] = true;
-    depth[id] = Math.max(depth[id], d);
-    (adj[id]||[]).forEach(function(child){ setDepth(child, d + 1); });
+  var html = '<div class="rb-msg-fld"><label>Recipients</label>'
+    + '<div class="rb-msg-recips" id="rb-msg-recips"></div></div>';
+  if(a.type === 'Email'){
+    html += '<div class="rb-msg-fld"><label>Subject</label>'
+      + '<input type="text" class="rb-input" id="rb-msg-subject" placeholder="Subject line…" value="' + rbEsc(a.subject || '') + '"></div>';
   }
-  ne.nodes.forEach(function(n){ if (n.type === 'event') setDepth(n.id, 0); });
-  ne.nodes.forEach(function(n){ if (!visited[n.id] && n.type !== 'text') setDepth(n.id, 0); });
-
-  // Group non-text nodes by depth column
-  var columns = {};
-  ne.nodes.forEach(function(n){
-    if (n.type === 'text') return;
-    var d = depth[n.id];
-    if (!columns[d]) columns[d] = [];
-    columns[d].push(n);
-  });
-
-  var colSpacing = 300;
-  var rowSpacing = 180;
-  var startX = 48;
-  var keys = Object.keys(columns).map(Number).sort(function(a,b){return a-b;});
-
-  ne.nodes.forEach(function(n){ n.el.classList.add('ne-layout-anim'); });
-
-  function place(n, nx, ny) {
-    nx = Math.round(nx / 24) * 24;
-    ny = Math.round(ny / 24) * 24;
-    n.x = nx; n.y = ny;
-    n.el.style.left = nx + 'px';
-    n.el.style.top = ny + 'px';
+  if(a.type === 'In-App'){
+    html += '<div class="rb-msg-fld"><label>Title</label>'
+      + '<input type="text" class="rb-input" id="rb-msg-ttl" placeholder="Notification title…" value="' + rbEsc(a.title || '') + '"></div>';
   }
+  html += '<div class="rb-msg-fld"><label>Message</label>'
+    + '<textarea class="rb-input" id="rb-msg-text" placeholder="Write your message…" oninput="rbMsgCount()">' + rbEsc(a.body || '') + '</textarea>'
+    + '<div class="rb-msg-tools">'
+      + '<select class="rb-input" style="max-width:190px;" onchange="rbMsgInsertToken(this)"><option value="">Insert Variable…</option>' + tokenOpts + '</select>'
+      + (a.type === 'SMS' ? '<span class="rb-msg-count" id="rb-msg-count"></span>' : '')
+    + '</div></div>';
 
-  // Place non-text nodes in columns with dynamic row spacing
-  keys.forEach(function(col, ci){
-    var nodes = columns[col];
-    var curY = 48;
-    nodes.forEach(function(n) {
-      place(n, startX + ci * colSpacing, curY);
-      var h = n.el.offsetHeight || 120;
-      var textChild = ne.nodes.find(function(t){ return t.type === 'text' && textParent[t.id] === n.id; });
-      if (textChild) h = Math.max(h, textChild.el.offsetHeight || 200);
-      curY += h + 40;
-    });
-  });
-
-  // Place text nodes beside their parent action
-  var maxCol = keys.length > 0 ? keys[keys.length - 1] : 0;
-  var textXBase = startX + (maxCol + 1) * colSpacing;
-  var orphanY = 48;
-  ne.nodes.forEach(function(n){
-    if (n.type !== 'text') return;
-    var parentId = textParent[n.id];
-    var parent = parentId ? ne.nodes.find(function(p){ return p.id === parentId; }) : null;
-    if (parent) {
-      place(n, parent.x + colSpacing, parent.y);
-    } else {
-      place(n, textXBase, orphanY);
-      orphanY += rowSpacing;
-    }
-  });
-
-  setTimeout(function(){
-    ne.nodes.forEach(function(n){ n.el.classList.remove('ne-layout-anim'); });
-    neRenderConnections();
-    neFitView();
-    neSnapshot();
-  }, 450);
-
-  neRenderConnections();
+  document.getElementById('rb-msg-title').textContent = 'Compose ' + (a.type === 'In-App' ? 'in-app notification' : a.type === 'SMS' ? 'SMS' : 'email');
+  document.getElementById('rb-msg-body').innerHTML = html;
+  document.getElementById('rb-msg-modal').classList.add('open');
+  rbMsgRenderRecips();
+  if(a.type === 'SMS') rbMsgCount();
+  var first = document.querySelector('#rb-msg-body input, #rb-msg-body textarea');
+  if(first) first.focus();
 }
 
-function neFitView() {
-  if (ne.nodes.length === 0) return;
-  var minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-  ne.nodes.forEach(function(n) {
-    var el = n.el;
-    var w = el.offsetWidth || 200;
-    var h = el.offsetHeight || 100;
-    if (n.x < minX) minX = n.x;
-    if (n.y < minY) minY = n.y;
-    if (n.x + w > maxX) maxX = n.x + w;
-    if (n.y + h > maxY) maxY = n.y + h;
-  });
-  var wrap = document.getElementById('ne-canvas-wrap');
-  var wrapW = wrap.clientWidth;
-  var wrapH = wrap.clientHeight;
-  var contentW = maxX - minX + 80;
-  var contentH = maxY - minY + 80;
-  var zoom = Math.min(wrapW / contentW, wrapH / contentH, 1);
-  zoom = Math.max(0.3, Math.min(1, zoom));
-  var panX = (wrapW - contentW * zoom) / 2 - minX * zoom + 40 * zoom;
-  var panY = (wrapH - contentH * zoom) / 2 - minY * zoom + 40 * zoom;
-  ne.zoom = zoom;
-  ne.pan = { x: panX, y: panY };
-  neApplyTransform();
-  document.getElementById('ne-zoom-pct').textContent = Math.round(zoom * 100) + '%';
+function rbMsgCount(){
+  var el = document.getElementById('rb-msg-count');
+  if(!el) return;
+  var n = (document.getElementById('rb-msg-text').value || '').length;
+  var parts = Math.ceil(n / 160) || 1;
+  el.textContent = n + ' chars · ' + parts + ' SMS';
+  el.classList.toggle('is-over', n > 160);
 }
 
-function neResetView() {
-  neFitView();
+function rbMsgInsertToken(sel){
+  var token = sel.value;
+  sel.selectedIndex = 0;
+  if(!token) return;
+  var ta = document.getElementById('rb-msg-text');
+  if(!ta) return;
+  var start = ta.selectionStart || 0, end = ta.selectionEnd || 0;
+  ta.value = ta.value.substring(0, start) + token + ta.value.substring(end);
+  ta.selectionStart = ta.selectionEnd = start + token.length;
+  ta.focus();
+  rbMsgCount();
 }
 
-// ── Phase 2: Connections & Wiring ──
-
-function neGetPortCenter(nodeId, portType) {
-  var nodeData = ne.nodes.find(function(n) { return n.id === nodeId; });
-  if (!nodeData) return { x: 0, y: 0 };
-  var el = nodeData.el;
-  var x = parseFloat(el.style.left);
-  var y = parseFloat(el.style.top);
-  var w = el.offsetWidth || 200;
-  var h = el.offsetHeight || 100;
-  if (portType === 'out') return { x: x + w, y: y + h / 2 };
-  return { x: x, y: y + h / 2 };
+function rbMsgCancel(){
+  document.getElementById('rb-msg-modal').classList.remove('open');
+  rbMsgEditing = null;
 }
 
-function neBezierPath(x1, y1, x2, y2) {
-  var dx = Math.abs(x2 - x1);
-  var cp = Math.max(60, dx * 0.4);
-  return 'M' + x1 + ',' + y1 + ' C' + (x1 + cp) + ',' + y1 + ' ' + (x2 - cp) + ',' + y2 + ' ' + x2 + ',' + y2;
-}
-
-function neAddConnection(fromId, toId) {
-  var exists = ne.connections.some(function(c) { return c.from === fromId && c.to === toId; });
-  if (exists) return;
-  var id = 'ne-conn-' + ne.connId++;
-  ne.connections.push({ id: id, from: fromId, to: toId });
-  neTextAdapt();
-  return id;
-}
-
-function neRemoveConnection(connId) {
-  ne.connections = ne.connections.filter(function(c) { return c.id !== connId; });
-  var el = document.getElementById(connId);
-  if (el) el.remove();
-  ne.selectedConn = null;
-  neTextAdapt();
-}
-
-function neRenderConnections() {
-  var svg = document.getElementById('ne-svg');
-  if (!svg) return;
-  // Clear old paths
-  svg.innerHTML = '';
-  ne.connections.forEach(function(conn) {
-    var from = neGetPortCenter(conn.from, 'out');
-    var to = neGetPortCenter(conn.to, 'in');
-    var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    g.id = conn.id;
-    g.classList.add('ne-conn-group');
-
-    // Invisible fat hitbox path
-    var hitbox = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    hitbox.setAttribute('d', neBezierPath(from.x, from.y, to.x, to.y));
-    hitbox.setAttribute('fill', 'none');
-    hitbox.setAttribute('stroke', 'transparent');
-    hitbox.setAttribute('stroke-width', '16');
-    hitbox.style.cursor = 'pointer';
-    hitbox.style.pointerEvents = 'stroke';
-
-    // Visible bezier path
-    var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    path.setAttribute('d', neBezierPath(from.x, from.y, to.x, to.y));
-    path.classList.add('ne-conn');
-    if (ne.selectedConn === conn.id) path.classList.add('ne-conn-selected');
-
-    // Delete button (circle with ×) at midpoint
-    var mx = (from.x + to.x) / 2;
-    var my = (from.y + to.y) / 2;
-    var del = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    del.classList.add('ne-conn-delete');
-    del.setAttribute('transform', 'translate(' + mx + ',' + my + ')');
-    var delBg = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    delBg.setAttribute('r', '10');
-    delBg.setAttribute('fill', 'var(--er,#e74c3c)');
-    var delX = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    delX.setAttribute('text-anchor', 'middle');
-    delX.setAttribute('dy', '4');
-    delX.setAttribute('fill', '#fff');
-    delX.setAttribute('font-size', '14');
-    delX.setAttribute('font-weight', 'bold');
-    delX.setAttribute('style', 'pointer-events:none;');
-    delX.textContent = '×';
-    del.appendChild(delBg);
-    del.appendChild(delX);
-
-    // Connection label at midpoint
-    var fromNode = ne.nodes.find(function(n){ return n.id === conn.from; });
-    var labelText = '';
-    if (fromNode) {
-      if (fromNode.type === 'field') labelText = fromNode.data.field || '';
-      else if (fromNode.type === 'operator') labelText = fromNode.data.operator || '';
-      else if (fromNode.type === 'value') labelText = fromNode.data.value || '';
-      else if (fromNode.type === 'event') labelText = 'trigger';
-      else if (fromNode.type === 'action') labelText = fromNode.data.channel || '';
-    }
-    if (labelText) {
-      if (labelText.length > 18) labelText = labelText.substring(0, 16) + '…';
-      var labelEl = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      labelEl.setAttribute('x', mx);
-      labelEl.setAttribute('y', my - 10);
-      labelEl.setAttribute('text-anchor', 'middle');
-      labelEl.classList.add('ne-conn-label');
-      labelEl.textContent = labelText;
-      var bgRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-      bgRect.classList.add('ne-conn-label-bg');
-      var tw = labelText.length * 5.5 + 8;
-      bgRect.setAttribute('x', mx - tw / 2);
-      bgRect.setAttribute('y', my - 20);
-      bgRect.setAttribute('width', tw);
-      bgRect.setAttribute('height', 14);
-      g.appendChild(bgRect);
-      g.appendChild(labelEl);
-    }
-
-    g.appendChild(hitbox);
-    g.appendChild(path);
-    g.appendChild(del);
-    svg.appendChild(g);
-
-    // Click to select/delete
-    hitbox.addEventListener('click', function(e) {
-      e.stopPropagation();
-      if (ne.selectedConn === conn.id) {
-        ne.selectedConn = null;
-      } else {
-        ne.selectedConn = conn.id;
-      }
-      neRenderConnections();
-    });
-    del.addEventListener('click', function(e) {
-      e.stopPropagation();
-      neRemoveConnection(conn.id);
-      neRenderConnections();
-    });
-  });
-
-  // Render preview line if wiring
-  if (ne.wiring && ne.wiring.preview) {
-    var preview = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    preview.setAttribute('d', neBezierPath(ne.wiring.startX, ne.wiring.startY, ne.wiring.previewX, ne.wiring.previewY));
-    preview.classList.add('ne-conn-preview');
-    svg.appendChild(preview);
+function rbMsgSave(){
+  var a = rb.actions.filter(function(x){ return x.id === rbMsgEditing; })[0];
+  if(a){
+    var sub = document.getElementById('rb-msg-subject');
+    var ttl = document.getElementById('rb-msg-ttl');
+    var txt = document.getElementById('rb-msg-text');
+    if(sub) a.subject = sub.value;
+    if(ttl) a.title = ttl.value;
+    if(txt) a.body = txt.value;
+    a.recipients = rbMsgRecips.slice();
   }
-  neRenderMinimap();
+  rbMsgCancel();
+  rbRenderActions(); rbRenderReads(); rbRenderVerdict();
 }
 
-// Wiring: start from port mousedown
-function neStartWiring(e, portEl) {
+// ── Choose which action type to add ──
+function rbAddActionMenu(e){
   e.stopPropagation();
-  e.preventDefault();
-  var nodeId = portEl.dataset.nodeId;
-  var portType = portEl.dataset.portType;
-  var pos = neGetPortCenter(nodeId, portType);
-  ne.wiring = {
-    fromNodeId: nodeId,
-    fromPortType: portType,
-    startX: pos.x,
-    startY: pos.y,
-    previewX: pos.x,
-    previewY: pos.y,
-    preview: true
-  };
-  portEl.classList.add('ne-port-active');
-  document.getElementById('ne-canvas-wrap').classList.add('ne-wiring');
-  neHighlightValidTargets(nodeId, portType);
+  rbCloseMenu();
+  var used = rb.actions.map(function(a){ return a.type; });
+  var avail = rbActionTypes.filter(function(t){ return used.indexOf(t.v) < 0; });
+  var m = document.createElement('div');
+  m.className = 'rb-menu';
+  m.id = 'rb-menu';
+  m.innerHTML = avail.length
+    ? avail.map(function(t){ return '<button onclick="rbAddActionType(\'' + t.v + '\')">' + rbEsc(t.name) + '</button>'; }).join('')
+    : '<div class="rb-menu-empty">All action types added</div>';
+  document.body.appendChild(m);
+  var box = e.currentTarget.getBoundingClientRect();
+  m.style.left = Math.min(box.left, window.innerWidth - m.offsetWidth - 10) + 'px';
+  // The button sits at the bottom of a long rule, so open upward when there is no room below.
+  var below = window.innerHeight - box.bottom;
+  m.style.top = (below < m.offsetHeight + 16 && box.top > m.offsetHeight)
+    ? (box.top - m.offsetHeight - 5) + 'px'
+    : (box.bottom + 5) + 'px';
+  setTimeout(function(){ document.addEventListener('click', rbCloseMenu, { once: true }); }, 0);
 }
-
-function neHighlightValidTargets(fromNodeId, fromPortType) {
-  document.querySelectorAll('.ne-port').forEach(function(p) {
-    p.classList.remove('ne-port-valid-target');
-  });
-  var targetPortType = fromPortType === 'out' ? 'in' : 'out';
-  ne.nodes.forEach(function(n) {
-    if (n.id === fromNodeId) return;
-    var port = n.el.querySelector('.ne-port-' + targetPortType);
-    if (!port) return;
-    port.classList.add('ne-port-valid-target');
-  });
-}
-
-function neClearWiring() {
-  if (!ne.wiring) return;
-  ne.wiring = null;
-  document.querySelectorAll('.ne-port-active').forEach(function(p) { p.classList.remove('ne-port-active'); });
-  document.querySelectorAll('.ne-port-valid-target').forEach(function(p) { p.classList.remove('ne-port-valid-target'); });
-  document.getElementById('ne-canvas-wrap').classList.remove('ne-wiring');
-  neRenderConnections();
-}
-
-function neCompleteWiring(targetPortEl) {
-  if (!ne.wiring) return;
-  var targetNodeId = targetPortEl.dataset.nodeId;
-  var targetPortType = targetPortEl.dataset.portType;
-  if (targetNodeId === ne.wiring.fromNodeId) { neClearWiring(); return; }
-  if (targetPortType === ne.wiring.fromPortType) { neClearWiring(); return; }
-
-  var fromId, toId;
-  if (ne.wiring.fromPortType === 'out') {
-    fromId = ne.wiring.fromNodeId;
-    toId = targetNodeId;
-  } else {
-    fromId = targetNodeId;
-    toId = ne.wiring.fromNodeId;
-  }
-  neAddConnection(fromId, toId);
-  neClearWiring();
-  neSnapshot();
-}
-
-// Minimap
-var neMinimapColors = {event:'#4f7cff',field:'#818cf8',operator:'#fbbf24',value:'#38bdf8',action:'#34d399',text:'#f472b6',condition:'#a78bfa'};
-function neRenderMinimap() {
-  var c = document.getElementById('ne-minimap-canvas');
-  if (!c) return;
-  var ctx = c.getContext('2d');
-  var W = c.width, H = c.height;
-  ctx.clearRect(0, 0, W, H);
-  if (ne.nodes.length === 0) return;
-  var minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-  ne.nodes.forEach(function(n) {
-    var w = n.el.offsetWidth || 160, h = n.el.offsetHeight || 80;
-    if (n.x < minX) minX = n.x;
-    if (n.y < minY) minY = n.y;
-    if (n.x + w > maxX) maxX = n.x + w;
-    if (n.y + h > maxY) maxY = n.y + h;
-  });
-  var pad = 80;
-  minX -= pad; minY -= pad; maxX += pad; maxY += pad;
-  var rangeX = maxX - minX || 1, rangeY = maxY - minY || 1;
-  var scale = Math.min(W / rangeX, H / rangeY);
-
-  // Draw connections
-  ctx.strokeStyle = 'rgba(255,255,255,.15)';
-  ctx.lineWidth = 1;
-  ne.connections.forEach(function(conn) {
-    var fn = ne.nodes.find(function(n){ return n.id === conn.from; });
-    var tn = ne.nodes.find(function(n){ return n.id === conn.to; });
-    if (!fn || !tn) return;
-    var fx = (fn.x + (fn.el.offsetWidth || 160) - minX) * scale;
-    var fy = (fn.y + (fn.el.offsetHeight || 80) / 2 - minY) * scale;
-    var tx = (tn.x - minX) * scale;
-    var ty = (tn.y + (tn.el.offsetHeight || 80) / 2 - minY) * scale;
-    ctx.beginPath(); ctx.moveTo(fx, fy); ctx.lineTo(tx, ty); ctx.stroke();
-  });
-
-  // Draw nodes
-  ne.nodes.forEach(function(n) {
-    var w = n.el.offsetWidth || 160, h = n.el.offsetHeight || 80;
-    var rx = (n.x - minX) * scale, ry = (n.y - minY) * scale;
-    var rw = Math.max(4, w * scale), rh = Math.max(3, h * scale);
-    ctx.fillStyle = neMinimapColors[n.type] || '#888';
-    ctx.globalAlpha = 0.8;
-    ctx.beginPath();
-    ctx.roundRect(rx, ry, rw, rh, 2);
-    ctx.fill();
-    ctx.globalAlpha = 1;
-  });
-
-  // Draw viewport rectangle
-  var wrap = document.getElementById('ne-canvas-wrap');
-  if (wrap) {
-    var vw = wrap.clientWidth, vh = wrap.clientHeight;
-    var vx = (-ne.pan.x / ne.zoom - minX) * scale;
-    var vy = (-ne.pan.y / ne.zoom - minY) * scale;
-    var vwS = (vw / ne.zoom) * scale, vhS = (vh / ne.zoom) * scale;
-    ctx.strokeStyle = 'rgba(79,124,255,.7)';
-    ctx.lineWidth = 1.5;
-    ctx.strokeRect(vx, vy, vwS, vhS);
-  }
-
-  // Store bounds for click handler
-  c._mmBounds = { minX: minX, minY: minY, scale: scale };
-}
-
-function neMinimapClick(e) {
-  var c = document.getElementById('ne-minimap-canvas');
-  if (!c || !c._mmBounds) return;
-  var rect = c.getBoundingClientRect();
-  var scaleX = c.width / rect.width, scaleY = c.height / rect.height;
-  var cx = (e.clientX - rect.left) * scaleX;
-  var cy = (e.clientY - rect.top) * scaleY;
-  var b = c._mmBounds;
-  var worldX = cx / b.scale + b.minX;
-  var worldY = cy / b.scale + b.minY;
-  var wrap = document.getElementById('ne-canvas-wrap');
-  if (wrap) {
-    ne.pan.x = -(worldX * ne.zoom - wrap.clientWidth / 2);
-    ne.pan.y = -(worldY * ne.zoom - wrap.clientHeight / 2);
-    neApplyTransform();
-    neRenderMinimap();
-  }
-}
-
-// Hook: open node editor from alert row expand arrow
-function neOpenFromAlert(btn) {
-  var row = btn.closest('.alt-alert-row');
-  var rows = document.querySelectorAll('.alt-alert-row');
-  var idx = Array.prototype.indexOf.call(rows, row);
-  if (idx >= 0) neOpen(idx);
+function rbAddActionType(type){
+  rbCloseMenu();
+  if(rb.actions.some(function(a){ return a.type === type; })) return;
+  rb.actions.push({ id: rb.nextId++, type: type, recipients: [], subject: '', title: '', body: '' });
+  rbRenderActions(); rbRenderReads(); rbUpdateSubtitle(); rbRenderVerdict();
 }
 </script>
 <script src="../../shared/notifications.js?v=6"></script>
