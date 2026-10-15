@@ -1,0 +1,2053 @@
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CoreConnect — Custom Alerts</title>
+<script>try{document.documentElement.setAttribute('data-theme',localStorage.getItem('cc_theme')==='light'?'light':'dark')}catch(e){}</script>
+<link rel="stylesheet" href="../../shared/app.css?v=2">
+<link rel="stylesheet" href="../../shared/settings.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{background:var(--bg);margin:0;padding:0;font-family:'DM Sans',sans-serif;}
+.root.main-area{height:calc(100vh - 64px);min-height:0;overflow:hidden;display:flex;flex-direction:column;}
+@media (max-width:640px){
+  .root.main-area{height:auto;min-height:0;overflow:visible;}
+}
+.ur-head-spacer{flex:1;}
+.alt-add-btn{display:flex;align-items:center;gap:5px;background:var(--ac);border:none;border-radius:8px;padding:0 14px;height:32px;color:#fff;font-size:12.5px;font-weight:500;font-family:var(--font);cursor:pointer;transition:all .15s;white-space:nowrap;}
+.alt-add-btn:hover{background:var(--ac2);}
+.alt-add-btn svg{width:15px;height:15px;}
+
+
+/* Table */
+.alt-table{width:100%;border-collapse:separate;border-spacing:0;border:0.5px solid var(--brd);border-radius:10px;overflow:hidden;}
+.alt-table th,.alt-table td{text-align:left;padding:12px 18px;font-size:13px;font-family:var(--font);border-bottom:0.5px solid var(--brd);}
+.alt-table th{font-size:11.5px;font-weight:600;color:var(--mu);text-transform:uppercase;letter-spacing:.4px;background:var(--sur2);position:sticky;top:0;z-index:1;}
+.alt-table td{color:var(--tx);}
+.alt-table td:first-child{color:var(--mu);font-family:var(--mono);font-size:12px;}
+.alt-table tr:last-child td{border-bottom:none;}
+.alt-table tbody tr{cursor:pointer;}
+.alt-table tbody tr:hover td{background:var(--sur2);}
+.alt-status{display:inline-block;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:.3px;}
+.alt-status-active{background:rgba(52,199,89,.12);color:#34c759;}
+.alt-status-inactive{background:rgba(255,69,58,.1);color:#ff453a;}
+.alt-channels{display:flex;gap:6px;flex-wrap:wrap;}
+.alt-channel-tag{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:500;background:var(--sur2);color:var(--tx);border:0.5px solid var(--brd);}
+.alt-channel-tag svg{width:12px;height:12px;}
+.alt-recipients{font-size:12px;color:var(--mu);}
+.alt-field-label{font-size:12px;font-weight:500;color:var(--mu);padding-left:2px;margin-bottom:4px;}
+
+/* Expandable conditions */
+.alt-arrow-btn{background:transparent;border:none;cursor:pointer;padding:4px;border-radius:4px;display:flex;align-items:center;justify-content:center;}
+.alt-arrow-btn:hover{background:var(--sur2);}
+.alt-arrow{width:16px;height:16px;color:var(--mu);transition:transform .2s;}
+.alt-row-expanded .alt-arrow{transform:rotate(90deg);}
+.alt-cond-row{display:none;}
+.alt-cond-row.open{display:table-row;}
+.alt-cond-row td{padding:0 !important;border-bottom:0.5px solid var(--brd);}
+.alt-cond-wrap{background:var(--bg);padding:14px 18px 14px 60px;}
+.alt-cond-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.alt-cond-title{font-size:12px;font-weight:600;color:var(--tx);text-transform:uppercase;letter-spacing:.3px;}
+.alt-cond-add{display:flex;align-items:center;gap:4px;background:transparent;border:1px solid var(--brd);border-radius:6px;padding:4px 10px;font-size:11.5px;color:var(--ac);font-family:var(--font);cursor:pointer;transition:all .15s;}
+.alt-cond-add:hover{background:var(--sur);border-color:var(--ac);}
+.alt-cond-add svg{width:12px;height:12px;}
+.alt-cond-list{display:flex;flex-direction:column;gap:6px;}
+.alt-cond{display:flex;align-items:center;gap:10px;background:var(--sur);border:0.5px solid var(--brd2);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--tx);}
+.alt-cond-field{font-weight:600;min-width:120px;}
+.alt-cond-op{color:var(--mu);font-size:12px;min-width:24px;text-align:center;}
+.alt-cond-val{color:var(--ac);font-weight:600;}
+.alt-cond-actions{margin-left:auto;display:flex;gap:6px;}
+.alt-cond-btn{background:transparent;border:none;cursor:pointer;color:var(--mu);padding:4px;border-radius:4px;display:flex;align-items:center;justify-content:center;transition:color .15s;}
+.alt-cond-btn:hover{color:var(--tx);}
+.alt-cond-btn svg{width:14px;height:14px;}
+.alt-empty-conds{font-size:12.5px;color:var(--mu);padding:8px 0;}
+
+/* Modals */
+#alt-add-modal .modal,#alt-edit-modal .modal,#alt-cond-modal .modal{overflow:visible;}
+#alt-add-modal .modal-body,#alt-edit-modal .modal-body,#alt-cond-modal .modal-body{overflow:visible;}
+.alt-modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 12px;}
+.alt-modal-full{grid-column:1 / -1;}
+@media(max-width:480px){.alt-modal-grid{grid-template-columns:1fr;}}
+#alt-cond-modal .modal{width:600px;}
+.alt-ifttt{display:flex;flex-direction:column;gap:0;padding:4px 0;}
+.alt-ifttt-block{display:flex;gap:16px;align-items:flex-start;}
+.alt-ifttt-label{flex-shrink:0;width:48px;padding-top:18px;font-size:20px;font-weight:700;font-family:var(--font);line-height:1;}
+.alt-ifttt-label.alt-if-label{color:var(--ac);}
+.alt-ifttt-label.alt-then-label{color:#34d399;}
+.alt-ifttt-card{flex:1;background:var(--sur);border:0.5px solid var(--brd2);border-radius:12px;padding:16px 18px;position:relative;}
+.alt-ifttt-card-head{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.alt-ifttt-card-head svg{width:20px;height:20px;flex-shrink:0;}
+.alt-ifttt-card-head .alt-if-icon{color:var(--ac);}
+.alt-ifttt-card-head .alt-then-icon{color:#34d399;}
+.alt-ifttt-card-title{font-size:13.5px;font-weight:600;color:var(--tx);font-family:var(--font);}
+.alt-ifttt-card-subtitle{font-size:11.5px;color:var(--mu);font-family:var(--font);}
+.alt-ifttt-connector{display:flex;align-items:center;padding-left:22px;height:28px;}
+.alt-ifttt-connector-line{width:2px;height:100%;background:var(--brd2);border-radius:1px;}
+.alt-ifttt-fields{display:flex;gap:10px;align-items:flex-end;}
+.alt-ifttt-fields>div{flex:1;}
+.alt-ifttt-then-content{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+.alt-ifttt-then-channels{display:flex;flex-wrap:wrap;gap:6px;}
+.alt-ifttt-then-recipients{font-size:12.5px;color:var(--mu);font-family:var(--font);}
+.alt-ifttt-then-sep{width:1px;height:20px;background:var(--brd2);margin:0 4px;}
+@media(max-width:480px){
+  #alt-cond-modal .modal{width:100%;}
+  .alt-ifttt-block{flex-direction:column;gap:6px;}
+  .alt-ifttt-label{width:auto;padding-top:0;}
+  .alt-ifttt-fields{flex-direction:column;align-items:stretch;}
+  .alt-ifttt-fields>div{flex:none;}
+  .alt-ifttt-connector{padding-left:10px;height:20px;}
+}
+
+/* Checkboxes */
+.alt-checkbox-group{display:flex;flex-wrap:wrap;gap:10px;}
+.alt-checkbox-label{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--tx);cursor:pointer;font-family:var(--font);}
+.alt-checkbox-label input[type="checkbox"]{width:16px;height:16px;accent-color:var(--ac);cursor:pointer;}
+
+/* Multi-select tags */
+.alt-tag-select{display:flex;flex-wrap:wrap;gap:6px;background:var(--sur);border:0.5px solid var(--brd);border-radius:8px;padding:8px 10px;min-height:38px;cursor:pointer;transition:border-color .15s;}
+.alt-tag-select:hover{border-color:var(--ac);}
+.alt-tag{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:12px;font-size:11.5px;font-weight:500;background:var(--ac);color:#fff;font-family:var(--font);}
+.alt-tag-remove{background:none;border:none;color:#fff;cursor:pointer;font-size:14px;line-height:1;padding:0 2px;opacity:.7;}
+.alt-tag-remove:hover{opacity:1;}
+
+/* Field input */
+.alt-field-input{width:100%;background:var(--sur);border:1px solid var(--brd);border-radius:8px;padding:10px 12px;font-size:13px;font-family:var(--font);color:var(--tx);outline:none;transition:border-color .15s;box-sizing:border-box;}
+.alt-field-input:focus{border-color:var(--ac);}
+.alt-field-input::placeholder{color:var(--tx2);opacity:.6;}
+
+/* Custom dropdown */
+.alt-dropdown{position:relative;width:100%;}
+.alt-dropdown-trigger{display:flex;align-items:center;justify-content:space-between;width:100%;background:var(--sur);border:0.5px solid var(--brd);border-radius:8px;padding:10px 12px;font-size:13px;font-family:var(--font);color:var(--tx);cursor:pointer;transition:border-color .15s;outline:none;}
+.alt-dropdown-trigger:hover,.alt-dropdown-trigger.open{border-color:var(--ac);}
+.alt-dropdown-trigger svg{width:14px;height:14px;color:var(--mu);transition:transform .2s;flex-shrink:0;}
+.alt-dropdown-trigger.open svg{transform:rotate(180deg);}
+.alt-dropdown-menu{display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--sur);border:0.5px solid var(--brd2);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.45);z-index:20;overflow:hidden;max-height:300px;overflow-y:auto;scrollbar-width:none;}
+.alt-dropdown-menu::-webkit-scrollbar{display:none;}
+.alt-dropdown-menu.open{display:block;}
+.alt-dropdown-item{display:flex;align-items:center;gap:8px;padding:9px 12px;font-size:13px;font-family:var(--font);color:var(--tx);cursor:pointer;transition:background .1s;}
+.alt-dropdown-item:hover{background:var(--sur2);}
+.alt-dropdown-item.selected{color:var(--ac);font-weight:600;}
+
+/* Global Settings */
+.alt-global{background:var(--sur);border:0.5px solid var(--brd);border-radius:10px;overflow:hidden;}
+.alt-global-toggle{display:flex;align-items:center;gap:8px;width:100%;background:none;border:none;padding:14px 18px;cursor:pointer;font-family:var(--font);}
+.alt-global-toggle:hover{background:var(--sur2);}
+.alt-global-chev{width:16px;height:16px;color:var(--mu);transition:transform .2s;}
+.alt-global-chev.open{transform:rotate(90deg);}
+.alt-global-title{font-size:13px;font-weight:600;color:var(--tx);text-transform:uppercase;letter-spacing:.4px;}
+.alt-global-body{display:none;padding:0 18px 18px;border-top:0.5px solid var(--brd);}
+.alt-global-body.open{display:block;}
+.alt-global-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px;}
+.alt-global-card{background:var(--bg);border:0.5px solid var(--brd2);border-radius:10px;padding:16px;}
+.alt-global-card-wide{grid-column:1 / -1;}
+.alt-global-card-head{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:13px;font-weight:600;color:var(--tx);}
+.alt-global-card-head svg{width:16px;height:16px;color:var(--ac);}
+.alt-global-desc{font-size:12px;color:var(--mu);margin-bottom:10px;}
+.alt-quiet-times{display:flex;align-items:flex-end;gap:10px;}
+.alt-quiet-times>div{flex:1;}
+.alt-quiet-to{font-size:12px;color:var(--mu);padding-bottom:10px;}
+.alt-digest-row{display:flex;align-items:center;gap:8px;margin-top:4px;}
+
+/* Toggle switch */
+.alt-switch{position:relative;display:inline-block;width:36px;height:20px;margin-left:auto;flex-shrink:0;}
+.alt-switch input{opacity:0;width:0;height:0;}
+.alt-switch-slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:var(--brd);border-radius:20px;transition:.2s;}
+.alt-switch-slider::before{content:'';position:absolute;height:14px;width:14px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.2s;}
+.alt-switch input:checked + .alt-switch-slider{background:var(--ac);}
+.alt-switch input:checked + .alt-switch-slider::before{transform:translateX(16px);}
+
+@media(max-width:640px){.alt-global-grid{grid-template-columns:1fr;}.alt-quiet-times{flex-direction:column;}.alt-quiet-to{padding:0;text-align:center;}}
+
+/* Mobile */
+@media(max-width:900px){
+  .alt-table{font-size:12px;}
+  .alt-table th,.alt-table td{padding:10px 12px;}
+}
+@media(max-width:768px){
+  .sidebar{display:none;}
+  .main-area{margin-left:0;}
+  .hamburger-btn{display:flex;}
+}
+@media(max-width:640px){
+  .alt-cond-wrap{padding:14px 14px 14px 14px;}
+  .alt-cond-field{min-width:80px;}
+
+  /* Table to cards */
+  .alt-table{border:none;border-radius:0;overflow:visible;}
+  .alt-table thead{display:none;}
+  .alt-table, .alt-table tbody{display:block;width:100%;}
+  .alt-table tbody tr[onclick]{display:grid;grid-template-columns:auto 1fr;gap:0 10px;background:var(--sur);border:0.5px solid var(--brd2);border-radius:12px;padding:14px 16px;margin-bottom:10px;position:relative;}
+  .alt-table tbody tr[onclick]:hover td{background:transparent;}
+  .alt-table td{border:none;padding:0;font-size:13px;}
+
+  /* Internal alerts card layout */
+  .alt-table tbody tr[onclick] td:nth-child(1){grid-row:1;grid-column:1;align-self:start;padding-top:2px;}
+  .alt-table tbody tr[onclick] td:nth-child(2){display:none;}
+  .alt-table tbody tr[onclick] td:nth-child(3){grid-row:1;grid-column:2;font-weight:600;font-size:13.5px;color:var(--tx);}
+  .alt-table tbody tr[onclick] td:nth-child(4){grid-row:2;grid-column:2;display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;}
+  .alt-table tbody tr[onclick] td:nth-child(5){grid-row:3;grid-column:2;font-size:12px;color:var(--mu);margin-top:4px;}
+  .alt-table tbody tr[onclick] td:nth-child(6){position:absolute;top:14px;right:16px;}
+
+  /* Parent card loses bottom radius when expanded */
+  .alt-table tbody tr.alt-row-expanded{border-radius:12px 12px 0 0;margin-bottom:0;border-bottom-color:var(--brd);}
+
+  /* Condition expanded rows */
+  .alt-cond-row{display:none !important;}
+  .alt-cond-row.open{display:block !important;margin:0 0 10px;border:0.5px solid var(--brd2);border-top:0.5px solid var(--brd);border-radius:0 0 12px 12px;background:var(--sur);overflow:hidden;}
+  .alt-cond-row.open td{display:block;}
+
+  /* Header layout */
+  .set-page-head{flex-wrap:wrap;gap:8px;}
+  .alt-add-btn{width:auto;}
+}
+
+/* Notification panel */
+.notif-panel{display:none;position:fixed;top:0;left:0;width:420px;max-height:560px;
+  background:var(--sur);border:0.5px solid var(--brd2);border-radius:12px;
+  box-shadow:0 12px 36px rgba(0,0,0,.55);z-index:9999;
+  flex-direction:column;overflow:hidden;}
+.notif-panel.open{display:flex;}
+.notif-header{display:flex;align-items:center;justify-content:space-between;
+  padding:14px 18px;border-bottom:0.5px solid var(--brd);flex-shrink:0;}
+.notif-title{font-size:14px;font-weight:600;color:var(--tx);}
+.notif-header-actions{display:flex;align-items:center;gap:6px;}
+.notif-markall{background:transparent;border:none;color:var(--ac2);
+  font-size:12px;font-weight:500;font-family:var(--font);cursor:pointer;
+  padding:10px 12px;min-height:40px;border-radius:8px;transition:background .12s;}
+.notif-markall:hover{background:rgba(79,124,255,.10);}
+.notif-markall[disabled]{opacity:.4;cursor:not-allowed;}
+.notif-markall[disabled]:hover{background:transparent;}
+.notif-close{display:none;width:36px;height:36px;border-radius:8px;
+  background:transparent;border:none;color:var(--mu);cursor:pointer;
+  align-items:center;justify-content:center;transition:all .12s;flex-shrink:0;}
+.notif-close:hover{background:var(--hover);color:var(--tx);}
+.notif-tabs{display:flex;gap:4px;padding:8px 14px 0;border-bottom:0.5px solid var(--brd);flex-shrink:0;}
+.notif-tab{background:transparent;border:none;color:var(--mu);
+  font-size:12.5px;font-weight:500;font-family:var(--font);cursor:pointer;
+  padding:12px 14px;min-height:44px;border-radius:6px 6px 0 0;display:flex;align-items:center;gap:6px;
+  border-bottom:2px solid transparent;margin-bottom:-0.5px;transition:color .12s;}
+.notif-tab:hover{color:var(--tx);}
+.notif-tab.active{color:var(--ac2);border-bottom-color:var(--ac);}
+.notif-tab-count{font-family:var(--mono);font-size:10.5px;color:var(--mu);
+  background:var(--sur2);padding:1px 6px;border-radius:9px;min-width:18px;
+  text-align:center;}
+.notif-tab.active .notif-tab-count{color:var(--ac2);background:rgba(79,124,255,.16);}
+.notif-body{overflow-y:auto;flex:1;min-height:120px;
+  scrollbar-width:thin;scrollbar-color:var(--brd2) transparent;}
+.notif-body::-webkit-scrollbar{width:6px;}
+.notif-body::-webkit-scrollbar-thumb{background:var(--brd2);border-radius:3px;}
+.notif-body::-webkit-scrollbar-thumb:hover{background:var(--mu);}
+.notif-empty{padding:40px 20px;text-align:center;color:var(--mu);font-size:12.5px;}
+.notif-empty-icon{font-size:32px;margin-bottom:8px;color:var(--brd2);}
+.notif-footer{padding:8px;border-top:0.5px solid var(--brd);flex-shrink:0;}
+.notif-seeall{width:100%;background:transparent;border:none;color:var(--ac2);
+  font-size:12.5px;font-weight:500;font-family:var(--font);cursor:pointer;
+  padding:14px 8px;min-height:48px;border-radius:8px;transition:background .12s;}
+.notif-seeall:hover{background:rgba(79,124,255,.08);}
+@media(max-width:640px){
+  .notif-panel{
+    top:0 !important;left:0 !important;right:0 !important;bottom:0 !important;
+    width:100% !important;max-height:none !important;height:100vh;
+    border-radius:0;border:none;
+  }
+  .notif-header{padding:14px 16px;}
+  .notif-title{font-size:16px;}
+  .notif-markall{padding:10px 14px;min-height:44px;font-size:13px;}
+  .notif-close{display:flex;width:48px;height:48px;}
+  .notif-tab{padding:14px 14px;font-size:13.5px;min-height:48px;}
+}
+
+/* ════════════════════════════════════════════════════════════════
+   RULE BUILDER
+   ════════════════════════════════════════════════════════════════ */
+.rb-overlay{display:none;position:fixed;inset:0;z-index:8000;background:var(--bg);flex-direction:column;}
+.rb-overlay.open{display:flex;}
+.rb-topbar{display:flex;align-items:center;gap:12px;padding:10px 16px;background:var(--sur);border-bottom:0.5px solid var(--brd);flex-shrink:0;}
+.rb-back{width:36px;height:36px;border-radius:8px;border:none;background:transparent;color:var(--mu);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;flex-shrink:0;}
+.rb-back:hover{background:var(--sur2);color:var(--tx);}
+.rb-back svg{width:20px;height:20px;}
+.rb-title{font-size:14px;font-weight:600;color:var(--tx);font-family:var(--font);}
+.rb-subtitle{font-size:12px;color:var(--mu);font-family:var(--font);}
+.rb-status-pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600;background:rgba(34,200,138,.16);color:var(--gr);}
+.rb-status-pill.is-inactive{background:rgba(232,85,85,.16);color:var(--rd);}
+.rb-btn{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;border:0.5px solid var(--brd);background:var(--sur);color:var(--tx);font-size:12.5px;font-weight:500;font-family:var(--font);cursor:pointer;transition:all .12s;white-space:nowrap;}
+.rb-btn:hover{background:var(--sur2);}
+.rb-btn.rb-primary{background:var(--ac);border-color:var(--ac);color:#fff;}
+.rb-btn.rb-primary:hover{background:var(--ac2);}
+.rb-btn svg{width:16px;height:16px;}
+
+/* Summary band */
+.rb-reads{padding:16px 20px;border-bottom:0.5px solid var(--brd);background:var(--sur);flex-shrink:0;}
+.rb-reads-lbl{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--mu);font-family:var(--font);margin-bottom:7px;}
+.rb-reads-txt{font-size:14px;line-height:1.65;color:var(--tx);font-family:var(--font);max-width:980px;}
+.rb-reads-txt b{font-weight:600;color:var(--tx);}
+.rb-reads-txt .rb-and{color:#fbbf24;font-weight:700;}
+.rb-reads-txt .rb-or{color:var(--ac2);font-weight:700;}
+.rb-reads-txt .rb-num{font-family:var(--mono,monospace);color:var(--tx);}
+
+.rb-scroll{flex:1;overflow-y:auto;padding:20px;}
+.rb-layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:20px;max-width:1240px;margin:0 auto;align-items:start;}
+
+/* Timeline rail */
+.rb-stage{position:relative;padding-left:46px;padding-bottom:22px;}
+.rb-stage:last-child{padding-bottom:0;}
+.rb-stage::before{content:'';position:absolute;left:15px;top:30px;bottom:-6px;width:1px;background:var(--brd2);}
+.rb-stage:last-child::before{display:none;}
+.rb-ic{position:absolute;left:0;top:0;width:31px;height:31px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:1px solid var(--brd2);background:var(--sur);}
+.rb-ic svg{width:15px;height:15px;}
+.rb-ic-when{color:var(--ac2);border-color:rgba(110,157,255,.45);background:rgba(110,157,255,.12);}
+.rb-ic-if{color:#fbbf24;border-color:rgba(251,191,36,.45);background:rgba(251,191,36,.12);}
+.rb-ic-then{color:var(--gr);border-color:rgba(34,200,138,.45);background:rgba(34,200,138,.12);}
+.rb-stage-head{display:flex;align-items:center;gap:10px;min-height:31px;margin-bottom:10px;}
+.rb-stage-lbl{font-size:11px;font-weight:700;letter-spacing:1px;color:var(--mu);font-family:var(--font);}
+.rb-hint{margin-left:auto;font-size:11.5px;color:var(--mu);font-family:var(--font);}
+.rb-hint b{color:#fbbf24;}
+.rb-hint i{color:var(--ac2);font-style:normal;font-weight:700;}
+
+.rb-card{background:var(--sur);border:0.5px solid var(--brd2);border-radius:10px;padding:14px 16px;}
+.rb-when-card{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.rb-when-name{font-size:13.5px;font-weight:600;color:var(--tx);font-family:var(--font);}
+.rb-when-meta{font-size:12px;color:var(--mu);font-family:var(--font);}
+
+/* Condition groups */
+.rb-group{background:var(--sur);border:0.5px solid var(--brd2);border-radius:10px;padding:13px 15px;}
+.rb-group-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.rb-group-title{font-size:12px;color:var(--mu);font-family:var(--font);}
+.rb-group-remove{margin-left:auto;background:none;border:none;color:var(--mu);font-size:12px;font-family:var(--font);cursor:pointer;padding:0;}
+.rb-group-remove:hover{color:var(--rd);text-decoration:underline;}
+.rb-cond{display:grid;grid-template-columns:76px minmax(120px,1.1fr) minmax(120px,1fr) minmax(90px,.8fr) 14px 22px;gap:8px;align-items:center;margin-bottom:8px;}
+.rb-where{font-size:12px;color:var(--mu);font-family:var(--font);padding-left:4px;}
+.rb-join{justify-self:start;padding:5px 14px;border-radius:999px;border:0.5px solid rgba(251,191,36,.45);background:rgba(251,191,36,.14);color:#fbbf24;font-size:11px;font-weight:700;letter-spacing:.5px;font-family:var(--font);cursor:pointer;transition:all .12s;}
+.rb-join:hover{background:rgba(251,191,36,.26);}
+.rb-join.is-or{border-color:rgba(110,157,255,.5);background:rgba(110,157,255,.18);color:var(--ac2);}
+.rb-join.is-or:hover{background:rgba(110,157,255,.3);}
+.rb-input{width:100%;background:var(--bg);border:0.5px solid var(--brd);border-radius:8px;padding:9px 11px;font-size:12.5px;font-family:var(--font);color:var(--tx);outline:none;transition:border-color .12s;box-sizing:border-box;}
+.rb-input:hover,.rb-input:focus{border-color:var(--ac);}
+.rb-input::placeholder{color:var(--mu);opacity:.6;}
+select.rb-input{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:28px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237a7a8a' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 9px center;}
+select.rb-input option,select.rb-input optgroup{background:var(--sur);color:var(--tx);}
+.rb-dot{width:9px;height:9px;border-radius:50%;border:1.5px solid var(--mu);justify-self:center;transition:all .15s;}
+.rb-dot.is-pass{background:var(--gr);border-color:var(--gr);box-shadow:0 0 7px rgba(34,200,138,.5);}
+.rb-x{width:22px;height:22px;display:flex;align-items:center;justify-content:center;border:none;background:none;color:var(--mu);font-size:15px;line-height:1;cursor:pointer;border-radius:5px;transition:all .12s;}
+.rb-x:hover{background:rgba(232,85,85,.14);color:var(--rd);}
+.rb-add{display:inline-flex;align-items:center;gap:6px;background:none;border:none;color:var(--ac);font-size:12.5px;font-family:var(--font);cursor:pointer;padding:4px 2px;}
+.rb-add:hover{text-decoration:underline;}
+.rb-act-foot{padding-top:10px;margin-top:2px;border-top:0.5px solid var(--brd);}
+.rb-add:disabled{color:var(--mu);opacity:.5;cursor:not-allowed;}
+.rb-add:disabled:hover{text-decoration:none;}
+.rb-add svg{width:13px;height:13px;}
+
+/* OR divider between groups */
+.rb-sep{display:flex;align-items:center;gap:0;margin:14px 0;}
+.rb-sep-line{flex:1;height:1px;background:var(--brd2);}
+.rb-sep .rb-join{margin:0 12px;}
+.rb-addgroup{width:100%;margin-top:14px;padding:14px;border:1px dashed var(--brd2);border-radius:10px;background:none;color:var(--ac);font-size:12.5px;font-family:var(--font);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .12s;}
+.rb-addgroup:hover{border-color:var(--ac);background:rgba(79,124,255,.06);}
+.rb-addgroup svg{width:14px;height:14px;}
+
+/* THEN actions */
+.rb-act{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 0;border-bottom:0.5px solid var(--brd);}
+.rb-act:last-of-type{border-bottom:none;}
+.rb-act-name{font-size:13px;font-weight:600;color:var(--tx);font-family:var(--font);min-width:132px;}
+.rb-act-to{font-size:12px;color:var(--mu);font-family:var(--font);}
+.rb-chip{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:999px;background:var(--sur2);border:0.5px solid var(--brd);color:var(--tx);font-size:12px;font-family:var(--font);}
+.rb-chip button{background:none;border:none;color:var(--mu);cursor:pointer;padding:0;font-size:13px;line-height:1;}
+.rb-chip button:hover{color:var(--rd);}
+.rb-chip-add{padding:5px 11px;border-radius:999px;border:1px dashed var(--brd2);background:none;color:var(--ac);font-size:12px;font-family:var(--font);cursor:pointer;transition:all .12s;}
+.rb-chip-add:hover{border-color:var(--ac);background:rgba(79,124,255,.08);}
+.rb-act-x{margin-left:auto;}
+.rb-menu{position:absolute;z-index:9000;background:var(--sur);border:0.5px solid var(--brd2);border-radius:9px;box-shadow:0 10px 28px rgba(0,0,0,.5);padding:4px;min-width:170px;}
+.rb-menu button{display:block;width:100%;text-align:left;padding:8px 11px;border:none;border-radius:6px;background:none;color:var(--tx);font-size:12.5px;font-family:var(--font);cursor:pointer;}
+.rb-menu button:hover{background:var(--sur2);}
+.rb-menu .rb-menu-empty{color:var(--mu);padding:8px 11px;font-size:12px;font-family:var(--font);}
+
+/* Test panel */
+.rb-test{background:var(--sur);border:0.5px solid var(--brd2);border-radius:10px;padding:15px 16px;position:sticky;top:0;}
+.rb-test-lbl{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--mu);font-family:var(--font);margin-bottom:6px;}
+.rb-test-hint{font-size:11.5px;color:var(--mu);font-family:var(--font);line-height:1.5;margin-bottom:12px;}
+.rb-test-fld{display:flex;flex-direction:column;gap:5px;margin-bottom:10px;}
+.rb-test-fld label{font-size:12px;color:var(--tx);font-family:var(--font);}
+.rb-verdict{margin-top:14px;padding-top:13px;border-top:0.5px solid var(--brd);}
+.rb-verdict-row{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;font-family:var(--font);margin-bottom:7px;}
+.rb-verdict-dot{width:10px;height:10px;border-radius:50%;border:1.5px solid var(--mu);flex:none;}
+.rb-verdict.is-fire .rb-verdict-dot{background:var(--gr);border-color:var(--gr);box-shadow:0 0 8px rgba(34,200,138,.55);}
+.rb-verdict.is-fire .rb-verdict-row{color:var(--gr);}
+.rb-verdict-txt{font-size:12px;color:var(--mu);font-family:var(--font);line-height:1.55;}
+.rb-test-empty{font-size:12px;color:var(--mu);font-family:var(--font);}
+
+@media(max-width:980px){
+  .rb-layout{grid-template-columns:minmax(0,1fr);}
+  .rb-test{position:static;}
+}
+@media(max-width:640px){
+  .rb-scroll{padding:14px;}
+  .rb-reads{padding:13px 14px;}
+  .rb-reads-txt{font-size:13px;}
+  .rb-topbar{gap:8px;padding:10px 12px;}
+  .rb-subtitle{display:none;}
+  .rb-btn{width:40px;height:40px;padding:0;gap:0;justify-content:center;flex-shrink:0;}
+  .rb-btn span{display:none;}
+  .rb-stage{padding-left:0;}
+  .rb-stage::before{display:none;}
+  .rb-ic{position:static;margin-right:2px;}
+  .rb-stage-head{margin-bottom:8px;}
+  .rb-hint{display:none;}
+  .rb-cond{grid-template-columns:1fr 14px 22px;gap:7px;padding:11px;border:0.5px solid var(--brd);border-radius:9px;margin-bottom:10px;}
+  .rb-cond > .rb-where,.rb-cond > .rb-join{grid-column:1/-1;justify-self:start;margin-bottom:2px;}
+  .rb-cond > select.rb-input:nth-of-type(1),.rb-cond > select.rb-input:nth-of-type(2){grid-column:1/-1;}
+  .rb-dot{grid-row:4;grid-column:2;}
+  .rb-x{grid-row:4;grid-column:3;}
+  .rb-act-name{min-width:0;width:100%;}
+}
+/* Message composer modal — must clear the rule-builder overlay (z-index 8000) */
+#rb-msg-modal{z-index:8600;}
+#rb-msg-modal .modal{width:560px;max-width:100%;}
+.rb-msg-fld{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
+.rb-msg-fld label{font-size:11.5px;font-weight:600;color:var(--mu);font-family:var(--font);}
+.rb-msg-fld textarea.rb-input{min-height:130px;resize:vertical;line-height:1.55;}
+.rb-msg-tools{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.rb-msg-count{font-size:11.5px;color:var(--mu);font-family:var(--font);margin-left:auto;}
+.rb-msg-count.is-over{color:var(--rd);}
+.rb-act-compose{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:7px;border:0.5px solid var(--brd);background:var(--sur2);color:var(--mu);font-size:12px;font-family:var(--font);cursor:pointer;transition:all .12s;}
+.rb-act-compose:hover{border-color:var(--ac);color:var(--ac);}
+.rb-act-compose svg{width:12px;height:12px;}
+.rb-act-compose.is-set{border-color:rgba(34,200,138,.45);background:rgba(34,200,138,.12);color:var(--gr);}
+/* Searchable recipient picker */
+.rb-pick{position:absolute;z-index:9000;width:290px;background:var(--sur);border:0.5px solid var(--brd2);border-radius:10px;box-shadow:0 12px 34px rgba(0,0,0,.55);overflow:hidden;}
+.rb-pick-search{position:relative;padding:8px;border-bottom:0.5px solid var(--brd);}
+.rb-pick-search input{width:100%;background:var(--bg);border:0.5px solid var(--brd);border-radius:7px;padding:8px 10px 8px 30px;font-size:12.5px;font-family:var(--font);color:var(--tx);outline:none;box-sizing:border-box;}
+.rb-pick-search input:focus{border-color:var(--ac);}
+.rb-pick-search svg{position:absolute;left:19px;top:50%;transform:translateY(-50%);width:13px;height:13px;color:var(--mu);pointer-events:none;}
+.rb-pick-list{max-height:260px;overflow-y:auto;padding:4px;}
+.rb-pick-head{padding:7px 10px 4px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--mu);font-family:var(--font);}
+.rb-pick-item{display:flex;align-items:center;gap:8px;width:100%;padding:7px 10px;border:none;border-radius:6px;background:none;color:var(--tx);font-size:12.5px;font-family:var(--font);cursor:pointer;text-align:left;}
+.rb-pick-item:hover,.rb-pick-item.is-active{background:var(--sur2);}
+.rb-pick-av{width:22px;height:22px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-size:9.5px;font-weight:700;letter-spacing:.3px;}
+.rb-pick-av.is-user{background:var(--ac);color:#fff;}
+.rb-pick-av.is-lead{background:var(--gr);color:#06251a;}
+.rb-pick-nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.rb-pick-sub{font-size:11px;color:var(--mu);flex:none;}
+.rb-pick-empty{padding:16px 10px;text-align:center;color:var(--mu);font-size:12px;font-family:var(--font);}
+.rb-menu-head{padding:7px 11px 4px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--mu);font-family:var(--font);}
+.rb-menu-head + button{margin-top:0;}
+.rb-menu-sub{font-size:11px;color:var(--mu);margin-left:6px;}
+.rb-msg-recips{display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+.rb-act .rb-chip{cursor:default;}
+/* Recipients on the action row collapse to overlapping avatars; name shows on hover */
+.rb-avs{display:flex;align-items:center;}
+.rb-av{position:relative;width:27px;height:27px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;letter-spacing:.3px;font-family:var(--font);border:1.5px solid var(--sur);margin-left:-7px;cursor:default;transition:transform .12s;}
+.rb-av:first-child{margin-left:0;}
+.rb-av:hover{transform:translateY(-2px);z-index:5;}
+.rb-av::after{content:attr(data-name);position:absolute;bottom:calc(100% + 7px);left:50%;transform:translateX(-50%);padding:4px 9px;border-radius:6px;background:var(--sur2);border:0.5px solid var(--brd2);color:var(--tx);font-size:11.5px;font-weight:500;letter-spacing:0;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .12s;box-shadow:0 6px 18px rgba(0,0,0,.5);}
+.rb-av:hover::after{opacity:1;}
+.rb-av.is-user{background:var(--ac);color:#fff;}
+.rb-av.is-lead{background:var(--gr);color:#06251a;}
+.rb-act-none{font-size:11.5px;color:var(--mu);font-family:var(--font);font-style:italic;max-width:230px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+</style>
+
+<div class="top-header">
+  <div class="th-left">
+    <button class="hamburger-btn" id="hamburger-btn" onclick="toggleMobileDrawer()" aria-label="Open menu">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+    <div class="logo" onclick="toggleProductSwitcher(event)">
+      <div class="logo-mark"><svg class="logo-mark-svg" viewBox="0 0 324 221" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="CoreConnect logo" style="width:100%;height:100%;"><path d="M72.30,32.52 L72.30,32.52 Q85.97,12.00 110.63,12.00 L246.25,12.00 Q270.90,12.00 257.23,32.52 L210.61,102.44 Q196.93,122.96 172.27,122.96 L36.66,122.96 Q12.00,122.96 25.68,102.44 Z" fill="#1E6BFF"/><path d="M113.39,118.82 L113.39,118.82 Q127.07,98.30 151.73,98.30 L287.34,98.30 Q312.00,98.30 298.32,118.82 L251.70,188.74 Q238.03,209.26 213.37,209.26 L77.75,209.26 Q53.10,209.26 66.77,188.74 Z" fill="#3D3DCC"/></svg></div>
+      <span class="logo-text">CoreConnect</span>
+      <svg class="logo-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+      <div class="product-switcher" id="product-switcher">
+        <a class="ps-item" data-pid="coreconnect" href="../../coreconnect_dashboard_v41/coreconnect_dashboard_v41.html"><svg class="ps-ic" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span>CoreConnect</span></a>
+        <a class="ps-item" data-pid="reputation" href="../../reputation/reputation_dashboard/Dashboard.html"><svg class="ps-ic" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span>Reputation</span></a>
+      </div>
+    </div>
+  </div>
+  <div class="top-header-right">
+    <button class="header-bell" id="header-bell" data-label="Notifications" onclick="toggleNotifications(event)" aria-label="Notifications">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+      </svg>
+      <span class="header-bell-dot" id="header-bell-dot"></span>
+      <span class="header-bell-call-dot" id="header-bell-call-dot"></span>
+    </button>
+  </div>
+</div>
+
+<!-- NOTIFICATIONS PANEL -->
+<div class="notif-panel" id="notif-panel">
+  <div class="notif-header">
+    <span class="notif-title">Notifications</span>
+    <div class="notif-header-actions">
+      <button class="notif-markall" id="notif-markall" onclick="markAllNotificationsRead()">Mark all as read</button>
+      <button class="notif-close" onclick="closeNotifications()" aria-label="Close notifications">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="notif-tabs">
+    <button class="notif-tab active" data-tab="all" onclick="setNotifTab('all')">All <span class="notif-tab-count" id="notif-count-all">0</span></button>
+    <button class="notif-tab" data-tab="unread" onclick="setNotifTab('unread')">Unread <span class="notif-tab-count" id="notif-count-unread">0</span></button>
+  </div>
+  <div class="notif-body" id="notif-body">
+    <div class="notif-empty">
+      <div class="notif-empty-icon">🔔</div>
+      You're all caught up
+    </div>
+  </div>
+  <div class="notif-footer">
+    <button class="notif-seeall" onclick="window.location.href='../../notification/notification.html'">See all notifications</button>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="sidebar-nav">
+    <div class="sb-item" data-nav="home" data-label="Dashboard" onclick="navClick('Home')">
+      <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 13.5H15"/><path d="M9.5 13.5V9.5H6.5V13.5"/><path d="M2.5 7.29309V13.5"/><path d="M13.5 13.5V7.29309"/><path d="M1.5 8.29315L7.64625 2.14628C7.69269 2.09979 7.74783 2.06291 7.80853 2.03775C7.86923 2.01259 7.93429 1.99963 8 1.99963C8.06571 1.99963 8.13077 2.01259 8.19147 2.03775C8.25217 2.06291 8.30731 2.09979 8.35375 2.14628L14.5 8.29315"/></svg>
+    </div>
+    <div class="sb-item" data-nav="crm" data-label="CRM Customer" onclick="navClick('CRM')">
+      <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 9C6.38071 9 7.5 7.88071 7.5 6.5C7.5 5.11929 6.38071 4 5 4C3.61929 4 2.5 5.11929 2.5 6.5C2.5 7.88071 3.61929 9 5 9Z"/><path d="M10 5H15.5"/><path d="M10 8H15.5"/><path d="M11.5 11H15.5"/><path d="M1 12C1.44375 10.275 3.13625 9 5 9C6.86375 9 8.55625 10.275 9 12"/></svg>
+    </div>
+    <div class="sb-item" data-nav="call" data-label="Call History" onclick="navClick('Call')">
+      <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.2744 9.08374C10.3436 9.03766 10.4233 9.00959 10.5061 9.00206C10.5889 8.99453 10.6723 9.00778 10.7488 9.04061L13.6963 10.3612C13.7956 10.4037 13.8785 10.4772 13.9326 10.5707C13.9867 10.6642 14.009 10.7727 13.9963 10.88C13.8991 11.6056 13.5418 12.2713 12.9907 12.7533C12.4395 13.2352 11.7321 13.5005 11 13.5C8.74566 13.5 6.58365 12.6045 4.98959 11.0104C3.39553 9.41633 2.5 7.25433 2.5 4.99999C2.49944 4.26786 2.7648 3.56045 3.24673 3.00932C3.72865 2.45818 4.39435 2.10084 5.12 2.00374C5.22727 1.99099 5.33578 2.01333 5.4293 2.06741C5.52281 2.12149 5.5963 2.2044 5.63875 2.30374L6.95938 5.25374C6.99182 5.3295 7.00504 5.41212 6.99784 5.49423C6.99064 5.57634 6.96326 5.65539 6.91813 5.72436L5.5825 7.31249C5.53512 7.38398 5.50711 7.46654 5.50119 7.55209C5.49528 7.63765 5.51166 7.72328 5.54875 7.80061C6.06563 8.85874 7.15938 9.93936 8.22063 10.4512C8.29836 10.4882 8.38439 10.5042 8.47021 10.4977C8.55602 10.4912 8.63867 10.4625 8.71 10.4144L10.2744 9.08374Z"/></svg>
+    </div>
+    <div class="sb-item" data-nav="message" data-label="Message History" onclick="navClick('Message')">
+      <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.47375 9L2 11V3C2 2.86739 2.05268 2.74021 2.14645 2.64645C2.24021 2.55268 2.36739 2.5 2.5 2.5H10.5C10.6326 2.5 10.7598 2.55268 10.8536 2.64645C10.9473 2.74021 11 2.86739 11 3V8.5C11 8.63261 10.9473 8.75979 10.8536 8.85355C10.7598 8.94732 10.6326 9 10.5 9H4.47375Z"/><path d="M5 9V11.5C5 11.6326 5.05268 11.7598 5.14645 11.8536C5.24021 11.9473 5.36739 12 5.5 12H11.5262L14 14V6C14 5.86739 13.9473 5.74021 13.8536 5.64645C13.7598 5.55268 13.6326 5.5 13.5 5.5H11"/></svg>
+    </div>
+    <div class="sb-item" data-nav="voicemail" data-label="Voice mail History" onclick="navClick('Voice mail')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="12" r="4"/><circle cx="18" cy="12" r="4"/><line x1="6" y1="16" x2="18" y2="16"/></svg>
+    </div>
+    <div class="sb-item" data-nav="appointments" data-label="Appointments" onclick="navClick('Appointments')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    </div>
+    <div class="sidebar-nav-spacer"></div>
+    <div class="sb-divider"></div>
+    <div class="sb-item active" data-nav="settings" data-label="Settings" onclick="navClick('Settings')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="6" x2="13" y2="6"/><line x1="17" y1="6" x2="20" y2="6"/><circle cx="15" cy="6" r="2"/><line x1="4" y1="12" x2="7" y2="12"/><line x1="11" y1="12" x2="20" y2="12"/><circle cx="9" cy="12" r="2"/><line x1="4" y1="18" x2="13" y2="18"/><line x1="17" y1="18" x2="20" y2="18"/><circle cx="15" cy="18" r="2"/></svg>
+    </div>
+  </div>
+  <div class="sb-account" onclick="navClick('Account')" title="Account">DP</div>
+</div>
+
+<!-- MOBILE DRAWER -->
+<div class="mobile-drawer-backdrop" id="mobile-drawer-backdrop" onclick="closeMobileDrawer()"></div>
+<div class="mobile-drawer" id="mobile-drawer">
+  <div class="md-nav">
+    <div class="md-item" onclick="navClick('Home');closeMobileDrawer();">
+      <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 13.5H15"/><path d="M9.5 13.5V9.5H6.5V13.5"/><path d="M2.5 7.29309V13.5"/><path d="M13.5 13.5V7.29309"/><path d="M1.5 8.29315L7.64625 2.14628C7.69269 2.09979 7.74783 2.06291 7.80853 2.03775C7.86923 2.01259 7.93429 1.99963 8 1.99963C8.06571 1.99963 8.13077 2.01259 8.19147 2.03775C8.25217 2.06291 8.30731 2.09979 8.35375 2.14628L14.5 8.29315"/></svg>
+      <span>Dashboard</span>
+    </div>
+    <div class="md-item" onclick="navClick('CRM');closeMobileDrawer();">
+      <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 9C6.38071 9 7.5 7.88071 7.5 6.5C7.5 5.11929 6.38071 4 5 4C3.61929 4 2.5 5.11929 2.5 6.5C2.5 7.88071 3.61929 9 5 9Z"/><path d="M10 5H15.5"/><path d="M10 8H15.5"/><path d="M11.5 11H15.5"/><path d="M1 12C1.44375 10.275 3.13625 9 5 9C6.86375 9 8.55625 10.275 9 12"/></svg>
+      <span>CRM Customer</span>
+    </div>
+    <div class="md-item" onclick="navClick('Call');closeMobileDrawer();">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      <span>Call History</span>
+    </div>
+    <div class="md-item" onclick="navClick('Message');closeMobileDrawer();">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span>Message History</span>
+    </div>
+    <div class="md-item" onclick="navClick('Voice mail');closeMobileDrawer();">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="12" r="4"/><circle cx="18" cy="12" r="4"/><line x1="6" y1="16" x2="18" y2="16"/></svg>
+      <span>Voice mail History</span>
+    </div>
+    <div class="md-item" onclick="navClick('Appointments');closeMobileDrawer();">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <span>Appointments</span>
+    </div>
+    <div class="md-divider"></div>
+    <div class="md-item active" onclick="navClick('Settings');closeMobileDrawer();">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="6" x2="13" y2="6"/><line x1="17" y1="6" x2="20" y2="6"/><circle cx="15" cy="6" r="2"/><line x1="4" y1="12" x2="7" y2="12"/><line x1="11" y1="12" x2="20" y2="12"/><circle cx="9" cy="12" r="2"/><line x1="4" y1="18" x2="13" y2="18"/><line x1="17" y1="18" x2="20" y2="18"/><circle cx="15" cy="18" r="2"/></svg>
+      <span>Settings</span>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE-LEVEL NAV TOAST -->
+<div class="nav-toast" id="nav-toast">
+  <div class="nav-toast-icon">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+  </div>
+  <div class="nav-toast-text">
+    <strong id="nav-toast-title">Coming soon</strong>
+    <span id="nav-toast-body">This feature is under construction.</span>
+  </div>
+  <button class="nav-toast-close" onclick="hideNavToast()" title="Dismiss">&#x2715;</button>
+</div>
+
+<!-- ADD ALERT MODAL -->
+<div class="modal-backdrop modal-fullscreen-mobile" id="alt-add-modal" onclick="if(event.target===this)altCloseAddModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Add Alert</span>
+      <button class="modal-close" onclick="altCloseAddModal()" aria-label="Close">&#x2715;</button>
+    </div>
+    <div class="modal-body">
+      <div class="alt-modal-grid">
+        <div class="alt-modal-full">
+          <label class="alt-field-label">Event</label>
+          <input type="text" class="alt-field-input" id="alt-add-event" placeholder="e.g. New Application Submitted" value="New Application Submitted">
+        </div>
+        <div class="alt-modal-full">
+          <label class="alt-field-label">Channels</label>
+          <div class="alt-checkbox-group">
+            <label class="alt-checkbox-label"><input type="checkbox" id="alt-add-ch-email" checked> Email</label>
+            <label class="alt-checkbox-label"><input type="checkbox" id="alt-add-ch-sms"> SMS</label>
+            <label class="alt-checkbox-label"><input type="checkbox" id="alt-add-ch-inapp" checked> In-App</label>
+          </div>
+        </div>
+        <div class="alt-modal-full">
+          <label class="alt-field-label">Recipients</label>
+          <div class="alt-checkbox-group">
+            <label class="alt-checkbox-label"><input type="checkbox" id="alt-add-r-sales" checked> Sales Manager</label>
+            <label class="alt-checkbox-label"><input type="checkbox" id="alt-add-r-fi"> F&amp;I Manager</label>
+            <label class="alt-checkbox-label"><input type="checkbox" id="alt-add-r-bdc"> BDC</label>
+            <label class="alt-checkbox-label"><input type="checkbox" id="alt-add-r-dp"> Dealer Principal</label>
+          </div>
+        </div>
+        <div>
+          <label class="alt-field-label">Status</label>
+          <div class="alt-dropdown" id="alt-add-status" data-value="Active">
+            <button type="button" class="alt-dropdown-trigger" onclick="altToggleDrop(this)"><span>Active</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
+            <div class="alt-dropdown-menu">
+              <div class="alt-dropdown-item selected" onclick="altSelectDrop(this,'Active')">Active</div>
+              <div class="alt-dropdown-item" onclick="altSelectDrop(this,'Inactive')">Inactive</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-cancel" onclick="altCloseAddModal()">Cancel</button>
+      <button class="modal-save" onclick="altSaveAdd()">Add Alert</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT ALERT MODAL -->
+<div class="modal-backdrop modal-fullscreen-mobile" id="alt-edit-modal" onclick="if(event.target===this)altCloseEditModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Edit Alert</span>
+      <button class="modal-close" onclick="altCloseEditModal()" aria-label="Close">&#x2715;</button>
+    </div>
+    <div class="modal-body">
+      <div class="alt-modal-grid">
+        <div class="alt-modal-full">
+          <label class="alt-field-label">Event</label>
+          <input type="text" class="alt-field-input" id="alt-edit-event" placeholder="e.g. New Application Submitted" value="">
+        </div>
+        <div class="alt-modal-full">
+          <label class="alt-field-label">Channels</label>
+          <div class="alt-checkbox-group">
+            <label class="alt-checkbox-label"><input type="checkbox" id="alt-edit-ch-email"> Email</label>
+            <label class="alt-checkbox-label"><input type="checkbox" id="alt-edit-ch-sms"> SMS</label>
+            <label class="alt-checkbox-label"><input type="checkbox" id="alt-edit-ch-inapp"> In-App</label>
+          </div>
+        </div>
+        <div class="alt-modal-full">
+          <label class="alt-field-label">Recipients</label>
+          <div class="alt-checkbox-group">
+            <label class="alt-checkbox-label"><input type="checkbox" id="alt-edit-r-sales"> Sales Manager</label>
+            <label class="alt-checkbox-label"><input type="checkbox" id="alt-edit-r-fi"> F&amp;I Manager</label>
+            <label class="alt-checkbox-label"><input type="checkbox" id="alt-edit-r-bdc"> BDC</label>
+            <label class="alt-checkbox-label"><input type="checkbox" id="alt-edit-r-dp"> Dealer Principal</label>
+          </div>
+        </div>
+        <div>
+          <label class="alt-field-label">Status</label>
+          <div class="alt-dropdown" id="alt-edit-status" data-value="Active">
+            <button type="button" class="alt-dropdown-trigger" onclick="altToggleDrop(this)"><span>Active</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
+            <div class="alt-dropdown-menu">
+              <div class="alt-dropdown-item selected" onclick="altSelectDrop(this,'Active')">Active</div>
+              <div class="alt-dropdown-item" onclick="altSelectDrop(this,'Inactive')">Inactive</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-cancel" onclick="altCloseEditModal()">Cancel</button>
+      <button class="modal-save" onclick="altSaveEdit()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONDITION MODAL -->
+<div class="modal-backdrop modal-fullscreen-mobile" id="alt-cond-modal" onclick="if(event.target===this)altCloseCondModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="alt-cond-modal-title">Add Condition</span>
+      <button class="modal-close" onclick="altCloseCondModal()" aria-label="Close">&#x2715;</button>
+    </div>
+    <div class="modal-body">
+      <div class="alt-ifttt">
+        <!-- IF block -->
+        <div class="alt-ifttt-block">
+          <div class="alt-ifttt-label alt-if-label">If</div>
+          <div class="alt-ifttt-card">
+            <div class="alt-ifttt-card-head">
+              <svg class="alt-if-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+              <div>
+                <div class="alt-ifttt-card-title" id="alt-cond-event-name">New Application Submitted</div>
+                <div class="alt-ifttt-card-subtitle">Trigger condition</div>
+              </div>
+            </div>
+            <div class="alt-ifttt-fields">
+              <div>
+                <label class="alt-field-label">Field</label>
+                <div class="alt-dropdown" id="alt-cond-field" data-value="Loan Amount">
+                  <button type="button" class="alt-dropdown-trigger" onclick="altToggleDrop(this)"><span>Loan Amount</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
+                  <div class="alt-dropdown-menu">
+                    <div class="alt-dropdown-item selected" onclick="altSelectDrop(this,'Loan Amount')">Loan Amount</div>
+                    <div class="alt-dropdown-item" onclick="altSelectDrop(this,'Credit Score')">Credit Score</div>
+                    <div class="alt-dropdown-item" onclick="altSelectDrop(this,'Down Payment')">Down Payment</div>
+                    <div class="alt-dropdown-item" onclick="altSelectDrop(this,'Interest Rate')">Interest Rate</div>
+                    <div class="alt-dropdown-item" onclick="altSelectDrop(this,'Term (months)')">Term (months)</div>
+                    <div class="alt-dropdown-item" onclick="altSelectDrop(this,'Vehicle Year')">Vehicle Year</div>
+                    <div class="alt-dropdown-item" onclick="altSelectDrop(this,'LTV Ratio')">LTV Ratio</div>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <label class="alt-field-label">Operator</label>
+                <div class="alt-dropdown" id="alt-cond-operator" data-value=">">
+                  <button type="button" class="alt-dropdown-trigger" onclick="altToggleDrop(this)"><span>&gt;</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
+                  <div class="alt-dropdown-menu">
+                    <div class="alt-dropdown-item selected" data-short="&gt;" onclick="altSelectDrop(this,'>')">&gt; Greater than</div>
+                    <div class="alt-dropdown-item" data-short="&lt;" onclick="altSelectDrop(this,'<')">&lt; Less than</div>
+                    <div class="alt-dropdown-item" data-short="&#8805;" onclick="altSelectDrop(this,'>=')">&#8805; Greater or equal</div>
+                    <div class="alt-dropdown-item" data-short="&#8804;" onclick="altSelectDrop(this,'<=')">&#8804; Less or equal</div>
+                    <div class="alt-dropdown-item" data-short="&#61;" onclick="altSelectDrop(this,'=')">&#61; Equal to</div>
+                    <div class="alt-dropdown-item" data-short="&#8800;" onclick="altSelectDrop(this,'!=')">&#8800; Not equal</div>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <label class="alt-field-label" for="alt-cond-value">Value</label>
+                <div class="modal-field"><input type="text" id="alt-cond-value" placeholder="e.g. 30000" /></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Connector -->
+        <div class="alt-ifttt-connector"><div class="alt-ifttt-connector-line"></div></div>
+        <!-- THEN block -->
+        <div class="alt-ifttt-block">
+          <div class="alt-ifttt-label alt-then-label">Then</div>
+          <div class="alt-ifttt-card">
+            <div class="alt-ifttt-card-head">
+              <svg class="alt-then-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              <div>
+                <div class="alt-ifttt-card-title">Send notification</div>
+                <div class="alt-ifttt-card-subtitle">Alert action</div>
+              </div>
+            </div>
+            <div class="alt-ifttt-then-content">
+              <div class="alt-ifttt-then-channels" id="alt-cond-then-channels"></div>
+              <div class="alt-ifttt-then-sep"></div>
+              <div class="alt-ifttt-then-recipients" id="alt-cond-then-recipients"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-cancel" onclick="altCloseCondModal()">Cancel</button>
+      <button class="modal-save" id="alt-cond-save-btn" onclick="altSaveCond()">Save Condition</button>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="root main-area" id="root">
+  <div class="set-page-head">
+    <a class="ur-back" href="../Settings_main_page/coreconnect_settings.html" title="Back to Settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      <span>Settings</span>
+    </a>
+    <span class="set-page-title">Custom Alerts</span>
+    <span class="ur-head-spacer"></span>
+    <button class="alt-add-btn" onclick="altOpenAddModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><span>Add Alert</span></button>
+  </div>
+  <div class="set-scroll">
+
+      <!-- GLOBAL SETTINGS -->
+      <section class="set-section" style="margin-bottom:20px;">
+        <div class="alt-global">
+          <button class="alt-global-toggle" onclick="altToggleGlobal()">
+            <svg class="alt-global-chev" id="alt-global-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
+            <span class="alt-global-title">Global Settings</span>
+          </button>
+          <div class="alt-global-body" id="alt-global-body">
+            <div class="alt-global-grid">
+              <!-- Quiet Hours -->
+              <div class="alt-global-card">
+                <div class="alt-global-card-head">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  <span>Quiet Hours</span>
+                  <label class="alt-switch"><input type="checkbox" id="alt-quiet-toggle" onchange="altToggleQuiet()" checked><span class="alt-switch-slider"></span></label>
+                </div>
+                <p class="alt-global-desc">Suppress SMS and In-App alerts during quiet hours.</p>
+                <div class="alt-quiet-times" id="alt-quiet-times">
+                  <div>
+                    <label class="alt-field-label" for="alt-quiet-start">Start</label>
+                    <div class="modal-field"><input type="time" id="alt-quiet-start" value="21:00" /></div>
+                  </div>
+                  <span class="alt-quiet-to">to</span>
+                  <div>
+                    <label class="alt-field-label" for="alt-quiet-end">End</label>
+                    <div class="modal-field"><input type="time" id="alt-quiet-end" value="07:00" /></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Digest Mode -->
+              <div class="alt-global-card">
+                <div class="alt-global-card-head">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                  <span>Digest Mode</span>
+                  <label class="alt-switch"><input type="checkbox" id="alt-digest-toggle" onchange="altToggleDigest()"><span class="alt-switch-slider"></span></label>
+                </div>
+                <p class="alt-global-desc">Batch alerts into a summary instead of sending individually.</p>
+                <div class="alt-digest-opts" id="alt-digest-opts" style="display:none;">
+                  <label class="alt-field-label">Send digest every</label>
+                  <div class="alt-digest-row">
+                    <div class="modal-field" style="width:80px;"><input type="number" id="alt-digest-interval" value="15" min="5" max="120" /></div>
+                    <span style="font-size:13px;color:var(--tx);">minutes</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Default Recipients -->
+              <div class="alt-global-card alt-global-card-wide">
+                <div class="alt-global-card-head">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                  <span>Default Recipients</span>
+                </div>
+                <p class="alt-global-desc">Pre-selected recipients when creating new alerts.</p>
+                <div class="alt-checkbox-group" style="margin-top:8px;">
+                  <label class="alt-checkbox-label"><input type="checkbox" id="alt-def-sales" checked> Sales Manager</label>
+                  <label class="alt-checkbox-label"><input type="checkbox" id="alt-def-fi" checked> F&amp;I Manager</label>
+                  <label class="alt-checkbox-label"><input type="checkbox" id="alt-def-bdc"> BDC</label>
+                  <label class="alt-checkbox-label"><input type="checkbox" id="alt-def-dp"> Dealer Principal</label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ALERTS TABLE -->
+      <section class="set-section">
+        <table class="alt-table" id="alt-table">
+          <thead><tr><th style="width:40px"></th><th>No</th><th>Event</th><th>Channels</th><th>Recipients</th><th>Status</th></tr></thead>
+          <tbody id="alt-tbody">
+            <!-- Alert 1 -->
+            <tr class="alt-alert-row" onclick="rbOpenFromRow(this)" data-event="New Application Submitted" data-channels="Email,In-App" data-recipients="Sales Manager,F&amp;I Manager" data-status="Active">
+              <td><button class="alt-arrow-btn" onclick="event.stopPropagation();rbOpenFromRow(this.closest('.alt-alert-row'))" title="Open rule"><svg class="alt-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button></td>
+              <td>1</td>
+              <td>New Application Submitted</td>
+              <td>
+                <div class="alt-channels">
+                  <span class="alt-channel-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Email</span>
+                  <span class="alt-channel-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>In-App</span>
+                </div>
+              </td>
+              <td><span class="alt-recipients">Sales Manager, F&amp;I Manager</span></td>
+              <td><span class="alt-status alt-status-active">Active</span></td>
+            </tr>
+            <tr class="alt-cond-row" data-alert-idx="0">
+              <td colspan="6">
+                <div class="alt-cond-wrap">
+                  <div class="alt-cond-header">
+                    <span class="alt-cond-title">Conditions</span>
+                    <button class="alt-cond-add" onclick="event.stopPropagation();altOpenCondModal(0)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Condition</button>
+                  </div>
+                  <div class="alt-cond-list">
+                    <div class="alt-cond">
+                      <span class="alt-cond-field">Loan Amount</span>
+                      <span class="alt-cond-op">&gt;</span>
+                      <span class="alt-cond-val">$30,000</span>
+                      <div class="alt-cond-actions">
+                        <button class="alt-cond-btn" title="Edit" onclick="event.stopPropagation();altEditCond(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                        <button class="alt-cond-btn" title="Delete" onclick="event.stopPropagation();altDeleteCond(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Alert 2 -->
+            <tr class="alt-alert-row" onclick="rbOpenFromRow(this)" data-event="Application Approved" data-channels="Email,SMS,In-App" data-recipients="Sales Manager,F&amp;I Manager,BDC" data-status="Active">
+              <td><button class="alt-arrow-btn" onclick="event.stopPropagation();rbOpenFromRow(this.closest('.alt-alert-row'))" title="Open rule"><svg class="alt-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button></td>
+              <td>2</td>
+              <td>Application Approved</td>
+              <td>
+                <div class="alt-channels">
+                  <span class="alt-channel-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Email</span>
+                  <span class="alt-channel-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>SMS</span>
+                  <span class="alt-channel-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>In-App</span>
+                </div>
+              </td>
+              <td><span class="alt-recipients">Sales Manager, F&amp;I Manager, BDC</span></td>
+              <td><span class="alt-status alt-status-active">Active</span></td>
+            </tr>
+            <tr class="alt-cond-row" data-alert-idx="1">
+              <td colspan="6">
+                <div class="alt-cond-wrap">
+                  <div class="alt-cond-header">
+                    <span class="alt-cond-title">Conditions</span>
+                    <button class="alt-cond-add" onclick="event.stopPropagation();altOpenCondModal(1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Condition</button>
+                  </div>
+                  <div class="alt-cond-list">
+                    <span class="alt-empty-conds">No conditions — this alert triggers for all approved applications.</span>
+                  </div>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Alert 3 -->
+            <tr class="alt-alert-row" onclick="rbOpenFromRow(this)" data-event="Application Denied" data-channels="Email" data-recipients="F&amp;I Manager" data-status="Active">
+              <td><button class="alt-arrow-btn" onclick="event.stopPropagation();rbOpenFromRow(this.closest('.alt-alert-row'))" title="Open rule"><svg class="alt-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button></td>
+              <td>3</td>
+              <td>Application Denied</td>
+              <td>
+                <div class="alt-channels">
+                  <span class="alt-channel-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Email</span>
+                </div>
+              </td>
+              <td><span class="alt-recipients">F&amp;I Manager</span></td>
+              <td><span class="alt-status alt-status-active">Active</span></td>
+            </tr>
+            <tr class="alt-cond-row" data-alert-idx="2">
+              <td colspan="6">
+                <div class="alt-cond-wrap">
+                  <div class="alt-cond-header">
+                    <span class="alt-cond-title">Conditions</span>
+                    <button class="alt-cond-add" onclick="event.stopPropagation();altOpenCondModal(2)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Condition</button>
+                  </div>
+                  <div class="alt-cond-list">
+                    <div class="alt-cond">
+                      <span class="alt-cond-field">Credit Score</span>
+                      <span class="alt-cond-op">&lt;</span>
+                      <span class="alt-cond-val">600</span>
+                      <div class="alt-cond-actions">
+                        <button class="alt-cond-btn" title="Edit" onclick="event.stopPropagation();altEditCond(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                        <button class="alt-cond-btn" title="Delete" onclick="event.stopPropagation();altDeleteCond(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Alert 4 -->
+            <tr class="alt-alert-row" onclick="rbOpenFromRow(this)" data-event="Stipulation Required" data-channels="Email,SMS" data-recipients="Sales Manager" data-status="Inactive">
+              <td><button class="alt-arrow-btn" onclick="event.stopPropagation();rbOpenFromRow(this.closest('.alt-alert-row'))" title="Open rule"><svg class="alt-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button></td>
+              <td>4</td>
+              <td>Stipulation Required</td>
+              <td>
+                <div class="alt-channels">
+                  <span class="alt-channel-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Email</span>
+                  <span class="alt-channel-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>SMS</span>
+                </div>
+              </td>
+              <td><span class="alt-recipients">Sales Manager</span></td>
+              <td><span class="alt-status alt-status-inactive">Inactive</span></td>
+            </tr>
+            <tr class="alt-cond-row" data-alert-idx="3">
+              <td colspan="6">
+                <div class="alt-cond-wrap">
+                  <div class="alt-cond-header">
+                    <span class="alt-cond-title">Conditions</span>
+                    <button class="alt-cond-add" onclick="event.stopPropagation();altOpenCondModal(3)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Condition</button>
+                  </div>
+                  <div class="alt-cond-list">
+                    <span class="alt-empty-conds">No conditions — this alert triggers for all stipulation requests.</span>
+                  </div>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Alert 5 -->
+            <tr class="alt-alert-row" onclick="rbOpenFromRow(this)" data-event="Funding Complete" data-channels="Email,In-App" data-recipients="F&amp;I Manager,Dealer Principal" data-status="Active">
+              <td><button class="alt-arrow-btn" onclick="event.stopPropagation();rbOpenFromRow(this.closest('.alt-alert-row'))" title="Open rule"><svg class="alt-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button></td>
+              <td>5</td>
+              <td>Funding Complete</td>
+              <td>
+                <div class="alt-channels">
+                  <span class="alt-channel-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Email</span>
+                  <span class="alt-channel-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>In-App</span>
+                </div>
+              </td>
+              <td><span class="alt-recipients">F&amp;I Manager, Dealer Principal</span></td>
+              <td><span class="alt-status alt-status-active">Active</span></td>
+            </tr>
+            <tr class="alt-cond-row" data-alert-idx="4">
+              <td colspan="6">
+                <div class="alt-cond-wrap">
+                  <div class="alt-cond-header">
+                    <span class="alt-cond-title">Conditions</span>
+                    <button class="alt-cond-add" onclick="event.stopPropagation();altOpenCondModal(4)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Condition</button>
+                  </div>
+                  <div class="alt-cond-list">
+                    <span class="alt-empty-conds">No conditions — this alert triggers for all funded deals.</span>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+  </div>
+</div>
+<!-- RULE BUILDER -->
+<div class="rb-overlay" id="rb-overlay">
+  <div class="rb-topbar">
+    <button class="rb-back" onclick="rbClose()" title="Back to alerts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+    <div>
+      <div class="rb-title" id="rb-title">Rule</div>
+      <div class="rb-subtitle" id="rb-subtitle">Notification rule</div>
+    </div>
+    <span class="rb-status-pill" id="rb-status">Active</span>
+    <div style="flex:1;"></div>
+    <button class="rb-btn" onclick="rbEditDetails()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"/></svg><span>Details</span></button>
+    <button class="rb-btn rb-primary" onclick="rbSave()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg><span>Save rule</span></button>
+  </div>
+
+  <div class="rb-reads">
+    <div class="rb-reads-lbl">This rule reads as</div>
+    <div class="rb-reads-txt" id="rb-reads"></div>
+  </div>
+
+  <div class="rb-scroll">
+    <div class="rb-layout">
+      <div>
+        <!-- WHEN -->
+        <div class="rb-stage">
+          <div class="rb-ic rb-ic-when"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+          <div class="rb-stage-head"><span class="rb-stage-lbl">WHEN</span></div>
+          <div class="rb-card rb-when-card">
+            <span class="rb-when-name" id="rb-when-name">&mdash;</span>
+            <span class="rb-when-meta">Credit app &middot; any source</span>
+          </div>
+        </div>
+
+        <!-- IF -->
+        <div class="rb-stage">
+          <div class="rb-ic rb-ic-if"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg></div>
+          <div class="rb-stage-head">
+            <span class="rb-stage-lbl">IF</span>
+            <span class="rb-hint">Click any <b>AND</b> / <i>OR</i> to switch it</span>
+          </div>
+          <div id="rb-groups"></div>
+          <button class="rb-addgroup" onclick="rbAddGroup()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add condition group</button>
+        </div>
+
+        <!-- THEN -->
+        <div class="rb-stage">
+          <div class="rb-ic rb-ic-then"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></div>
+          <div class="rb-stage-head"><span class="rb-stage-lbl">THEN</span></div>
+          <div class="rb-card" id="rb-actions"></div>
+        </div>
+      </div>
+
+      <!-- TEST PANEL -->
+      <div class="rb-test">
+        <div class="rb-test-lbl">Test this rule</div>
+        <div class="rb-test-hint">Enter sample application values. The dots beside each condition show which ones pass.</div>
+        <div id="rb-test-fields"></div>
+        <div class="rb-verdict" id="rb-verdict">
+          <div class="rb-verdict-row"><span class="rb-verdict-dot"></span><span id="rb-verdict-ttl">Rule does not fire</span></div>
+          <div class="rb-verdict-txt" id="rb-verdict-txt"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MESSAGE COMPOSER -->
+<div class="modal-backdrop modal-fullscreen-mobile" id="rb-msg-modal" onclick="if(event.target===this)rbMsgCancel()">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="rb-msg-title">Compose message</span>
+      <button class="modal-close" onclick="rbMsgCancel()" aria-label="Close">&#x2715;</button>
+    </div>
+    <div class="modal-body" id="rb-msg-body"></div>
+    <div class="modal-footer">
+      <button class="modal-cancel" onclick="rbMsgCancel()">Cancel</button>
+      <button class="modal-save" onclick="rbMsgSave()">Save message</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function navClick(page){
+  if(page === 'Settings') window.location.href = '../Settings_main_page/coreconnect_settings.html';
+  else if(page === 'Home') window.location.href = '../../coreconnect_dashboard_v41/coreconnect_dashboard_v41.html';
+  else if(page === 'CRM') window.location.href = '../../coreconnect_leads_v83/coreconnect_leads_v83.html';
+  else if(page === 'Call') window.location.href = '../../call_history/coreconnect_call_history_v31.html';
+  else if(page === 'Message') window.location.href = '../../coreconnect_message_history_v41/coreconnect_message_history_v41.html';
+  else if(page === 'Voice mail') window.location.href = '../../coreconnect_voicemail_history_v9/coreconnect_voicemail_history_v9.html';
+  else if(page === 'Appointments') window.location.href = '../../coreconnect_appointments/coreconnect_appointments.html';
+  else showNavToast('Coming soon', page + ' is under construction.');
+}
+function toggleMobileDrawer(){ document.getElementById('mobile-drawer').classList.toggle('open'); document.getElementById('mobile-drawer-backdrop').classList.toggle('open'); }
+function closeMobileDrawer(){ document.getElementById('mobile-drawer').classList.remove('open'); document.getElementById('mobile-drawer-backdrop').classList.remove('open'); }
+function toggleNotifications(e){e.stopPropagation();if(window.openNotifications){window.openNotifications(e);}else{var p=document.getElementById('notif-panel');if(p)p.classList.toggle('open');}}
+
+var navToastTimer = null;
+function showNavToast(title, body){
+  var t = document.getElementById('nav-toast');
+  document.getElementById('nav-toast-title').textContent = title;
+  document.getElementById('nav-toast-body').textContent = body;
+  t.classList.add('show');
+  if(navToastTimer) clearTimeout(navToastTimer);
+  navToastTimer = setTimeout(hideNavToast, 4000);
+}
+function hideNavToast(){
+  var t = document.getElementById('nav-toast'); if(t) t.classList.remove('show');
+  if(navToastTimer){ clearTimeout(navToastTimer); navToastTimer = null; }
+}
+// Expandable conditions
+function altToggleConds(row){
+  var condRow = row.nextElementSibling;
+  if(!condRow || !condRow.classList.contains('alt-cond-row')) return;
+  var isOpen = condRow.classList.contains('open');
+  document.querySelectorAll('.alt-cond-row.open').forEach(function(r){ r.classList.remove('open'); });
+  document.querySelectorAll('.alt-row-expanded').forEach(function(r){ r.classList.remove('alt-row-expanded'); });
+  if(!isOpen){
+    condRow.classList.add('open');
+    row.classList.add('alt-row-expanded');
+  }
+}
+
+// Edit modal
+var altEditingRow = null;
+function altOpenEditModal(row){
+  altEditingRow = row;
+  document.getElementById('alt-edit-event').value = row.dataset.event;
+  altSetDropValue('alt-edit-status', row.dataset.status);
+  var channels = (row.dataset.channels || '').split(',');
+  document.getElementById('alt-edit-ch-email').checked = channels.indexOf('Email') > -1;
+  document.getElementById('alt-edit-ch-sms').checked = channels.indexOf('SMS') > -1;
+  document.getElementById('alt-edit-ch-inapp').checked = channels.indexOf('In-App') > -1;
+  var recipients = (row.dataset.recipients || '').split(',');
+  document.getElementById('alt-edit-r-sales').checked = recipients.indexOf('Sales Manager') > -1;
+  document.getElementById('alt-edit-r-fi').checked = recipients.indexOf('F&I Manager') > -1;
+  document.getElementById('alt-edit-r-bdc').checked = recipients.indexOf('BDC') > -1;
+  document.getElementById('alt-edit-r-dp').checked = recipients.indexOf('Dealer Principal') > -1;
+  document.getElementById('alt-edit-modal').classList.add('open');
+}
+function altCloseEditModal(){
+  document.getElementById('alt-edit-modal').classList.remove('open');
+  altEditingRow = null;
+}
+function altSaveEdit(){
+  if(!altEditingRow) return;
+  var evtName = document.getElementById('alt-edit-event').value.trim();
+  var status = document.getElementById('alt-edit-status').dataset.value;
+  var channels = [];
+  if(document.getElementById('alt-edit-ch-email').checked) channels.push('Email');
+  if(document.getElementById('alt-edit-ch-sms').checked) channels.push('SMS');
+  if(document.getElementById('alt-edit-ch-inapp').checked) channels.push('In-App');
+  var recipients = [];
+  if(document.getElementById('alt-edit-r-sales').checked) recipients.push('Sales Manager');
+  if(document.getElementById('alt-edit-r-fi').checked) recipients.push('F&I Manager');
+  if(document.getElementById('alt-edit-r-bdc').checked) recipients.push('BDC');
+  if(document.getElementById('alt-edit-r-dp').checked) recipients.push('Dealer Principal');
+  altEditingRow.dataset.event = evtName;
+  altEditingRow.dataset.channels = channels.join(',');
+  altEditingRow.dataset.recipients = recipients.join(',');
+  altEditingRow.dataset.status = status;
+  altEditingRow.cells[2].textContent = evtName;
+  altEditingRow.querySelector('.alt-channels').innerHTML = channels.map(function(c){ return altChannelTag(c); }).join('');
+  altEditingRow.querySelector('.alt-recipients').textContent = recipients.join(', ');
+  var statusSpan = altEditingRow.querySelector('.alt-status');
+  statusSpan.textContent = status;
+  statusSpan.className = 'alt-status alt-status-' + status.toLowerCase();
+  altCloseEditModal();
+  showNavToast('Alert Updated', evtName + ' alert has been updated.');
+}
+
+function altChannelTag(ch){
+  var icons = {
+    'Email':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>',
+    'SMS':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
+    'In-App':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>'
+  };
+  return '<span class="alt-channel-tag">'+(icons[ch]||'')+ch+'</span>';
+}
+
+// Add modal
+function altOpenAddModal(){
+  altSetDropValue('alt-add-event', 'New Application Submitted');
+  altSetDropValue('alt-add-status', 'Active');
+  document.getElementById('alt-add-ch-email').checked = true;
+  document.getElementById('alt-add-ch-sms').checked = false;
+  document.getElementById('alt-add-ch-inapp').checked = true;
+  document.getElementById('alt-add-r-sales').checked = true;
+  document.getElementById('alt-add-r-fi').checked = false;
+  document.getElementById('alt-add-r-bdc').checked = false;
+  document.getElementById('alt-add-r-dp').checked = false;
+  document.getElementById('alt-add-modal').classList.add('open');
+}
+function altCloseAddModal(){
+  document.getElementById('alt-add-modal').classList.remove('open');
+}
+function altSaveAdd(){
+  var evtName = document.getElementById('alt-add-event').value.trim();
+  altCloseAddModal();
+  showNavToast('Alert Added', evtName + ' alert has been created.');
+}
+
+// Condition modal
+var altCurrentAlert = null;
+var altEditingCond = null;
+function altPopulateCondThen(alertIdx){
+  var rows = document.querySelectorAll('.alt-alert-row');
+  var row = rows[alertIdx];
+  if(!row) return;
+  var evtName = row.getAttribute('data-event') || '';
+  var channels = (row.getAttribute('data-channels') || '').split(',').filter(Boolean);
+  var recipients = row.getAttribute('data-recipients') || '';
+  document.getElementById('alt-cond-event-name').textContent = evtName;
+  var chHtml = '';
+  var chIcons = {
+    'Email':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>',
+    'SMS':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
+    'In-App':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>'
+  };
+  channels.forEach(function(ch){
+    ch = ch.trim();
+    chHtml += '<span class="alt-channel-tag">'+(chIcons[ch]||'')+ch+'</span>';
+  });
+  document.getElementById('alt-cond-then-channels').innerHTML = chHtml;
+  document.getElementById('alt-cond-then-recipients').textContent = recipients;
+}
+function altOpenCondModal(alertIdx){
+  altCurrentAlert = alertIdx;
+  altEditingCond = null;
+  document.getElementById('alt-cond-modal-title').textContent = 'Add Condition';
+  document.getElementById('alt-cond-save-btn').textContent = 'Save Condition';
+  altSetDropValue('alt-cond-field', 'Loan Amount');
+  altSetDropValue('alt-cond-operator', '>');
+  document.getElementById('alt-cond-value').value = '';
+  altPopulateCondThen(alertIdx);
+  document.getElementById('alt-cond-modal').classList.add('open');
+  setTimeout(function(){ document.getElementById('alt-cond-value').focus(); }, 0);
+}
+function altEditCond(btn){
+  var condEl = btn.closest('.alt-cond');
+  var condRow = btn.closest('.alt-cond-row');
+  altCurrentAlert = parseInt(condRow.getAttribute('data-alert-idx'));
+  altEditingCond = condEl;
+  var field = condEl.querySelector('.alt-cond-field').textContent;
+  var op = condEl.querySelector('.alt-cond-op').textContent;
+  var val = condEl.querySelector('.alt-cond-val').textContent.replace(/^\$/, '').replace(/,/g, '');
+  document.getElementById('alt-cond-modal-title').textContent = 'Edit Condition';
+  document.getElementById('alt-cond-save-btn').textContent = 'Save Condition';
+  altSetDropValue('alt-cond-field', field);
+  var opValMap = {'>':'>', '<':'<', '≥':'>=', '≤':'<=', '=':'=', '≠':'!='};
+  altSetDropValue('alt-cond-operator', opValMap[op] || op);
+  document.getElementById('alt-cond-value').value = val;
+  altPopulateCondThen(altCurrentAlert);
+  document.getElementById('alt-cond-modal').classList.add('open');
+}
+function altCloseCondModal(){
+  document.getElementById('alt-cond-modal').classList.remove('open');
+  altEditingCond = null;
+}
+function altSaveCond(){
+  var field = document.getElementById('alt-cond-field').dataset.value;
+  var op = document.getElementById('alt-cond-operator').dataset.value;
+  var val = document.getElementById('alt-cond-value').value.trim();
+  if(!val){ alert('Please enter a value.'); return; }
+  var opDisplay = {'>':'>','<':'<','>=':'≥','<=':'≤','=':'=','!=':'≠'};
+  var displayOp = opDisplay[op] || op;
+  var moneyFields = ['Down Payment', 'Loan Amount'];
+  var displayVal = val;
+  if(moneyFields.indexOf(field) > -1){
+    var num = parseFloat(val);
+    if(!isNaN(num)) displayVal = '$' + num.toLocaleString();
+  }
+  if(altEditingCond){
+    altEditingCond.querySelector('.alt-cond-field').textContent = field;
+    altEditingCond.querySelector('.alt-cond-op').textContent = displayOp;
+    altEditingCond.querySelector('.alt-cond-val').textContent = displayVal;
+    showNavToast('Condition Updated', 'Condition has been updated.');
+  } else {
+    var condRow = document.querySelector('.alt-cond-row[data-alert-idx="'+altCurrentAlert+'"]');
+    var condList = condRow.querySelector('.alt-cond-list');
+    var empty = condList.querySelector('.alt-empty-conds');
+    if(empty) empty.remove();
+    var newCond = document.createElement('div');
+    newCond.className = 'alt-cond';
+    newCond.innerHTML = '<span class="alt-cond-field">'+field+'</span>'
+      +'<span class="alt-cond-op">'+displayOp+'</span>'
+      +'<span class="alt-cond-val">'+displayVal+'</span>'
+      +'<div class="alt-cond-actions">'
+      +'<button class="alt-cond-btn" title="Edit" onclick="event.stopPropagation();altEditCond(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>'
+      +'<button class="alt-cond-btn" title="Delete" onclick="event.stopPropagation();altDeleteCond(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>'
+      +'</div>';
+    condList.appendChild(newCond);
+    showNavToast('Condition Added', field + ' ' + displayOp + ' ' + displayVal + ' added.');
+  }
+  altCloseCondModal();
+}
+function altDeleteCond(btn){
+  var condEl = btn.closest('.alt-cond');
+  condEl.remove();
+  showNavToast('Condition Deleted', 'Condition has been removed.');
+}
+
+// Global settings
+function altToggleGlobal(){
+  document.getElementById('alt-global-body').classList.toggle('open');
+  document.getElementById('alt-global-chev').classList.toggle('open');
+}
+function altToggleQuiet(){
+  var on = document.getElementById('alt-quiet-toggle').checked;
+  document.getElementById('alt-quiet-times').style.opacity = on ? '1' : '.4';
+  document.getElementById('alt-quiet-times').style.pointerEvents = on ? 'auto' : 'none';
+  showNavToast('Quiet Hours', on ? 'Quiet hours enabled.' : 'Quiet hours disabled.');
+}
+function altToggleDigest(){
+  var on = document.getElementById('alt-digest-toggle').checked;
+  document.getElementById('alt-digest-opts').style.display = on ? 'block' : 'none';
+  showNavToast('Digest Mode', on ? 'Digest mode enabled.' : 'Digest mode disabled.');
+}
+
+// Dropdown functions
+function altToggleDrop(btn){
+  var menu = btn.nextElementSibling;
+  var isOpen = menu.classList.contains('open');
+  document.querySelectorAll('.alt-dropdown-menu.open').forEach(function(m){ m.classList.remove('open'); m.previousElementSibling.classList.remove('open'); });
+  if(!isOpen){ menu.classList.add('open'); btn.classList.add('open'); }
+}
+function altSelectDrop(item, value){
+  var dropdown = item.closest('.alt-dropdown');
+  dropdown.dataset.value = value;
+  dropdown.querySelector('.alt-dropdown-trigger span').textContent = item.dataset.short || item.textContent.trim();
+  dropdown.querySelectorAll('.alt-dropdown-item').forEach(function(el){ el.classList.remove('selected'); });
+  item.classList.add('selected');
+  dropdown.querySelector('.alt-dropdown-menu').classList.remove('open');
+  dropdown.querySelector('.alt-dropdown-trigger').classList.remove('open');
+}
+function altSetDropValue(id, value){
+  var dropdown = document.getElementById(id);
+  if(!dropdown) return;
+  dropdown.dataset.value = value;
+  var items = dropdown.querySelectorAll('.alt-dropdown-item');
+  items.forEach(function(item){
+    var itemVal = item.getAttribute('onclick').match(/altSelectDrop\(this,'(.+?)'\)/);
+    if(itemVal && itemVal[1] === value){
+      item.classList.add('selected');
+      dropdown.querySelector('.alt-dropdown-trigger span').textContent = item.dataset.short || item.textContent.trim();
+    } else {
+      item.classList.remove('selected');
+    }
+  });
+}
+document.addEventListener('click', function(e){
+  if(!e.target.closest('.alt-dropdown')){
+    document.querySelectorAll('.alt-dropdown-menu.open').forEach(function(m){ m.classList.remove('open'); m.previousElementSibling.classList.remove('open'); });
+  }
+});
+function toggleProductSwitcher(e){ e.stopPropagation(); document.getElementById('product-switcher').classList.toggle('open'); }
+document.addEventListener('click', function(){ var ps = document.getElementById('product-switcher'); if(ps) ps.classList.remove('open'); });
+function closeNotifications(){ document.getElementById('notif-panel') && document.getElementById('notif-panel').classList.remove('open'); }
+
+
+// ════════════════════════════════════════════════════════════════
+// RULE BUILDER
+// ════════════════════════════════════════════════════════════════
+var rb = { row: null, event: '', status: 'Active', groups: [], actions: [], sample: {}, nextId: 1 };
+
+var rbFieldGroups = [
+  { label: 'Loan Details', fields: ['Loan Amount','Down Payment','Interest Rate','Term (months)','Monthly Payment','LTV Ratio','APR','Finance Charge','Amount Financed','Balloon Payment'] },
+  { label: 'Applicant Info', fields: ['Credit Score','Applicant Name','Co-Applicant Name','Phone Number','Email','SSN (last 4)','Date of Birth','Employment Status','Monthly Income','Years Employed','Housing Status','Monthly Housing Payment'] },
+  { label: 'Vehicle Details', fields: ['Vehicle Year','Vehicle Make','Vehicle Model','Vehicle Trim','VIN','Mileage','Vehicle Type (New/Used/CPO)','MSRP','Invoice Price','Book Value','Stock Number'] },
+  { label: 'Deal Info', fields: ['Deal Type (Retail/Lease)','Deal Status','Trade-In Value','Trade-In Payoff','Negative Equity','Back-End Products Total','GAP Insurance','Extended Warranty','F&I Gross Profit','Front-End Gross Profit'] },
+  { label: 'Lender / Funding', fields: ['Lender Name','Lender Decision','Stipulation Count','Days in Funding','Approval Amount','Buy Rate','Reserve Amount','Funding Status'] },
+  { label: 'Dealership', fields: ['Dealer Name','Sales Person','F&I Manager','BDC Agent','Desk Manager','Store Location'] }
+];
+var rbOperators = [
+  {v:'=',  label:'Has a value of',           phrase:'has a value of'},
+  {v:'<',  label:'Less than',                phrase:'is less than'},
+  {v:'>',  label:'Greater than',             phrase:'is greater than'},
+  {v:'<=', label:'Less than or equal to',    phrase:'is less than or equal to'},
+  {v:'>=', label:'Greater than or equal to', phrase:'is greater than or equal to'},
+  {v:'<>', label:'Not equal to',             phrase:'is not equal to'}
+];
+// Fields rendered with a currency prefix in the summary sentence
+var rbMoneyFields = ['Loan Amount','Down Payment','Monthly Payment','Finance Charge','Amount Financed','Balloon Payment','Monthly Income','Monthly Housing Payment','MSRP','Invoice Price','Book Value','Trade-In Value','Trade-In Payoff','Negative Equity','Back-End Products Total','GAP Insurance','Extended Warranty','F&I Gross Profit','Front-End Gross Profit','Approval Amount','Reserve Amount'];
+var rbActionTypes = [
+  {v:'Email',  name:'Send email',          verb:'email'},
+  {v:'SMS',    name:'Send SMS',            verb:'text'},
+  {v:'In-App', name:'In-app notification', verb:'notify'}
+];
+
+function rbEsc(s){
+  if(s == null) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function rbIsMoney(field){ return rbMoneyFields.indexOf(field) > -1; }
+function rbFmtValue(field, value){
+  if(value === '' || value == null) return '…';
+  var n = parseFloat(String(value).replace(/[^0-9.\-]/g, ''));
+  if(isNaN(n)) return value;
+  var s = n.toLocaleString('en-US');
+  return rbIsMoney(field) ? '$' + s : s;
+}
+function rbOpLabel(v){
+  for(var i=0;i<rbOperators.length;i++){ if(rbOperators[i].v === v) return rbOperators[i].label; }
+  return v;
+}
+function rbOpPhrase(v){
+  for(var i=0;i<rbOperators.length;i++){ if(rbOperators[i].v === v) return rbOperators[i].phrase; }
+  return v;
+}
+
+function rbOpenFromRow(row){
+  rb.row = row;
+  rb.event = row.dataset.event || 'Alert';
+  rb.status = row.dataset.status || 'Active';
+  rb.sample = {};
+  rb.nextId = 1;
+
+  // Seed a starter condition group and one action per configured channel
+  rb.groups = [{ id: rb.nextId++, conditions: [
+    { id: rb.nextId++, field: 'Loan Amount', operator: '>', value: '', joinPrev: 'AND' }
+  ], joinPrev: 'OR' }];
+
+  var recips = (row.dataset.recipients || '').split(',').map(function(r){ return r.trim(); }).filter(Boolean)
+    .map(function(r){ return rbRoleToPerson[r] || r; });
+  rb.actions = (row.dataset.channels || '').split(',').map(function(c){ return c.trim(); }).filter(Boolean)
+    .map(function(ch){ return { id: rb.nextId++, type: ch, recipients: recips.slice(), subject: '', title: '', body: '' }; });
+
+  document.getElementById('rb-title').textContent = rb.event;
+  document.getElementById('rb-when-name').textContent = 'A new application is submitted';
+  var pill = document.getElementById('rb-status');
+  pill.textContent = rb.status;
+  pill.classList.toggle('is-inactive', rb.status !== 'Active');
+
+  rbRenderAll();
+  document.getElementById('rb-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function rbClose(){
+  document.getElementById('rb-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+  rbCloseMenu();
+}
+function rbEditDetails(){ if(rb.row) altOpenEditModal(rb.row); }
+
+function rbRenderAll(){
+  rbRenderGroups();
+  rbRenderActions();
+  rbRenderTest();
+  rbRenderReads();
+  rbUpdateSubtitle();
+}
+
+function rbUpdateSubtitle(){
+  var chans = rb.actions.map(function(a){ return a.type; });
+  document.getElementById('rb-subtitle').textContent =
+    'Notification rule' + (chans.length ? ' · ' + chans.join(', ') : '');
+}
+
+function rbFindGroup(id){ for(var i=0;i<rb.groups.length;i++){ if(rb.groups[i].id===id) return rb.groups[i]; } return null; }
+function rbFindCond(id){
+  for(var i=0;i<rb.groups.length;i++){
+    var cs = rb.groups[i].conditions;
+    for(var j=0;j<cs.length;j++){ if(cs[j].id===id) return cs[j]; }
+  }
+  return null;
+}
+
+function rbGroupSubtitle(g){
+  if(g.conditions.length < 2) return 'all of these must match';
+  var joins = g.conditions.slice(1).map(function(c){ return c.joinPrev; });
+  var allAnd = joins.every(function(j){ return j === 'AND'; });
+  var allOr  = joins.every(function(j){ return j === 'OR'; });
+  if(allAnd) return 'all of these must match';
+  if(allOr)  return 'any of these must match';
+  return 'custom match';
+}
+
+function rbRenderGroups(){
+  var host = document.getElementById('rb-groups');
+  if(!host) return;
+  host.innerHTML = rb.groups.map(function(g, gi){
+    var sep = gi === 0 ? '' :
+      '<div class="rb-sep"><span class="rb-sep-line"></span>'
+      + '<button class="rb-join' + (g.joinPrev === 'OR' ? ' is-or' : '') + '" onclick="rbToggleGroupJoin(' + g.id + ')">' + g.joinPrev + '</button>'
+      + '<span class="rb-sep-line"></span></div>';
+
+    var conds = g.conditions.map(function(c, ci){
+      var lead = ci === 0
+        ? '<span class="rb-where">Where</span>'
+        : '<button class="rb-join' + (c.joinPrev === 'OR' ? ' is-or' : '') + '" onclick="rbToggleCondJoin(' + c.id + ')">' + c.joinPrev + '</button>';
+      var fieldOpts = rbFieldGroups.map(function(fg){
+        return '<optgroup label="' + rbEsc(fg.label) + '">' + fg.fields.map(function(f){
+          return '<option value="' + rbEsc(f) + '"' + (c.field === f ? ' selected' : '') + '>' + rbEsc(f) + '</option>';
+        }).join('') + '</optgroup>';
+      }).join('');
+      var opOpts = rbOperators.map(function(o){
+        return '<option value="' + rbEsc(o.v) + '"' + (c.operator === o.v ? ' selected' : '') + '>' + rbEsc(o.v) + '  ' + rbEsc(o.label) + '</option>';
+      }).join('');
+      var pass = rbEvalCondition(c);
+      return '<div class="rb-cond">' + lead
+        + '<select class="rb-input" onchange="rbCondChange(' + c.id + ',\'field\',this.value)">' + fieldOpts + '</select>'
+        + '<select class="rb-input" onchange="rbCondChange(' + c.id + ',\'operator\',this.value)">' + opOpts + '</select>'
+        + '<input type="text" class="rb-input" placeholder="value" value="' + rbEsc(c.value) + '" oninput="rbCondChange(' + c.id + ',\'value\',this.value)">'
+        + '<span class="rb-dot' + (pass ? ' is-pass' : '') + '" title="' + (pass ? 'Passes with the sample values' : 'Does not pass') + '"></span>'
+        + '<button class="rb-x" onclick="rbRemoveCond(' + c.id + ')" title="Remove condition">&times;</button>'
+      + '</div>';
+    }).join('');
+
+    return sep + '<div class="rb-group">'
+      + '<div class="rb-group-head">'
+        + '<span class="rb-group-title">Group ' + (gi + 1) + ' &middot; ' + rbGroupSubtitle(g) + '</span>'
+        + (rb.groups.length > 1 ? '<button class="rb-group-remove" onclick="rbRemoveGroup(' + g.id + ')">Remove group</button>' : '')
+      + '</div>'
+      + conds
+      + '<button class="rb-add" onclick="rbAddCond(' + g.id + ')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add condition</button>'
+    + '</div>';
+  }).join('');
+}
+
+// ── Condition / group mutations ──
+function rbCondChange(id, prop, val){
+  var c = rbFindCond(id); if(!c) return;
+  c[prop] = val;
+  if(prop === 'field'){ rbRenderTest(); }
+  rbRenderGroups(); rbRenderReads(); rbRenderVerdict();
+  if(prop === 'field') rbRenderTest();
+}
+function rbToggleCondJoin(id){
+  var c = rbFindCond(id); if(!c) return;
+  c.joinPrev = c.joinPrev === 'AND' ? 'OR' : 'AND';
+  rbRenderGroups(); rbRenderReads(); rbRenderVerdict();
+}
+function rbToggleGroupJoin(id){
+  var g = rbFindGroup(id); if(!g) return;
+  g.joinPrev = g.joinPrev === 'AND' ? 'OR' : 'AND';
+  rbRenderGroups(); rbRenderReads(); rbRenderVerdict();
+}
+function rbAddCond(groupId){
+  var g = rbFindGroup(groupId); if(!g) return;
+  g.conditions.push({ id: rb.nextId++, field: 'Loan Amount', operator: '>', value: '', joinPrev: 'AND' });
+  rbRenderGroups(); rbRenderTest(); rbRenderReads();
+}
+function rbRemoveCond(id){
+  for(var i=0;i<rb.groups.length;i++){
+    var g = rb.groups[i];
+    var idx = g.conditions.map(function(c){ return c.id; }).indexOf(id);
+    if(idx > -1){
+      g.conditions.splice(idx, 1);
+      if(!g.conditions.length && rb.groups.length > 1) rb.groups.splice(i, 1);
+      break;
+    }
+  }
+  rbRenderGroups(); rbRenderTest(); rbRenderReads();
+}
+function rbAddGroup(){
+  rb.groups.push({ id: rb.nextId++, joinPrev: 'OR', conditions: [
+    { id: rb.nextId++, field: 'Loan Amount', operator: '<', value: '', joinPrev: 'AND' }
+  ]});
+  rbRenderGroups(); rbRenderTest(); rbRenderReads();
+}
+function rbRemoveGroup(id){
+  if(rb.groups.length < 2) return;
+  rb.groups = rb.groups.filter(function(g){ return g.id !== id; });
+  rbRenderGroups(); rbRenderTest(); rbRenderReads();
+}
+
+// ── Actions ──
+function rbActionName(type){
+  for(var i=0;i<rbActionTypes.length;i++){ if(rbActionTypes[i].v === type) return rbActionTypes[i].name; }
+  return type;
+}
+// Lives inside the actions card, so it is rebuilt with every render.
+// Only one action per channel, so once all three exist there is nothing left to add.
+function rbAddActionBtn(){
+  var used = rb.actions.map(function(a){ return a.type; });
+  var left = rbActionTypes.filter(function(t){ return used.indexOf(t.v) < 0; }).length;
+  return '<div class="rb-act-foot"><button class="rb-add" id="rb-add-action" onclick="rbAddActionMenu(event)"'
+    + (left ? '' : ' disabled title="Email, SMS and in-app are all added"')
+    + '><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add action</button></div>';
+}
+
+function rbRenderActions(){
+  var host = document.getElementById('rb-actions');
+  if(!host) return;
+  if(!rb.actions.length){
+    host.innerHTML = '<div class="rb-test-empty">No actions yet.</div>' + rbAddActionBtn();
+    return;
+  }
+  host.innerHTML = rb.actions.map(function(a){
+    var chips = a.recipients.length
+      ? '<span class="rb-avs">' + a.recipients.map(function(r){
+          return '<span class="rb-av is-' + rbRecipKind(r) + '" data-name="' + rbEsc(r) + '" aria-label="' + rbEsc(r) + '">'
+            + rbEsc(rbInitials(r)) + '</span>';
+        }).join('') + '</span>'
+      : '<span class="rb-act-none">no recipients yet</span>';
+    var hasMsg = rbMsgHasContent(a);
+    return '<div class="rb-act">'
+      + '<span class="rb-act-name">' + rbEsc(rbActionName(a.type)) + '</span>'
+      + '<span class="rb-act-to">to</span>' + chips
+      + '<button class="rb-act-compose' + (hasMsg ? ' is-set' : '') + '" onclick="rbOpenMsg(' + a.id + ')">'
+        + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"/></svg>'
+        + (hasMsg ? 'Edit message' : 'Write message') + '</button>'
+      + '<button class="rb-x rb-act-x" onclick="rbRemoveAction(' + a.id + ')" title="Remove action">&times;</button>'
+    + '</div>';
+  }).join('') + rbAddActionBtn();
+}
+function rbRemoveAction(id){
+  rb.actions = rb.actions.filter(function(a){ return a.id !== id; });
+  rbRenderActions(); rbRenderReads(); rbUpdateSubtitle(); rbRenderVerdict();
+}
+function rbCloseMenu(){
+  var m = document.getElementById('rb-menu');
+  if(m) m.remove();
+}
+
+// Recipients are edited on a draft inside the compose dialog so Cancel can discard them.
+var rbMsgRecips = [];
+
+function rbMsgRenderRecips(){
+  var host = document.getElementById('rb-msg-recips');
+  if(!host) return;
+  var chips = rbMsgRecips.map(function(r){
+    return '<span class="rb-chip">' + rbEsc(r)
+      + '<button onclick="rbMsgRemoveRecip(\'' + rbEsc(r).replace(/'/g, '&#39;') + '\')" title="Remove">&times;</button></span>';
+  }).join('');
+  host.innerHTML = chips
+    + '<button class="rb-chip-add" onclick="rbMsgRecipMenu(event)">+ Add recipient</button>';
+}
+
+// Searchable recipient directory: staff users and CRM leads.
+// Staff are real people; their job title is the subtitle, not the name.
+var rbUserList = [
+  { name: 'David P.',      sub: 'Sales Manager' },
+  { name: 'James D.',      sub: 'F&I Manager' },
+  { name: 'Maria R.',      sub: 'BDC' },
+  { name: 'Tom K.',        sub: 'Desk Manager' },
+  { name: 'Robert Hale',   sub: 'Dealer Principal' },
+  { name: 'Angel Garcia',  sub: 'Sales' },
+  { name: 'Will Fletcher', sub: 'Inventory' }
+];
+// Alert rows store job titles; map them onto the people who hold them.
+var rbRoleToPerson = {
+  'Sales Manager': 'David P.',
+  'F&I Manager': 'James D.',
+  'BDC': 'Maria R.',
+  'Desk Manager': 'Tom K.',
+  'Dealer Principal': 'Robert Hale'
+};
+var rbLeadList = ['Ac Thakur','Kristina Stuart','Taylor Dang','Gage Quarles','Jason Stark','Christian Webster','Saurabh Singh','Jasbir Chandok','Maria Trapp','Derek Huff','Priya Mehta','Carlos Rivera','Sandra Lee','James Okoye','Mei Huang','Luis Garza','Tina Brooks','Omar Shaikh','Rachel Kim','Daniel Park','Sophia Reyes','Ethan Wright','Isabella Costa','Noah Bennett','Mia Foster','Liam Becker','Ava Sullivan','Mason Reid','Charlotte Hale','Logan Wells','Amelia Brooks','Henry Cole','Evelyn Tan','Jack Morrison','Harper Reeves','Owen Pierce','Lily Chen','Wyatt Lane','Zoe Vargas','Caleb Knox','Grace Donovan','Ryan Tate','Eleanor Page','Sebastian Hart','Penelope Yu','Eli Sanders','Aurora Klein','Theo Mendoza','Naomi Frost','Hudson Pratt','Violet Park','Asher Bowen','Hazel Ortiz','Levi Quinn','Stella Reyes'].map(function(n){ return { name: n, sub: 'Lead' }; });
+
+function rbInitials(n){
+  var p = String(n).trim().split(/\s+/);
+  return ((p[0] || '').charAt(0) + (p.length > 1 ? p[p.length - 1].charAt(0) : '')).toUpperCase();
+}
+function rbRecipKind(name){
+  for(var i=0;i<rbUserList.length;i++){ if(rbUserList[i].name === name) return 'user'; }
+  return 'lead';
+}
+
+function rbPickClose(){
+  var p = document.getElementById('rb-pick');
+  if(p) p.remove();
+}
+
+function rbPickResults(q){
+  q = (q || '').trim().toLowerCase();
+  function filt(list){
+    return list.filter(function(i){
+      if(rbMsgRecips.indexOf(i.name) > -1) return false;
+      return !q || i.name.toLowerCase().indexOf(q) > -1 || (i.sub || '').toLowerCase().indexOf(q) > -1;
+    });
+  }
+  return [
+    { label: 'Users',               kind: 'user', items: filt(rbUserList) },
+    { label: 'Leads',               kind: 'lead', items: filt(rbLeadList).slice(0, q ? 40 : 8) }
+  ].filter(function(g){ return g.items.length; });
+}
+
+function rbPickRender(q){
+  var list = document.getElementById('rb-pick-list');
+  if(!list) return;
+  var groups = rbPickResults(q);
+  if(!groups.length){
+    list.innerHTML = '<div class="rb-pick-empty">No matches</div>';
+    return;
+  }
+  list.innerHTML = groups.map(function(g){
+    return '<div class="rb-pick-head">' + rbEsc(g.label) + '</div>'
+      + g.items.map(function(i){
+          return '<button class="rb-pick-item" onmousedown="event.preventDefault()" onclick="rbPickChoose(\'' + rbEsc(i.name).replace(/'/g, '&#39;') + '\')">'
+            + '<span class="rb-pick-av is-' + g.kind + '">' + rbEsc(rbInitials(i.name)) + '</span>'
+            + '<span class="rb-pick-nm">' + rbEsc(i.name) + '</span>'
+            + '<span class="rb-pick-sub">' + rbEsc(i.sub || '') + '</span></button>';
+        }).join('');
+  }).join('');
+  var first = list.querySelector('.rb-pick-item');
+  if(first) first.classList.add('is-active');
+}
+
+function rbPickChoose(name){
+  if(rbMsgRecips.indexOf(name) < 0) rbMsgRecips.push(name);
+  var inp = document.getElementById('rb-pick-input');
+  rbMsgRenderRecips();
+  // keep the picker open so several recipients can be added in a row
+  var btn = document.querySelector('#rb-msg-recips .rb-chip-add');
+  if(btn) rbMsgRecipMenu({ stopPropagation: function(){}, currentTarget: btn });
+}
+
+function rbPickKey(e){
+  var list = document.getElementById('rb-pick-list');
+  if(!list) return;
+  var items = Array.prototype.slice.call(list.querySelectorAll('.rb-pick-item'));
+  var idx = items.findIndex(function(el){ return el.classList.contains('is-active'); });
+  if(e.key === 'ArrowDown' || e.key === 'ArrowUp'){
+    e.preventDefault();
+    if(!items.length) return;
+    if(idx > -1) items[idx].classList.remove('is-active');
+    var next = e.key === 'ArrowDown' ? (idx + 1) % items.length : (idx - 1 + items.length) % items.length;
+    items[next].classList.add('is-active');
+    items[next].scrollIntoView({ block: 'nearest' });
+  } else if(e.key === 'Enter'){
+    e.preventDefault();
+    if(idx > -1) items[idx].click();
+  } else if(e.key === 'Escape'){
+    e.preventDefault();
+    rbPickClose();
+  }
+}
+
+function rbMsgRecipMenu(e){
+  if(e && e.stopPropagation) e.stopPropagation();
+  rbPickClose();
+  var btn = e.currentTarget;
+  var p = document.createElement('div');
+  p.className = 'rb-pick';
+  p.id = 'rb-pick';
+  p.innerHTML = '<div class="rb-pick-search">'
+      + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>'
+      + '<input type="text" id="rb-pick-input" placeholder="Search users and leads…" oninput="rbPickRender(this.value)" onkeydown="rbPickKey(event)">'
+    + '</div><div class="rb-pick-list" id="rb-pick-list"></div>';
+  p.addEventListener('click', function(ev){ ev.stopPropagation(); });
+  document.body.appendChild(p);
+  var box = btn.getBoundingClientRect();
+  p.style.left = Math.min(box.left, window.innerWidth - p.offsetWidth - 10) + 'px';
+  var below = window.innerHeight - box.bottom;
+  if(below < p.offsetHeight + 16 && box.top > p.offsetHeight){
+    p.style.top = (box.top - p.offsetHeight - 5) + 'px';
+  } else {
+    p.style.top = (box.bottom + 5) + 'px';
+  }
+  rbPickRender('');
+  var inp = document.getElementById('rb-pick-input');
+  if(inp) inp.focus();
+  setTimeout(function(){ document.addEventListener('click', rbPickClose, { once: true }); }, 0);
+}
+function rbMsgRemoveRecip(name){
+  rbMsgRecips = rbMsgRecips.filter(function(r){ return r !== name; });
+  rbMsgRenderRecips();
+}
+
+// ── Evaluation ──
+// Joins fold left-to-right with no precedence; the groups supply the parentheses.
+function rbEvalCondition(c){
+  var raw = rb.sample[c.field];
+  if(raw === undefined || raw === '' || c.value === '') return false;
+  var a = parseFloat(String(raw).replace(/[^0-9.\-]/g, ''));
+  var b = parseFloat(String(c.value).replace(/[^0-9.\-]/g, ''));
+  if(isNaN(a) || isNaN(b)){
+    var sa = String(raw).trim().toLowerCase(), sb = String(c.value).trim().toLowerCase();
+    if(c.operator === '=')  return sa === sb;
+    if(c.operator === '<>') return sa !== sb;
+    return false;
+  }
+  switch(c.operator){
+    case '>':  return a >  b;
+    case '<':  return a <  b;
+    case '>=': return a >= b;
+    case '<=': return a <= b;
+    case '=':  return a === b;
+    case '<>': return a !== b;
+  }
+  return false;
+}
+function rbEvalGroup(g){
+  if(!g.conditions.length) return false;
+  var acc = rbEvalCondition(g.conditions[0]);
+  for(var i=1;i<g.conditions.length;i++){
+    var v = rbEvalCondition(g.conditions[i]);
+    acc = g.conditions[i].joinPrev === 'AND' ? (acc && v) : (acc || v);
+  }
+  return acc;
+}
+function rbEvalRule(){
+  if(!rb.groups.length) return false;
+  var acc = rbEvalGroup(rb.groups[0]);
+  for(var i=1;i<rb.groups.length;i++){
+    var v = rbEvalGroup(rb.groups[i]);
+    acc = rb.groups[i].joinPrev === 'AND' ? (acc && v) : (acc || v);
+  }
+  return acc;
+}
+function rbUsedFields(){
+  var out = [];
+  rb.groups.forEach(function(g){
+    g.conditions.forEach(function(c){ if(c.field && out.indexOf(c.field) < 0) out.push(c.field); });
+  });
+  return out;
+}
+
+// ── Test panel ──
+function rbRenderTest(){
+  var host = document.getElementById('rb-test-fields');
+  if(!host) return;
+  var fields = rbUsedFields();
+  if(!fields.length){
+    host.innerHTML = '<div class="rb-test-empty">Add a condition to test the rule.</div>';
+  } else {
+    host.innerHTML = fields.map(function(f){
+      return '<div class="rb-test-fld"><label>' + rbEsc(f) + '</label>'
+        + '<input type="text" class="rb-input" placeholder="e.g. 5000" value="' + rbEsc(rb.sample[f] || '') + '"'
+        + ' oninput="rbSampleChange(\'' + rbEsc(f).replace(/'/g, '&#39;') + '\',this.value)"></div>';
+    }).join('');
+  }
+  rbRenderVerdict();
+}
+function rbSampleChange(field, val){
+  rb.sample[field] = val;
+  rbRenderGroups();   // refresh the pass/fail dots
+  rbRenderVerdict();
+}
+function rbActionsSentence(){
+  if(!rb.actions.length) return 'No actions are configured.';
+  var names = rb.actions.map(function(a){ return rbActionName(a.type).toLowerCase(); });
+  var recips = [];
+  rb.actions.forEach(function(a){
+    a.recipients.forEach(function(r){ if(recips.indexOf(r) < 0) recips.push(r); });
+  });
+  var who = recips.length ? ' go to ' + rbJoinWords(recips) : ' have no recipients yet';
+  return rbCap(rbJoinWords(names)) + who + '.';
+}
+function rbRenderVerdict(){
+  var box = document.getElementById('rb-verdict');
+  if(!box) return;
+  var fires = rbEvalRule();
+  box.classList.toggle('is-fire', fires);
+  document.getElementById('rb-verdict-ttl').textContent = fires ? 'Rule fires' : 'Rule does not fire';
+  document.getElementById('rb-verdict-txt').textContent = fires
+    ? rbActionsSentence()
+    : 'With these sample values the conditions are not met, so no action runs.';
+}
+
+// ── Plain-English summary ──
+function rbJoinWords(arr){
+  if(arr.length === 0) return '';
+  if(arr.length === 1) return arr[0];
+  return arr.slice(0, -1).join(', ') + ' and ' + arr[arr.length - 1];
+}
+function rbCap(s){ return s.charAt(0).toUpperCase() + s.slice(1); }
+
+function rbConditionPhrase(c){
+  return '<b>' + rbEsc(c.field) + '</b> ' + rbOpPhrase(c.operator)
+    + ' <span class="rb-num">' + rbEsc(rbFmtValue(c.field, c.value)) + '</span>';
+}
+function rbGroupPhrase(g){
+  var parts = g.conditions.map(function(c, i){
+    return (i === 0 ? '' : ' <span class="rb-' + c.joinPrev.toLowerCase() + '">' + c.joinPrev.toLowerCase() + '</span> ') + rbConditionPhrase(c);
+  }).join('');
+  return g.conditions.length > 1 ? '(' + parts + ')' : parts;
+}
+function rbRenderReads(){
+  var el = document.getElementById('rb-reads');
+  if(!el) return;
+  if(!rb.groups.length || !rbUsedFields().length){
+    el.innerHTML = 'When <b>' + rbEsc(rb.event.toLowerCase()) + '</b> happens, no conditions are set yet.';
+    return;
+  }
+  var ifPart = rb.groups.map(function(g, i){
+    return (i === 0 ? '' : ' <span class="rb-' + g.joinPrev.toLowerCase() + '">' + g.joinPrev.toLowerCase() + '</span> ') + rbGroupPhrase(g);
+  }).join('');
+
+  var verbs = rb.actions.map(function(a){
+    for(var i=0;i<rbActionTypes.length;i++){ if(rbActionTypes[i].v === a.type) return rbActionTypes[i].verb; }
+    return a.type;
+  });
+  var recips = [];
+  rb.actions.forEach(function(a){ a.recipients.forEach(function(r){ if(recips.indexOf(r) < 0) recips.push(r); }); });
+  var thenPart = verbs.length
+    ? rbJoinWords(verbs) + (recips.length ? ' ' + rbJoinWords(recips.map(function(r){ return '<b>' + rbEsc(r) + '</b>'; })) : ' nobody yet')
+    : 'do nothing';
+
+  // Names like "David P." already end in a period — don't add a second one.
+  var lastRecip = recips.length ? recips[recips.length - 1] : '';
+  var stop = (verbs.length && recips.length && /\.$/.test(lastRecip)) ? '' : '.';
+  el.innerHTML = 'When a new application is submitted, if ' + ifPart + ', ' + thenPart + stop;
+}
+
+function rbSave(){
+  if(!rb.row){ rbClose(); return; }
+  var channels = rb.actions.map(function(a){ return a.type; });
+  var recips = [];
+  rb.actions.forEach(function(a){ a.recipients.forEach(function(r){ if(recips.indexOf(r) < 0) recips.push(r); }); });
+  if(channels.length){
+    rb.row.dataset.channels = channels.join(',');
+    var chCell = rb.row.querySelector('.alt-channels');
+    if(chCell) chCell.innerHTML = channels.map(function(c){ return altChannelTag(c); }).join('');
+  }
+  if(recips.length){
+    rb.row.dataset.recipients = recips.join(',');
+    var rcCell = rb.row.querySelector('.alt-recipients');
+    if(rcCell) rcCell.textContent = recips.join(', ');
+  }
+  rbClose();
+  if(typeof showNavToast === 'function'){
+    var n = rb.groups.reduce(function(t, g){ return t + g.conditions.length; }, 0);
+    showNavToast('Rule Saved', n + ' condition' + (n === 1 ? '' : 's') + ' and ' + rb.actions.length + ' action' + (rb.actions.length === 1 ? '' : 's') + ' saved.');
+  }
+}
+
+document.addEventListener('keydown', function(e){
+  var ov = document.getElementById('rb-overlay');
+  if(!ov || !ov.classList.contains('open')) return;
+  if(e.key === 'Escape' && !e.target.matches('input,textarea,select')) rbClose();
+});
+
+// ── Message composer ──
+var rbTokenGroups = [
+  { label: 'Customer', tokens: ['customer_name','credit_score','application_id'] },
+  { label: 'Loan', tokens: ['loan_amount','interest_rate','term_months','monthly_payment'] },
+  { label: 'Vehicle', tokens: ['vehicle_year','vehicle_make','vehicle_model'] },
+  { label: 'Deal', tokens: ['deal_status','lender_name'] },
+  { label: 'Dealership', tokens: ['dealer_name','sales_person'] }
+];
+var rbMsgEditing = null;
+
+function rbMsgHasContent(a){
+  return !!((a.body && a.body.trim()) || (a.subject && a.subject.trim()) || (a.title && a.title.trim()));
+}
+
+function rbOpenMsg(actionId){
+  var a = rb.actions.filter(function(x){ return x.id === actionId; })[0];
+  if(!a) return;
+  rbMsgEditing = actionId;
+  rbMsgRecips = a.recipients.slice();
+
+  var tokenOpts = rbTokenGroups.map(function(g){
+    return '<optgroup label="' + rbEsc(g.label) + '">' + g.tokens.map(function(t){
+      return '<option value="{{' + t + '}}">{{' + t + '}}</option>';
+    }).join('') + '</optgroup>';
+  }).join('');
+
+  var html = '<div class="rb-msg-fld"><label>Recipients</label>'
+    + '<div class="rb-msg-recips" id="rb-msg-recips"></div></div>';
+  if(a.type === 'Email'){
+    html += '<div class="rb-msg-fld"><label>Subject</label>'
+      + '<input type="text" class="rb-input" id="rb-msg-subject" placeholder="Subject line…" value="' + rbEsc(a.subject || '') + '"></div>';
+  }
+  if(a.type === 'In-App'){
+    html += '<div class="rb-msg-fld"><label>Title</label>'
+      + '<input type="text" class="rb-input" id="rb-msg-ttl" placeholder="Notification title…" value="' + rbEsc(a.title || '') + '"></div>';
+  }
+  html += '<div class="rb-msg-fld"><label>Message</label>'
+    + '<textarea class="rb-input" id="rb-msg-text" placeholder="Write your message…" oninput="rbMsgCount()">' + rbEsc(a.body || '') + '</textarea>'
+    + '<div class="rb-msg-tools">'
+      + '<select class="rb-input" style="max-width:190px;" onchange="rbMsgInsertToken(this)"><option value="">Insert Variable…</option>' + tokenOpts + '</select>'
+      + (a.type === 'SMS' ? '<span class="rb-msg-count" id="rb-msg-count"></span>' : '')
+    + '</div></div>';
+
+  document.getElementById('rb-msg-title').textContent = 'Compose ' + (a.type === 'In-App' ? 'in-app notification' : a.type === 'SMS' ? 'SMS' : 'email');
+  document.getElementById('rb-msg-body').innerHTML = html;
+  document.getElementById('rb-msg-modal').classList.add('open');
+  rbMsgRenderRecips();
+  if(a.type === 'SMS') rbMsgCount();
+  var first = document.querySelector('#rb-msg-body input, #rb-msg-body textarea');
+  if(first) first.focus();
+}
+
+function rbMsgCount(){
+  var el = document.getElementById('rb-msg-count');
+  if(!el) return;
+  var n = (document.getElementById('rb-msg-text').value || '').length;
+  var parts = Math.ceil(n / 160) || 1;
+  el.textContent = n + ' chars · ' + parts + ' SMS';
+  el.classList.toggle('is-over', n > 160);
+}
+
+function rbMsgInsertToken(sel){
+  var token = sel.value;
+  sel.selectedIndex = 0;
+  if(!token) return;
+  var ta = document.getElementById('rb-msg-text');
+  if(!ta) return;
+  var start = ta.selectionStart || 0, end = ta.selectionEnd || 0;
+  ta.value = ta.value.substring(0, start) + token + ta.value.substring(end);
+  ta.selectionStart = ta.selectionEnd = start + token.length;
+  ta.focus();
+  rbMsgCount();
+}
+
+function rbMsgCancel(){
+  document.getElementById('rb-msg-modal').classList.remove('open');
+  rbMsgEditing = null;
+}
+
+function rbMsgSave(){
+  var a = rb.actions.filter(function(x){ return x.id === rbMsgEditing; })[0];
+  if(a){
+    var sub = document.getElementById('rb-msg-subject');
+    var ttl = document.getElementById('rb-msg-ttl');
+    var txt = document.getElementById('rb-msg-text');
+    if(sub) a.subject = sub.value;
+    if(ttl) a.title = ttl.value;
+    if(txt) a.body = txt.value;
+    a.recipients = rbMsgRecips.slice();
+  }
+  rbMsgCancel();
+  rbRenderActions(); rbRenderReads(); rbRenderVerdict();
+}
+
+// ── Choose which action type to add ──
+function rbAddActionMenu(e){
+  e.stopPropagation();
+  rbCloseMenu();
+  var used = rb.actions.map(function(a){ return a.type; });
+  var avail = rbActionTypes.filter(function(t){ return used.indexOf(t.v) < 0; });
+  var m = document.createElement('div');
+  m.className = 'rb-menu';
+  m.id = 'rb-menu';
+  m.innerHTML = avail.length
+    ? avail.map(function(t){ return '<button onclick="rbAddActionType(\'' + t.v + '\')">' + rbEsc(t.name) + '</button>'; }).join('')
+    : '<div class="rb-menu-empty">All action types added</div>';
+  document.body.appendChild(m);
+  var box = e.currentTarget.getBoundingClientRect();
+  m.style.left = Math.min(box.left, window.innerWidth - m.offsetWidth - 10) + 'px';
+  // The button sits at the bottom of a long rule, so open upward when there is no room below.
+  var below = window.innerHeight - box.bottom;
+  m.style.top = (below < m.offsetHeight + 16 && box.top > m.offsetHeight)
+    ? (box.top - m.offsetHeight - 5) + 'px'
+    : (box.bottom + 5) + 'px';
+  setTimeout(function(){ document.addEventListener('click', rbCloseMenu, { once: true }); }, 0);
+}
+function rbAddActionType(type){
+  rbCloseMenu();
+  if(rb.actions.some(function(a){ return a.type === type; })) return;
+  rb.actions.push({ id: rb.nextId++, type: type, recipients: [], subject: '', title: '', body: '' });
+  rbRenderActions(); rbRenderReads(); rbUpdateSubtitle(); rbRenderVerdict();
+}
+</script>
+<script src="../../shared/notifications.js?v=6"></script>
